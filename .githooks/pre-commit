@@ -1,0 +1,7 @@
+#!/bin/sh
+
+git stash -q -u --keep-index
+
+grunt lint
+
+git stash pop -q
