@@ -15,8 +15,14 @@
     "devDependencies": {
         "mocha": "~1.15.1",
         "chai": "~1.8.1",
-        "jscs": "~1.2.4"
+        "jscs": "~1.2.4",
+        "grunt": "~0.4.2",
+        "grunt-cli": "~0.1.13",
+        "grunt-shell": "~0.6.4",
+        "grunt-contrib-clean": "~0.5.0",
+        "grunt-jscs-checker": "~0.3.2"
     },
+    "postinstall": "grunt install-hooks",
     "scripts": {
         "test": "./node_modules/.bin/mocha --reporter list test/"
     }
