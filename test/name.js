@@ -37,7 +37,7 @@ definer('NameTest', function(Name) {
 
         it('Получить всю информацию о сущности', function() {
             var entity = new Name('block_mod_val__element_elemMod_elemVal');
-            assert.equal(entity.info(), {
+            assert.deepEqual(entity.info(), {
                 block: 'block',
                 modName: 'mod',
                 modVal: 'val',
