@@ -1,6 +1,4 @@
-definer('NameTest', function(Name) {
-    var assert = require('chai').assert;
-
+definer('NameTest', function(assert, Name) {
     describe('Модуль Name.', function() {
 
         it('Получить имя блока', function() {
