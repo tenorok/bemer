@@ -91,7 +91,6 @@
     "disallowKeywords": ["with"],
     "disallowMultipleLineBreaks": true,
     "validateQuoteMarks": "'",
-    "validateIndentation": 4,
     "disallowTrailingWhitespace": true,
     "disallowKeywordsOnNewLine": ["else"],
     "requireLineFeedAtFileEnd": true,
