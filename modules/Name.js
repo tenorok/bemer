@@ -13,11 +13,12 @@ definer('Name', function() {
     /**
      * Разделители имён.
      *
-     * @type {{mod: string, val: string, elem: string}}
+     * @property {string} mod Разделитель блока и модификатора, элемента и модификатора, модификатора и значения
+     * @property {string} elem Разделитель блока и элемента
+     * @type {{mod: string, elem: string}}
      */
     Name.delimiters = {
         mod: '_',
-        val: '_',
         elem: '__'
     };
 
@@ -26,7 +27,7 @@ definer('Name', function() {
         /**
          * Получить информацию по БЭМ-сущности.
          *
-         * @returns {Object}
+         * @returns {object}
          */
         info: function() {
             var blockAndElem = this._getBlockAndElem(),
