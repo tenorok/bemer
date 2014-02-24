@@ -7,7 +7,14 @@ definer('Name', function() {
      * @param {string} name Имя БЭМ-сущности
      */
     function Name(name) {
-        this.name = name;
+
+        /**
+         * Имя БЭМ-сущности.
+         *
+         * @private
+         * @type {string}
+         */
+        this._name = name;
     }
 
     /**
@@ -51,7 +58,7 @@ definer('Name', function() {
          * @returns {{block: string, elem: string}}
          */
         _getBlockAndElem: function() {
-            var blockAndElem = this.name.split(Name.delimiters.elem);
+            var blockAndElem = this._name.split(Name.delimiters.elem);
             return {
                 block: blockAndElem[0] || '',
                 elem: blockAndElem[1] || ''
