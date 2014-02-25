@@ -25,5 +25,16 @@ definer('TagTest', function(assert, Tag) {
             assert.isFalse(tag.name('table').isSingle());
         });
 
+        it('Добавить/удалить атрибуты, получить атрибут и список всех атрибутов', function() {
+            var tag = new Tag('input');
+            assert.deepEqual(tag.attr('id', 10).attr('id', 100).attr('type', 'checkbox').attrList(), {
+                id: 100,
+                type: 'checkbox'
+            });
+            assert.deepEqual(tag.delAttr('type').delAttr('unexpect').attrList(), { id: 100 });
+            assert.equal(tag.attr('id'), 100);
+            assert.isUndefined(tag.attr('type'));
+        });
+
     });
 });

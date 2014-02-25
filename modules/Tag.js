@@ -23,6 +23,14 @@ definer('Tag', /** @exports Tag */ function() {
          * @type {string[]}
          */
         this._class = [];
+
+        /**
+         * Список атрибутов.
+         *
+         * @private
+         * @type {object}
+         */
+        this._attr = {};
     }
 
     /**
@@ -103,6 +111,42 @@ definer('Tag', /** @exports Tag */ function() {
          */
         isSingle: function() {
             return !!~Tag.singleTags.indexOf(this._name);
+        },
+
+        /**
+         * Получить/установить атрибут.
+         *
+         * @param {string} name Имя атрибута
+         * @param {*} [val] Значение атрибута
+         * @returns {*|Tag}
+         */
+        attr: function(name, val) {
+            if(val === undefined) {
+                return this._attr[name];
+            }
+
+            this._attr[name] = val;
+            return this;
+        },
+
+        /**
+         * Удалить атрибут.
+         *
+         * @param {string} name Имя атрибута
+         * @returns {Tag}
+         */
+        delAttr: function(name) {
+            delete this._attr[name];
+            return this;
+        },
+
+        /**
+         * Получить список атрибутов.
+         *
+         * @returns {object}
+         */
+        attrList: function() {
+            return this._attr;
         }
 
     };
