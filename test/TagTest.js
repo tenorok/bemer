@@ -19,5 +19,11 @@ definer('TagTest', function(assert, Tag) {
             assert.isFalse(tag.hasClass('block'));
         });
 
+        it('Проверить на одиночный тег', function() {
+            var tag = new Tag('img');
+            assert.isTrue(tag.isSingle());
+            assert.isFalse(tag.name('table').isSingle());
+        });
+
     });
 });

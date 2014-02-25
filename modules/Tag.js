@@ -1,4 +1,4 @@
-definer('Tag', function() {
+definer('Tag', /** @exports Tag */ function() {
 
     /**
      * Модуль работы с тегом.
@@ -17,13 +17,23 @@ definer('Tag', function() {
         this._name = name || 'div';
 
         /**
-         * Массив классов тега.
+         * Список классов тега.
          *
          * @private
          * @type {string[]}
          */
         this._class = [];
     }
+
+    /**
+     * Список одиночных HTML-тегов.
+     *
+     * @type {String[]}
+     */
+    Tag.singleTags = [
+        'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img',
+        'input', 'keygen', 'link', 'meta', 'param', 'source', 'wbr'
+    ];
 
     Tag.prototype = {
 
@@ -84,6 +94,15 @@ definer('Tag', function() {
          */
         getClass: function() {
             return this._class;
+        },
+
+        /**
+         * Проверить на одиночный тег.
+         *
+         * @returns {boolean}
+         */
+        isSingle: function() {
+            return !!~Tag.singleTags.indexOf(this._name);
         }
 
     };
