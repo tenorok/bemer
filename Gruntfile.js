@@ -8,6 +8,9 @@ module.exports = function(grunt) {
         shell: {
             hooks: {
                 command: 'cp .githooks/* .git/hooks/'
+            },
+            jsdoc: {
+                command: './node_modules/.bin/jsdoc -d jsdoc modules/'
             }
         },
         definer: require('./grunt/Target').definer(),
@@ -24,6 +27,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-mocha-test');
 
     grunt.registerTask('install-hooks', ['clean:hooks', 'shell:hooks']);
+    grunt.registerTask('jsdoc', ['shell:jsdoc']);
 
     grunt.registerTask('test', [
         'clean:test',

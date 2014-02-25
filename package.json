@@ -13,6 +13,7 @@
     },
     "license": "MIT",
     "devDependencies": {
+        "jsdoc": "~3.3.0",
         "chai": "~1.8.1",
         "jscs": "~1.2.4",
         "grunt": "~0.4.2",
@@ -23,7 +24,6 @@
         "grunt-contrib-clean": "~0.5.0"
     },
     "scripts": {
-        "postinstall": "./node_modules/.bin/grunt install-hooks",
-        "test": "./node_modules/.bin/mocha --reporter list test/"
+        "postinstall": "./node_modules/.bin/grunt install-hooks"
     }
 }
