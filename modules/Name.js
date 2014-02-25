@@ -3,6 +3,7 @@ definer('Name', function() {
     /**
      * Модуль парсинга имени БЭМ-сущности.
      *
+     * @name Name
      * @constructor
      * @param {string} name Имя БЭМ-сущности
      */
@@ -20,9 +21,10 @@ definer('Name', function() {
     /**
      * Разделители имён.
      *
+     * @memberof Name
+     * @type {{mod: string, elem: string}}
      * @property {string} mod Разделитель блока и модификатора, элемента и модификатора, модификатора и значения
      * @property {string} elem Разделитель блока и элемента
-     * @type {{mod: string, elem: string}}
      */
     Name.delimiters = {
         mod: '_',
@@ -34,6 +36,7 @@ definer('Name', function() {
         /**
          * Получить информацию по БЭМ-сущности.
          *
+         * @memberof Name#
          * @returns {object}
          */
         info: function() {
