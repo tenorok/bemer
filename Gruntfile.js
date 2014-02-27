@@ -1,32 +1,17 @@
 module.exports = function(grunt) {
 
-    var module = grunt.option('module') || 'main';
-
     grunt.initConfig({
         clean: {
-            hooks: ['.git/hooks/*'],
+            githooks: ['.git/hooks/*'],
             test: ['!test/tmp/.gitkeep', 'test/tmp/*']
         },
         shell: {
-            hooks: {
-                command: 'cp .githooks/* .git/hooks/'
-            }
+            githooks: { command: 'cp .githooks/* .git/hooks/' },
+            jsdoc: { command: './node_modules/.bin/jsdoc -d jsdoc modules/' }
         },
-        definer: {
-            main: {
-                target: 'test/tmp/main.js',
-                directory: ['modules/', 'test/']
-            },
-            name: {
-                module: 'NameTest',
-                target: 'test/tmp/name.js',
-                directory: ['modules/', 'test/']
-            }
-        },
+        definer: require('./grunt/Target').definer(),
         mochaTest: {
-            main: {
-                src: ['test/tmp/*']
-            }
+            main: { src: ['test/tmp/*'] }
         }
     });
 
@@ -35,8 +20,13 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-definer');
     grunt.loadNpmTasks('grunt-mocha-test');
 
-    grunt.registerTask('install-hooks', ['clean:hooks', 'shell:hooks']);
+    grunt.registerTask('githooks', ['clean:githooks', 'shell:githooks']);
+    grunt.registerTask('jsdoc', ['shell:jsdoc']);
 
-    grunt.registerTask('test', ['clean:test', 'definer:' + module, 'mochaTest']);
+    grunt.registerTask('test', [
+        'clean:test',
+        'definer:' + (grunt.option('module') || 'main'),
+        'mochaTest'
+    ]);
 
 };

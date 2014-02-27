@@ -1,4 +1,4 @@
-definer('Name', function() {
+definer('Name', /** @exports Name */ function() {
 
     /**
      * Модуль парсинга имени БЭМ-сущности.
@@ -7,15 +7,22 @@ definer('Name', function() {
      * @param {string} name Имя БЭМ-сущности
      */
     function Name(name) {
-        this.name = name;
+
+        /**
+         * Имя БЭМ-сущности.
+         *
+         * @private
+         * @type {string}
+         */
+        this._name = name;
     }
 
     /**
      * Разделители имён.
      *
+     * @type {{mod: string, elem: string}}
      * @property {string} mod Разделитель блока и модификатора, элемента и модификатора, модификатора и значения
      * @property {string} elem Разделитель блока и элемента
-     * @type {{mod: string, elem: string}}
      */
     Name.delimiters = {
         mod: '_',
@@ -51,7 +58,7 @@ definer('Name', function() {
          * @returns {{block: string, elem: string}}
          */
         _getBlockAndElem: function() {
-            var blockAndElem = this.name.split(Name.delimiters.elem);
+            var blockAndElem = this._name.split(Name.delimiters.elem);
             return {
                 block: blockAndElem[0] || '',
                 elem: blockAndElem[1] || ''
