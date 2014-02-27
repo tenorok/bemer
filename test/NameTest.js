@@ -6,15 +6,32 @@ definer('NameTest', function(assert, Name) {
             assert.equal(entity.info().block, 'block');
         });
 
+        it('Задать/получить имя блока методом', function() {
+            var entity = new Name();
+            assert.equal(entity.block('block').block(), 'block');
+        });
+
         it('Получить имя модификатора блока', function() {
             var entity = new Name('block_mod');
             assert.equal(entity.info().modName, 'mod');
+        });
+
+        it('Задать/получить имя модификатора блока методом', function() {
+            var block = new Name().block('block').mod('mod');
+            assert.equal(block.mod().name, 'mod');
+            assert.equal(block.modName(), 'mod');
         });
 
         it('Получить имя и значение модификатора блока', function() {
             var entity = new Name('block_mod_val');
             assert.equal(entity.info().modName, 'mod');
             assert.equal(entity.info().modVal, 'val');
+        });
+
+        it('Задать/получить значение модификатора блока методом', function() {
+            var block = new Name().block('block').mod('mod', 'val');
+            assert.equal(block.mod().val, 'val');
+            assert.equal(block.modVal(), 'val');
         });
 
         it('Получить имя элемента', function() {

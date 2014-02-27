@@ -1,10 +1,10 @@
 definer('Name', /** @exports Name */ function() {
 
     /**
-     * Модуль парсинга имени БЭМ-сущности.
+     * Модуль работы с именем БЭМ-сущности.
      *
      * @constructor
-     * @param {string} name Имя БЭМ-сущности
+     * @param {string} [name] Имя БЭМ-сущности
      */
     function Name(name) {
 
@@ -14,7 +14,33 @@ definer('Name', /** @exports Name */ function() {
          * @private
          * @type {string}
          */
-        this._name = name;
+        this._name = name || '';
+
+        /**
+         * Имя блока.
+         *
+         * @private
+         * @type {string}
+         */
+        this._block;
+
+        /**
+         * Имя модификатора блока.
+         *
+         * @private
+         * @type {string}
+         */
+        this._modName;
+
+        /**
+         * Значение модификатора блока.
+         *
+         * @private
+         * @type {string}
+         */
+        this._modVal;
+
+        this.info();
     }
 
     /**
@@ -42,13 +68,70 @@ definer('Name', /** @exports Name */ function() {
                 elem = this._getObjectAndMods(blockAndElem.elem);
 
             return {
-                block: block.object,
-                modName: block.modName,
-                modVal: block.modVal,
+                block: this._block = block.object,
+                modName: this._modName = block.modName,
+                modVal: this._modVal = block.modVal,
                 elem: elem.object,
                 elemModName: elem.modName,
                 elemModVal: elem.modVal
             };
+        },
+
+        /**
+         * Получить/установить имя блока.
+         *
+         * @param {string} name Имя блока
+         * @returns {string|Name}
+         */
+        block: function(name) {
+            if(name === undefined) return this._block;
+
+            this._block = name;
+            return this;
+        },
+
+        /**
+         * Получить/установить модификатор блока.
+         *
+         * @param {string} [name] Имя модификатора
+         * @param {string} [val] Значение модификатора
+         * @returns {{name: string, val: string}|Name}
+         */
+        mod: function(name, val) {
+            if(name === undefined && val === undefined) return {
+                name: this.modName(),
+                val: this.modVal()
+            };
+
+            this.modName(name);
+            this.modVal(val);
+            return this;
+        },
+
+        /**
+         * Получить/установить имя модификатора блока.
+         *
+         * @param {string} [name] Имя модификатора
+         * @returns {string|Name}
+         */
+        modName: function(name) {
+            if(name === undefined) return this._modName;
+
+            this._modName = name;
+            return this;
+        },
+
+        /**
+         * Получить/установить значение модификатора блока.
+         *
+         * @param {string} [val] Значение модификатора
+         * @returns {string|Name}
+         */
+        modVal: function(val) {
+            if(val === undefined) return this._modVal;
+
+            this._modVal = val;
+            return this;
         },
 
         /**
