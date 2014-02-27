@@ -195,6 +195,35 @@ definer('Tag', /** @exports Tag */ function() {
         addContent: function(content) {
             this._content.push(content);
             return this;
+        },
+
+        /**
+         * Получить строковое представление тега.
+         *
+         * @returns {string}
+         */
+        toString: function() {
+            var tag = ['<' + this.name()],
+                classes = this.getClass(),
+                attrList = this.attrList();
+
+            if(classes.length) {
+                tag.push(' class="' + classes.join(' ') + '"');
+            }
+
+            Object.keys(attrList).forEach(function(attr) {
+                tag.push(' ' + attr + '="' + attrList[attr] + '"');
+            }, this);
+
+            if(this.single()) {
+                tag.push('/>')
+            } else {
+                tag.push('>');
+                tag = tag.concat(this.content());
+                tag.push('</' + this.name() + '>');
+            }
+
+            return tag.join('');
         }
 
     };

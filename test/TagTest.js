@@ -46,5 +46,26 @@ definer('TagTest', function(assert, Tag) {
             assert.deepEqual(tag.content('').content(), ['']);
         });
 
+        it('Получить строковое представление тега', function() {
+            var tag = new Tag('span');
+            assert.equal(tag.toString(), '<span></span>');
+            assert.equal(tag.addContent('Строка ').addContent('содержимого.').toString(),
+                '<span>Строка содержимого.</span>'
+            );
+            assert.equal(tag.addClass('block').addClass('block_mod_val').toString(),
+                '<span class="block block_mod_val">Строка содержимого.</span>'
+            );
+            assert.equal(tag.attr('id', 'i100').attr('data-info', 'text').toString(),
+                '<span class="block block_mod_val" id="i100" data-info="text">Строка содержимого.</span>'
+            );
+            assert.equal(tag.addContent(new Tag().content('Вложенный блок.')).toString(),
+                '<span class="block block_mod_val" id="i100" data-info="text">' +
+                    'Строка содержимого.' +
+                    '<div>Вложенный блок.</div>' +
+                '</span>'
+            );
+            assert.equal(tag.single(true).toString(), '<span class="block block_mod_val" id="i100" data-info="text"/>');
+        });
+
     });
 });
