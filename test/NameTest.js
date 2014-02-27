@@ -49,10 +49,22 @@ definer('NameTest', function(assert, Name) {
             assert.equal(entity.info().elemModName, 'elemMod');
         });
 
+        it('Задать/получить имя модификатора элемента методом', function() {
+            var block = new Name().block('block').elem('element').elemMod('elemMod');
+            assert.equal(block.elemMod().name, 'elemMod');
+            assert.equal(block.elemModName(), 'elemMod');
+        });
+
         it('Получить имя и значение модификатора элемента', function() {
             var entity = new Name('block__element_elemMod_elemVal');
             assert.equal(entity.info().elemModName, 'elemMod');
             assert.equal(entity.info().elemModVal, 'elemVal');
+        });
+
+        it('Задать/получить значение модификатора элемента методом', function() {
+            var block = new Name().block('block').elem('element').elemMod('elemMod', 'elemVal');
+            assert.equal(block.elemMod().val, 'elemVal');
+            assert.equal(block.elemModVal(), 'elemVal');
         });
 
         it('Получить всю информацию о сущности', function() {

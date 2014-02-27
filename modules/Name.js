@@ -48,6 +48,22 @@ definer('Name', /** @exports Name */ function() {
          */
         this._elem = '';
 
+        /**
+         * Имя модификатора элемента.
+         *
+         * @private
+         * @type {string}
+         */
+        this._elemModName = '';
+
+        /**
+         * Значение модификатора элемента.
+         *
+         * @private
+         * @type {string}
+         */
+        this._elemModVal = '';
+
         this.info();
     }
 
@@ -79,9 +95,9 @@ definer('Name', /** @exports Name */ function() {
                 block: this._block = block.object,
                 modName: this._modName = block.modName,
                 modVal: this._modVal = block.modVal,
-                elem: elem.object,
-                elemModName: elem.modName,
-                elemModVal: elem.modVal
+                elem: this._elem = elem.object,
+                elemModName: this._elemModName = elem.modName,
+                elemModVal: this._elemModVal = elem.modVal
             };
         },
 
@@ -141,6 +157,44 @@ definer('Name', /** @exports Name */ function() {
          */
         elem: function(name) {
             return this._getSet('_elem', name);
+        },
+
+        /**
+         * Получить/установить модификатор элемента.
+         *
+         * @param {string} [name] Имя модификатора
+         * @param {string} [val] Значение модификатора
+         * @returns {{name: string, val: string}|Name}
+         */
+        elemMod: function(name, val) {
+            if(name === undefined && val === undefined) return {
+                name: this.elemModName(),
+                val: this.elemModVal()
+            };
+
+            this.elemModName(name);
+            this.elemModVal(val);
+            return this;
+        },
+
+        /**
+         * Получить/установить имя модификатора элемента.
+         *
+         * @param {string} [name] Имя модификатора
+         * @returns {string|Name}
+         */
+        elemModName: function(name) {
+            return this._getSet('_elemModName', name);
+        },
+
+        /**
+         * Получить/установить значение модификатора элемента.
+         *
+         * @param {string} [val] Значение модификатора
+         * @returns {string|Name}
+         */
+        elemModVal: function(val) {
+            return this._getSet('_elemModVal', val);
         },
 
         /**
