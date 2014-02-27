@@ -39,6 +39,14 @@ definer('Tag', /** @exports Tag */ function() {
          * @type {boolean}
          */
         this._single;
+
+        /**
+         * Содержимое тега.
+         *
+         * @private
+         * @type {string[]}
+         */
+        this._content = [''];
     }
 
     /**
@@ -163,6 +171,30 @@ definer('Tag', /** @exports Tag */ function() {
          */
         attrList: function() {
             return this._attr;
+        },
+
+        /**
+         * Получить/установить содержимое тега.
+         *
+         * @param {string} [content] Содержимое
+         * @returns {string[]|Tag}
+         */
+        content: function(content) {
+            if(content === undefined) return this._content;
+
+            this._content = [content];
+            return this;
+        },
+
+        /**
+         * Добавить содержимое тега.
+         *
+         * @param {string} content Содержимое
+         * @returns {Tag}
+         */
+        addContent: function(content) {
+            this._content.push(content);
+            return this;
         }
 
     };

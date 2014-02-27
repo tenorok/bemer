@@ -39,5 +39,12 @@ definer('TagTest', function(assert, Tag) {
             assert.isUndefined(tag.attr('type'));
         });
 
+        it('Установить/добавить и получить содержимое тега', function() {
+            var tag = new Tag();
+            assert.deepEqual(tag.content('Первый').content(), ['Первый']);
+            assert.deepEqual(tag.addContent('Второй').addContent('Третий').content(), ['Первый', 'Второй', 'Третий']);
+            assert.deepEqual(tag.content('').content(), ['']);
+        });
+
     });
 });
