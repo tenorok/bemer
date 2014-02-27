@@ -22,7 +22,7 @@ definer('Name', /** @exports Name */ function() {
          * @private
          * @type {string}
          */
-        this._block;
+        this._block = '';
 
         /**
          * Имя модификатора блока.
@@ -30,7 +30,7 @@ definer('Name', /** @exports Name */ function() {
          * @private
          * @type {string}
          */
-        this._modName;
+        this._modName = '';
 
         /**
          * Значение модификатора блока.
@@ -38,7 +38,15 @@ definer('Name', /** @exports Name */ function() {
          * @private
          * @type {string}
          */
-        this._modVal;
+        this._modVal = '';
+
+        /**
+         * Имя элемента.
+         *
+         * @private
+         * @type {string}
+         */
+        this._elem = '';
 
         this.info();
     }
@@ -80,14 +88,11 @@ definer('Name', /** @exports Name */ function() {
         /**
          * Получить/установить имя блока.
          *
-         * @param {string} name Имя блока
+         * @param {string} [name] Имя блока
          * @returns {string|Name}
          */
         block: function(name) {
-            if(name === undefined) return this._block;
-
-            this._block = name;
-            return this;
+            return this._getSet('_block', name);
         },
 
         /**
@@ -115,10 +120,7 @@ definer('Name', /** @exports Name */ function() {
          * @returns {string|Name}
          */
         modName: function(name) {
-            if(name === undefined) return this._modName;
-
-            this._modName = name;
-            return this;
+            return this._getSet('_modName', name);
         },
 
         /**
@@ -128,10 +130,17 @@ definer('Name', /** @exports Name */ function() {
          * @returns {string|Name}
          */
         modVal: function(val) {
-            if(val === undefined) return this._modVal;
+            return this._getSet('_modVal', val);
+        },
 
-            this._modVal = val;
-            return this;
+        /**
+         * Получить/установить элемент.
+         *
+         * @param {string} [name] Имя элемента
+         * @returns {string|Name}
+         */
+        elem: function(name) {
+            return this._getSet('_elem', name);
         },
 
         /**
@@ -162,6 +171,21 @@ definer('Name', /** @exports Name */ function() {
                 modName: blockAndMod[1] || '',
                 modVal: blockAndMod[2] || ''
             };
+        },
+
+        /**
+         * Получить/установить значение полю.
+         *
+         * @private
+         * @param {string} name Имя поля
+         * @param {*} [val] Значение
+         * @returns {*|Name}
+         */
+        _getSet: function(name, val) {
+            if(val === undefined) return this[name];
+
+            this[name] = val;
+            return this;
         }
 
     };

@@ -39,6 +39,11 @@ definer('NameTest', function(assert, Name) {
             assert.equal(entity.info().elem, 'element');
         });
 
+        it('Задать/получить имя элемента методом', function() {
+            var block = new Name();
+            assert.equal(block.block('block').elem('element').elem(), 'element');
+        });
+
         it('Получить имя модификатора элемента', function() {
             var entity = new Name('block__element_elemMod');
             assert.equal(entity.info().elemModName, 'elemMod');
