@@ -21,8 +21,11 @@ definer('TagTest', function(assert, Tag) {
 
         it('Проверить на одиночный тег', function() {
             var tag = new Tag('img');
-            assert.isTrue(tag.isSingle());
-            assert.isFalse(tag.name('table').isSingle());
+            assert.isTrue(tag.single());
+            assert.isFalse(tag.name('table').single());
+            assert.isTrue(tag.single(true).single(), 'принудительное указание одиночного тега');
+            assert.isTrue(tag.name('b').single(), 'после смены тега принудительное указание не сбрасывается');
+            assert.isFalse(tag.single(false).single());
         });
 
         it('Добавить/удалить атрибуты, получить атрибут и список всех атрибутов', function() {

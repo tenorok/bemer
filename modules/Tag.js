@@ -31,6 +31,14 @@ definer('Tag', /** @exports Tag */ function() {
          * @type {object}
          */
         this._attr = {};
+
+        /**
+         * Флаг принудительного указания одиночного тега.
+         *
+         * @private
+         * @type {boolean}
+         */
+        this._single;
     }
 
     /**
@@ -105,12 +113,20 @@ definer('Tag', /** @exports Tag */ function() {
         },
 
         /**
-         * Проверить на одиночный тег.
+         * Проверить/установить одиночный тег.
          *
-         * @returns {boolean}
+         * @param {boolean} [state] Флаг одиночного тега
+         * @returns {boolean|Tag}
          */
-        isSingle: function() {
-            return !!~Tag.singleTags.indexOf(this._name);
+        single: function(state) {
+            if(state === undefined) {
+                return this._single !== undefined
+                    ? this._single
+                    : !!~Tag.singleTags.indexOf(this._name);
+            }
+
+            this._single = state;
+            return this;
         },
 
         /**
