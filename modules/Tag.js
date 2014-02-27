@@ -77,13 +77,16 @@ definer('Tag', /** @exports Tag */ function() {
         /**
          * Добавить тегу класс.
          *
-         * @param {string} name Имя класса
+         * @param {string|string[]} cls Имя класса или список имён
          * @returns {Tag}
          */
-        addClass: function(name) {
-            if(!this.hasClass(name)) {
-                this._class.push(name);
-            }
+        addClass: function(cls) {
+            var names = Array.isArray(cls) ? cls : [cls];
+            names.forEach(function(name) {
+                if(!this.hasClass(name)) {
+                    this._class.push(name);
+                }
+            }, this);
             return this;
         },
 

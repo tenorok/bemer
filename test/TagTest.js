@@ -17,6 +17,7 @@ definer('TagTest', function(assert, Tag) {
             assert.isTrue(tag.hasClass('block'));
             assert.deepEqual(tag.delClass('block').delClass('unexpect').getClass(), ['block2']);
             assert.isFalse(tag.hasClass('block'));
+            assert.deepEqual(tag.addClass(['block3', 'block4']).getClass(), ['block2', 'block3', 'block4']);
         });
 
         it('Проверить на одиночный тег', function() {
