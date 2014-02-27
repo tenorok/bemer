@@ -198,6 +198,38 @@ definer('Name', /** @exports Name */ function() {
         },
 
         /**
+         * Получить строковое представление БЭМ-сущности.
+         *
+         * @returns {string}
+         */
+        toString: function() {
+            var mod = Name.delimiters.mod,
+                name = [this._block];
+
+            if(this._modName) {
+                name.push(mod, this._modName);
+
+                if(this._modVal) {
+                    name.push(mod, this._modVal);
+                }
+            }
+
+            if(this._elem) {
+                name.push(Name.delimiters.elem, this._elem);
+
+                if(this._elemModName) {
+                    name.push(mod, this._elemModName);
+
+                    if(this._elemModVal) {
+                        name.push(mod, this._elemModVal);
+                    }
+                }
+            }
+
+            return name.join('');
+        },
+
+        /**
          * Получить строковую информацию о блоке и его элементе.
          *
          * @private
