@@ -33,6 +33,9 @@ definer('NodeTest', function(assert, Node) {
                 { block: 'block2', elem: 'elem2' },
                 { block: 'block3', mods: { size: 's' }}
             ] }).getClass(), ['block__elem', 'block2__elem2', 'block3', 'block3_size_s']);
+
+            assert.deepEqual(new Node({ block: 'block', cls: 'cls1  cls2' }).getClass(), ['cls1', 'cls2', 'block']);
+            assert.deepEqual(new Node({ block: 'block', bem: false, cls: 'cls1 cls2' }).getClass(), ['cls1', 'cls2']);
         });
 
     });

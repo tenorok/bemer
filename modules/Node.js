@@ -77,7 +77,11 @@ definer('Node', /** @exports Node */ function(Tag, Name) {
         getClass: function() {
             var node = this._node;
 
-            if(node.bem === false) return [];
+            if(node.cls) {
+                this._tag.addClass(node.cls.split(' ').filter(function(cls) { return cls; }));
+            }
+
+            if(node.bem === false) return this._tag.getClass();
 
             if(this.isElem()) {
                 this._name.elem(node.elem);
