@@ -2,6 +2,8 @@ definer('string', /** @exports string */ function() {
 
     /**
      * Модуль работы со строками.
+     *
+     * @class
      */
     function string() {}
 
