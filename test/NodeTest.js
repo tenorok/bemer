@@ -12,5 +12,13 @@ definer('NodeTest', function(assert, Node) {
             assert.isTrue(new Node({ block: 'name', elem: 'elem' }).isElem());
         });
 
+        it('Получить список классов узла', function() {
+            assert.deepEqual(new Node({ block: 'name' }).getClass(), ['name']);
+            assert.deepEqual(new Node({ block: 'name', bem: false }).getClass(), []);
+            assert.deepEqual(new Node({ block: 'name', js: true }).getClass(), ['name', 'i-bem']);
+            assert.deepEqual(new Node({ block: 'name', js: { a: 100 }}).getClass(), ['name', 'i-bem']);
+            assert.deepEqual(new Node({ block: 'name', elem: 'element' }).getClass(), ['name__element']);
+        });
+
     });
 });
