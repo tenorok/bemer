@@ -23,6 +23,14 @@ definer('Node', /** @exports Node */ function(Tag, Name) {
          * @type {Tag}
          */
         this._tag = new Tag();
+
+        /**
+         * Экземпляр имени БЭМ-сущности.
+         *
+         * @private
+         * @type {Name}
+         */
+        this._name = new Name(node.block);
     }
 
     /**
@@ -71,19 +79,46 @@ definer('Node', /** @exports Node */ function(Tag, Name) {
 
             if(node.bem === false) return [];
 
-            var name = new Name(node.block);
-
             if(this.isElem()) {
-                name.elem(node.elem);
+                this._name.elem(node.elem);
             }
 
-            this._tag.addClass(name.toString());
+            this._tag.addClass(this._name.toString());
 
             if(node.js) {
                 this._tag.addClass(Node.bemClass);
             }
 
+            if(node.mods) {
+                this._tag.addClass(this._getModsClasses('mod'));
+            }
+
+            if(node.elemMods) {
+                this._tag.addClass(this._getModsClasses('elemMod'));
+            }
+
+            if(node.mix) {
+                this._tag.addClass(node.mix.reduce(function(classes, node) {
+                    return classes.concat(new Node(node).getClass());
+                }.bind(this), []));
+            }
+
             return this._tag.getClass();
+        },
+
+        /**
+         * Получить список классов модификаторов узла.
+         *
+         * @private
+         * @param {string} method Имя метода для установки модификаторов
+         * @returns {string[]}
+         */
+        _getModsClasses: function(method) {
+            var mods = this._node[method + 's'];
+            return Object.keys(mods).reduce(function(classes, key) {
+                classes.push(this._name[method](key, mods[key]).toString());
+                return classes;
+            }.bind(this), []);
         }
 
     };
