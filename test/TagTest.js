@@ -40,6 +40,16 @@ definer('TagTest', function(assert, Tag) {
             assert.isUndefined(tag.attr('type'));
         });
 
+        it('Добавить атрибут со сложным значением', function() {
+            var tag = new Tag();
+            assert.equal(tag.attr('data-bem', { myblock: { a: 100, b: 200 }}).attr('data-bem'),
+                '{&quot;myblock&quot;:{&quot;a&quot;:100,&quot;b&quot;:200}}'
+            );
+            assert.equal(tag.attr('data-list', [100, true, 'third', { b: 200 }]).attr('data-list'),
+                '[100,true,&quot;third&quot;,{&quot;b&quot;:200}]'
+            );
+        });
+
         it('Установить/добавить и получить содержимое тега', function() {
             var tag = new Tag();
             assert.deepEqual(tag.content('Первый').content(), ['Первый']);

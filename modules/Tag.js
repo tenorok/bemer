@@ -1,4 +1,4 @@
-definer('Tag', /** @exports Tag */ function() {
+definer('Tag', /** @exports Tag */ function(string) {
 
     /**
      * Модуль работы с тегом.
@@ -143,13 +143,18 @@ definer('Tag', /** @exports Tag */ function() {
         /**
          * Получить/установить атрибут.
          *
+         * В качестве значения атрибуту можно передавать массив или объект,
+         * они будут установлены в заэкранированном виде.
+         *
          * @param {string} name Имя атрибута
          * @param {*} [val] Значение атрибута
          * @returns {*|Tag}
          */
         attr: function(name, val) {
-            if(val === undefined) {
-                return this._attr[name];
+            if(val === undefined) return this._attr[name];
+
+            if(typeof val === 'object') {
+                val = string.htmlEscape(JSON.stringify(val));
             }
 
             this._attr[name] = val;
