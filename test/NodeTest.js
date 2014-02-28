@@ -38,5 +38,27 @@ definer('NodeTest', function(assert, Node) {
             assert.deepEqual(new Node({ block: 'block', bem: false, cls: 'cls1 cls2' }).getClass(), ['cls1', 'cls2']);
         });
 
+        it('Получить js-параметры узла', function() {
+            assert.deepEqual(new Node({
+                block: 'block1', js: { a: 100 },
+                mix: [{ block: 'block2', js: { b: 200 }}]
+            }).getParams(), {
+                block1: { a: 100 },
+                block2: { b: 200 }
+            });
+
+            assert.deepEqual(new Node({
+                block: 'block1', elem: 'elem1', js: { a: 100 },
+                mix: [
+                    { block: 'block2', js: { b: 200, c: 300 }},
+                    { block: 'block3', elem: 'elem3', js: { d: 400 }}
+                ]
+            }).getParams(), {
+                block1__elem1: { a: 100 },
+                block2: { b: 200, c: 300 },
+                block3__elem3: { d: 400 }
+            });
+        });
+
     });
 });

@@ -31,6 +31,14 @@ definer('Node', /** @exports Node */ function(Tag, Name) {
          * @type {Name}
          */
         this._name = new Name(node.block);
+
+        /**
+         * Параметры узла.
+         *
+         * @private
+         * @type {object}
+         */
+        this._params = {};
     }
 
     /**
@@ -109,6 +117,13 @@ definer('Node', /** @exports Node */ function(Tag, Name) {
 
             return this._tag.getClass();
         },
+
+        /**
+         * Получить параметры узла.
+         *
+         * @returns {object}
+         */
+        getParams: function() {},
 
         /**
          * Получить список классов модификаторов узла.
