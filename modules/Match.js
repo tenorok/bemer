@@ -37,7 +37,7 @@ definer('Match', /** @exports Match */ function(Name) {
                 this._block(node.block) &&
                 this._blockMod(node.mods) &&
                 this._elem(node.elem) &&
-                this._elemMod(node.mods)
+                this._elemMod(node.elemMods)
             );
         },
 
