@@ -57,7 +57,7 @@ definer('Match', /** @exports Match */ function(Name) {
          * Проверить модификаторы блока на соответствие шаблону.
          *
          * @private
-         * @param {string} mods Модификаторы блока узла
+         * @param {object} mods Модификаторы блока узла
          * @returns {boolean}
          */
         _blockMod: function(mods) {
@@ -85,7 +85,7 @@ definer('Match', /** @exports Match */ function(Name) {
          * Проверить модификаторы элемента на соответствие шаблону.
          *
          * @private
-         * @param {string} mods Модификаторы элемента узла
+         * @param {object} mods Модификаторы элемента узла
          * @returns {boolean}
          */
         _elemMod: function(mods) {
@@ -98,11 +98,11 @@ definer('Match', /** @exports Match */ function(Name) {
          * @private
          * @param {string} patternName Шаблон имени модификатора
          * @param {string} patternVal Шаблон имени значения модификатора
-         * @param {string} mods Модификаторы элемента узла
+         * @param {object} mods Модификаторы элемента узла
          * @returns {boolean}
          */
         _anyMod: function(patternName, patternVal, mods) {
-            if(!patternName) {
+            if(!patternName && !mods) {
                 return true;
             }
 
