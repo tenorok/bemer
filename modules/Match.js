@@ -36,7 +36,8 @@ definer('Match', /** @exports Match */ function(Name) {
             return (
                 this._block(node.block) &&
                 this._blockMod(node.mods) &&
-                this._elem(node.elem)
+                this._elem(node.elem) &&
+                this._elemMod(node.mods)
             );
         },
 
@@ -60,20 +61,7 @@ definer('Match', /** @exports Match */ function(Name) {
          * @returns {boolean}
          */
         _blockMod: function(mods) {
-            var patternName = this._pattern.modName(),
-                patternVal = this._pattern.modVal();
-
-            if(!patternName) {
-                return true;
-            }
-
-            if(!mods) {
-                return false;
-            }
-
-            return Object.keys(mods).some(function(name) {
-                return this._mod(patternName, patternVal, name, mods[name]);
-            }, this);
+            return this._anyMod(this._pattern.modName(), this._pattern.modVal(), mods);
         },
 
         /**
@@ -91,6 +79,40 @@ definer('Match', /** @exports Match */ function(Name) {
             }
 
             return pattern === Match.any || pattern === elem;
+        },
+
+        /**
+         * Проверить модификаторы элемента на соответствие шаблону.
+         *
+         * @private
+         * @param {string} mods Модификаторы элемента узла
+         * @returns {boolean}
+         */
+        _elemMod: function(mods) {
+            return this._anyMod(this._pattern.elemModName(), this._pattern.elemModVal(), mods);
+        },
+
+        /**
+         * Проверить модификаторы блока или элемента на соответствие шаблону.
+         *
+         * @private
+         * @param {string} patternName Шаблон имени модификатора
+         * @param {string} patternVal Шаблон имени значения модификатора
+         * @param {string} mods Модификаторы элемента узла
+         * @returns {boolean}
+         */
+        _anyMod: function(patternName, patternVal, mods) {
+            if(!patternName) {
+                return true;
+            }
+
+            if(!mods) {
+                return false;
+            }
+
+            return Object.keys(mods).some(function(name) {
+                return this._mod(patternName, patternVal, name, mods[name]);
+            }, this);
         },
 
         /**
