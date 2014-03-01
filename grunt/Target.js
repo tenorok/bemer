@@ -5,8 +5,9 @@ Target.definer = function() {
     var modules = [
             'Name',
             'Tag',
+            'Node',
             'string',
-            'Node'
+            'object'
         ],
 
         directories = ['modules/', 'test/'],
