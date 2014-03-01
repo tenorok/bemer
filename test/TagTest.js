@@ -31,11 +31,11 @@ definer('TagTest', function(assert, Tag) {
 
         it('Добавить/удалить атрибуты, получить атрибут и список всех атрибутов', function() {
             var tag = new Tag('input');
-            assert.deepEqual(tag.attr('id', 10).attr('id', 100).attr('type', 'checkbox').attrList(), {
+            assert.deepEqual(tag.attr('id', 10).attr('id', 100).attr('type', 'checkbox').attr(), {
                 id: 100,
                 type: 'checkbox'
             });
-            assert.deepEqual(tag.delAttr('type').delAttr('unexpect').attrList(), { id: 100 });
+            assert.deepEqual(tag.delAttr('type').delAttr('unexpect').attr(), { id: 100 });
             assert.equal(tag.attr('id'), 100);
             assert.isUndefined(tag.attr('type'));
         });
@@ -48,6 +48,19 @@ definer('TagTest', function(assert, Tag) {
             assert.equal(tag.attr('data-list', [100, true, 'third', { b: 200 }]).attr('data-list'),
                 '[100,true,&quot;third&quot;,{&quot;b&quot;:200}]'
             );
+        });
+
+        it('Установить список атрибутов', function() {
+            assert.deepEqual(new Tag('input').attr('id', 100).attr({
+                type: 'text',
+                placeholder: 'example',
+                'data-bem': { my: { a: 1 }}
+            }).attr(), {
+                id: 100,
+                type: 'text',
+                placeholder: 'example',
+                'data-bem': '{&quot;my&quot;:{&quot;a&quot;:1}}'
+            });
         });
 
         it('Установить/добавить и получить содержимое тега', function() {

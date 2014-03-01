@@ -142,16 +142,27 @@ definer('Tag', /** @exports Tag */ function(string) {
 
         /**
          * Получить/установить атрибут.
+         * Установить список атрибутов.
+         * Получить список атрибутов.
          *
          * В качестве значения атрибуту можно передавать массив или объект,
          * они будут установлены в заэкранированном виде.
          *
-         * @param {string} name Имя атрибута
+         * @param {string|object} [name] Имя атрибута или список атрибутов
          * @param {*} [val] Значение атрибута
-         * @returns {*|Tag}
+         * @returns {*|object|Tag}
          */
         attr: function(name, val) {
-            if(val === undefined) return this._attr[name];
+            if(!arguments.length) return this._attr;
+
+            if(typeof name === 'object') {
+                Object.keys(name).forEach(function(attr) {
+                    this.attr(attr, name[attr]);
+                }, this);
+                return this;
+            } else if(val === undefined) {
+                return this._attr[name];
+            }
 
             if(typeof val === 'object') {
                 val = string.htmlEscape(JSON.stringify(val));
@@ -170,15 +181,6 @@ definer('Tag', /** @exports Tag */ function(string) {
         delAttr: function(name) {
             delete this._attr[name];
             return this;
-        },
-
-        /**
-         * Получить список атрибутов.
-         *
-         * @returns {object}
-         */
-        attrList: function() {
-            return this._attr;
         },
 
         /**
@@ -213,14 +215,14 @@ definer('Tag', /** @exports Tag */ function(string) {
         toString: function() {
             var tag = ['<' + this.name()],
                 classes = this.getClass(),
-                attrList = this.attrList();
+                attrs = this.attr();
 
             if(classes.length) {
                 tag.push(' class="' + classes.join(' ') + '"');
             }
 
-            Object.keys(attrList).forEach(function(attr) {
-                tag.push(' ' + attr + '="' + attrList[attr] + '"');
+            Object.keys(attrs).forEach(function(attr) {
+                tag.push(' ' + attr + '="' + attrs[attr] + '"');
             }, this);
 
             if(this.single()) {
