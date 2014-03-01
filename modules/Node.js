@@ -22,15 +22,7 @@ definer('Node', /** @exports Node */ function(Tag, Name, object) {
          * @private
          * @type {Tag}
          */
-        this._tag = new Tag();
-
-        /**
-         * Список классов узла.
-         *
-         * @private
-         * @type {string[]}
-         */
-        this._classes = [];
+        this._tag = new Tag(node.tag).attr(node.attrs || {});
 
         /**
          * Экземпляр имени БЭМ-сущности.
@@ -108,7 +100,6 @@ definer('Node', /** @exports Node */ function(Tag, Name, object) {
                 name.elem(this._node.elem);
             }
 
-            this._classes.push(name.toString());
             return name;
         },
 
@@ -121,7 +112,6 @@ definer('Node', /** @exports Node */ function(Tag, Name, object) {
             var params = {};
 
             if(this._node.js) {
-                this._classes.push(Node.bemClass);
                 params[this._name.toString()] = this._node.js === true ? {} : this._node.js;
             }
 
@@ -163,7 +153,13 @@ definer('Node', /** @exports Node */ function(Tag, Name, object) {
 
             if(node.bem === false) return this._tag.getClass();
 
-            this._tag.addClass(this._classes);
+            if(this.isBlock() || this.isElem() && !node.mods) {
+                this._tag.addClass(this._name.toString());
+            }
+
+            if(!object.isEmpty(this._params)) {
+                this._tag.addClass(Node.bemClass);
+            }
 
             if(node.mods) {
                 this._tag.addClass(this._getModsClasses('mod'));
@@ -178,6 +174,21 @@ definer('Node', /** @exports Node */ function(Tag, Name, object) {
             }, []));
 
             return this._tag.getClass();
+        },
+
+        /**
+         * Получить строковое представление узла.
+         *
+         * @returns {string}
+         */
+        toString: function() {
+            this.getClass();
+
+            if(!object.isEmpty(this._params)) {
+                this._tag.attr(Node.bemAttr, this._params);
+            }
+
+            return this._tag.toString();
         },
 
         /**
