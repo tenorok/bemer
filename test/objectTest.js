@@ -19,5 +19,13 @@ definer('objectTest', function(assert, object) {
             assert.deepEqual(object.extend({ a: 1, b: 2 }, expected), expected);
         });
 
+        it('Проверить объект на наличие полей', function() {
+            assert.isTrue(object.isEmpty({}));
+            assert.isFalse(object.isEmpty({ a: 1 }));
+            function Foo() {}
+            Foo.prototype.a = 1;
+            assert.isTrue(object.isEmpty(Foo));
+        });
+
     });
 });

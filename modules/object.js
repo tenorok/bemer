@@ -21,6 +21,16 @@ definer('object', /** @exports object */ function() {
         }, object);
     };
 
+    /**
+     * Проверить объект на наличие полей.
+     *
+     * @param {object} object Объект
+     * @returns {boolean}
+     */
+    object.isEmpty = function(object) {
+        return !Object.keys(object).length;
+    };
+
     return object;
 
 });
