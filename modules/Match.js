@@ -33,7 +33,11 @@ definer('Match', /** @exports Match */ function(Name) {
          * @returns {boolean}
          */
         is: function(node) {
-            return (this._block(node.block) && this._elem(node.elem));
+            return (
+                this._block(node.block) &&
+                this._blockMod(node.mods) &&
+                this._elem(node.elem)
+            );
         },
 
         /**
@@ -46,6 +50,30 @@ definer('Match', /** @exports Match */ function(Name) {
         _block: function(block) {
             var pattern = this._pattern.block();
             return pattern === Match.any || pattern === block;
+        },
+
+        /**
+         * Проверить модификаторы блока на соответствие шаблону.
+         *
+         * @private
+         * @param {string} mods Модификаторы блока узла
+         * @returns {boolean}
+         */
+        _blockMod: function(mods) {
+            var patternName = this._pattern.modName(),
+                patternVal = this._pattern.modVal();
+
+            if(!patternName) {
+                return true;
+            }
+
+            if(!mods) {
+                return false;
+            }
+
+            return Object.keys(mods).some(function(name) {
+                return this._mod(patternName, patternVal, name, mods[name]);
+            }, this);
         },
 
         /**
@@ -63,6 +91,34 @@ definer('Match', /** @exports Match */ function(Name) {
             }
 
             return pattern === Match.any || pattern === elem;
+        },
+
+        /**
+         * Проверить модификатор на соответствие шаблону.
+         *
+         * @private
+         * @param {string} patternName Шаблон имени модификатора
+         * @param {string} patternVal Шаблон имени значения модификатора
+         * @param {string} name Имя проверяемого модификатора
+         * @param {string} val Значение проверяемого модификатора
+         * @returns {boolean}
+         */
+        _mod: function(patternName, patternVal, name, val) {
+
+            if(patternName === Match.any && patternVal === Match.any) {
+                return true;
+            }
+
+            if(patternName === Match.any) {
+                return patternVal === val;
+            }
+
+            // Вторая проверка на булев модификатор
+            if(patternVal === Match.any || !patternVal && val === true) {
+                return patternName === name;
+            }
+
+            return patternName === name && patternVal === val;
         }
 
     };
