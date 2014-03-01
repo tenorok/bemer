@@ -1,4 +1,4 @@
-definer('Node', /** @exports Node */ function(Tag, Name) {
+definer('Node', /** @exports Node */ function(Tag, Name, object) {
 
     /**
      * Модуль работы с БЭМ-узлом.
@@ -25,12 +25,28 @@ definer('Node', /** @exports Node */ function(Tag, Name) {
         this._tag = new Tag();
 
         /**
+         * Список классов узла.
+         *
+         * @private
+         * @type {string[]}
+         */
+        this._classes = [];
+
+        /**
          * Экземпляр имени БЭМ-сущности.
          *
          * @private
          * @type {Name}
          */
-        this._name = new Name(node.block);
+        this._name = this.getName();
+
+        /**
+         * Список информационных объектов о примиксованных сущностях.
+         *
+         * @private
+         * @type {array}
+         */
+        this._mix = this.getMix();
 
         /**
          * Параметры узла.
@@ -38,7 +54,7 @@ definer('Node', /** @exports Node */ function(Tag, Name) {
          * @private
          * @type {object}
          */
-        this._params = {};
+        this._params = this.getParams();
     }
 
     /**
@@ -78,6 +94,62 @@ definer('Node', /** @exports Node */ function(Tag, Name) {
         },
 
         /**
+         * Получить экземпляр имени базовой БЭМ-сущности.
+         *
+         * Это может быть блок или элемент блока.
+         *
+         * @returns {Name}
+         */
+        getName: function() {
+
+            var name = new Name(this._node.block);
+
+            if(this.isElem()) {
+                name.elem(this._node.elem);
+            }
+
+            this._classes.push(name.toString());
+            return name;
+        },
+
+        /**
+         * Получить параметры узла.
+         *
+         * @returns {object}
+         */
+        getParams: function() {
+            var params = {};
+
+            if(this._node.js) {
+                this._classes.push(Node.bemClass);
+                params[this._name.toString()] = this._node.js === true ? {} : this._node.js;
+            }
+
+            return this._mix.reduce(function(params, mixNode) {
+                return object.extend(params, mixNode.params);
+            }, params);
+        },
+
+        /**
+         * Получить информацию о примиксованных сущностях.
+         *
+         * @returns {array}
+         */
+        getMix: function() {
+            if(!this._node.mix) return [];
+
+            return this._node.mix.reduce(function(mix, mixNode) {
+                var node = new Node(mixNode);
+                mix.push({
+                    name: node.getName().toString(),
+                    params: node.getParams(),
+                    classes: node.getClass()
+                });
+                return mix;
+            }, []);
+        },
+
+        /**
          * Получить список классов узла.
          *
          * @returns {string[]}
@@ -91,15 +163,7 @@ definer('Node', /** @exports Node */ function(Tag, Name) {
 
             if(node.bem === false) return this._tag.getClass();
 
-            if(this.isElem()) {
-                this._name.elem(node.elem);
-            }
-
-            this._tag.addClass(this._name.toString());
-
-            if(node.js) {
-                this._tag.addClass(Node.bemClass);
-            }
+            this._tag.addClass(this._classes);
 
             if(node.mods) {
                 this._tag.addClass(this._getModsClasses('mod'));
@@ -109,21 +173,12 @@ definer('Node', /** @exports Node */ function(Tag, Name) {
                 this._tag.addClass(this._getModsClasses('elemMod'));
             }
 
-            if(node.mix) {
-                this._tag.addClass(node.mix.reduce(function(classes, node) {
-                    return classes.concat(new Node(node).getClass());
-                }.bind(this), []));
-            }
+            this._tag.addClass(this._mix.reduce(function(mixClasses, mixNode) {
+                return mixClasses.concat(mixNode.classes);
+            }, []));
 
             return this._tag.getClass();
         },
-
-        /**
-         * Получить параметры узла.
-         *
-         * @returns {object}
-         */
-        getParams: function() {},
 
         /**
          * Получить список классов модификаторов узла.
