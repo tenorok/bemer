@@ -1,0 +1,5 @@
+{
+    "clean": {
+        "inherit": "node_modules/inherit/lib/inherit.js"
+    }
+}

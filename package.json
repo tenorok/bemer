@@ -12,6 +12,9 @@
         "homepage": "http://tenorok.ru"
     },
     "license": "MIT",
+    "dependencies": {
+        "inherit": "2.1.0"
+    },
     "devDependencies": {
         "jsdoc": "~3.3.0",
         "chai": "~1.8.1",
