@@ -7,16 +7,23 @@ Target.definer = function() {
             'Tag',
             'Node',
             'Match',
+            'Class',
             'string',
             'object'
         ],
 
         directories = ['modules/', 'test/'],
+        verbose = ['info', 'error'],
+        clean = {
+            inherit: 'node_modules/inherit/lib/inherit.js'
+        },
 
         target = {
             main: {
                 target: 'test/tmp/main.js',
-                directory: directories
+                directory: directories,
+                verbose: verbose,
+                clean: clean
             }
         };
 
@@ -25,7 +32,9 @@ Target.definer = function() {
         target[moduleName] = {
             module: testName,
             target: 'test/tmp/' + testName + '.js',
-            directory: ['modules/', 'test/']
+            directory: directories,
+            verbose: verbose,
+            clean: clean
         };
     });
 
