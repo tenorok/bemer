@@ -1,7 +1,7 @@
-definer('ClassTest', function(assert, Class) {
-    describe('Модуль Class.', function() {
+definer('classifyTest', function(assert, classify) {
+    describe('Модуль classify.', function() {
 
-        var A = Class({
+        var A = classify({
             __constructor: function(property) {
                 this.property = property;
             },
@@ -32,7 +32,7 @@ definer('ClassTest', function(assert, Class) {
             assert.equal(A.staticMethod(), 'staticA');
         });
 
-        var B = Class(A, {
+        var B = classify(A, {
             getProperty: function() { // overriding
                 return this.property + ' of instanceB';
             },
@@ -53,14 +53,14 @@ definer('ClassTest', function(assert, Class) {
             assert.equal(B.staticMethod(), 'staticA of staticB');
         });
 
-        var M = Class({
+        var M = classify({
             getMixedProperty: function() {
                 return 'mixed property';
             }
         }),
 
         // inherited from A with mixin M
-        C = Class([A, M], {
+        C = classify([A, M], {
             getMixedProperty: function() {
                 return this.__base() + ' from C';
             }

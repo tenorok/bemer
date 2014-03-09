@@ -7,7 +7,7 @@ Target.definer = function() {
             'Tag',
             'Node',
             'Match',
-            'Class',
+            'classify',
             'string',
             'object'
         ],
