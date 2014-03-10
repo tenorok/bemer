@@ -8,6 +8,7 @@ Target.definer = function() {
             'Node',
             'Match',
             'classify',
+            'Template',
             'string',
             'object'
         ],
