@@ -31,6 +31,16 @@ definer('object', /** @exports object */ function() {
         return !Object.keys(object).length;
     };
 
+    /**
+     * Клонировать объект.
+     *
+     * @param {object} obj Объект
+     * @returns {object}
+     */
+    object.clone = function(obj) {
+        return object.extend({}, obj);
+    };
+
     return object;
 
 });

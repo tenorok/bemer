@@ -27,5 +27,12 @@ definer('objectTest', function(assert, object) {
             assert.isTrue(object.isEmpty(Foo));
         });
 
+        it('Клонироать объект', function() {
+            var a = {},
+                b = object.clone(a);
+            b.foo = 100;
+            assert.isUndefined(a.foo);
+        });
+
     });
 });
