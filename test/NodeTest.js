@@ -206,6 +206,12 @@ definer('NodeTest', function(assert, Node) {
                 assert.equal(new Node({ block: 'name', elem: 'el' }).toString(), '<div class="name__el"></div>');
             });
 
+            it('Элемент с пустым списком модификаторов', function() {
+                assert.equal(new Node({ block: 'name', elem: 'el', mods: {}}).toString(),
+                    '<div class="name__el"></div>'
+                );
+            });
+
             it('Элемент с модификатором у блока', function() {
                 assert.equal(new Node({
                     block: 'name',
