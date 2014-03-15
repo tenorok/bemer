@@ -1,4 +1,4 @@
-definer('Template', /** @exports Template */ function(Match, classify) {
+definer('Template', /** @exports Template */ function(Match, classify, Node) {
 
     /**
      * Модуль шаблонизации BEMJSON-узла.
@@ -26,7 +26,19 @@ definer('Template', /** @exports Template */ function(Match, classify) {
         this._Modes = classify(modes);
     }
 
-    Template.prototype = {};
+    Template.prototype = {
+
+        /**
+         * Применить BEMJSON к шаблону.
+         *
+         * @param {object} bemjson BEMJSON
+         * @returns {Node|null} Экземпляр БЭМ-узла или null при несоответствии BEMJSON шаблону
+         */
+        match: function(bemjson) {
+            return this._match.is(bemjson) ? new Node(bemjson) : null;
+        }
+
+    };
 
     return Template;
 
