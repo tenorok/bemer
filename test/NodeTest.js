@@ -245,6 +245,15 @@ definer('NodeTest', function(assert, Node) {
                 );
             });
 
+            it('Блок с содержимым', function() {
+                assert.equal(new Node({
+                    block: 'name',
+                    content: 'Параграф текста'
+                }).toString(),
+                    '<div class="name">Параграф текста</div>'
+                );
+            });
+
         });
 
     });

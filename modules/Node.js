@@ -188,6 +188,10 @@ definer('Node', /** @exports Node */ function(Tag, Name, object) {
                 this._tag.attr(Node.bemAttr, this._params);
             }
 
+            if(this._node.content) {
+                this._tag.addContent(this._node.content);
+            }
+
             return this._tag.toString();
         },
 
