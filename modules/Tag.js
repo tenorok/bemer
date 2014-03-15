@@ -46,7 +46,7 @@ definer('Tag', /** @exports Tag */ function(string) {
          * @private
          * @type {string[]}
          */
-        this._content = [''];
+        this._content = [];
     }
 
     /**
@@ -186,24 +186,29 @@ definer('Tag', /** @exports Tag */ function(string) {
         /**
          * Получить/установить содержимое тега.
          *
-         * @param {string} [content] Содержимое
+         * @param {string|string[]} content Содержимое
          * @returns {string[]|Tag}
          */
         content: function(content) {
             if(content === undefined) return this._content;
 
-            this._content = [content];
+            this._content = [];
+            this.addContent(content);
             return this;
         },
 
         /**
          * Добавить содержимое тега.
          *
-         * @param {string} content Содержимое
+         * @param {string|string[]} content Содержимое
          * @returns {Tag}
          */
         addContent: function(content) {
-            this._content.push(content);
+            if(Array.isArray(content)) {
+                this._content = this._content.concat(content);
+            } else {
+                this._content.push(content);
+            }
             return this;
         },
 
