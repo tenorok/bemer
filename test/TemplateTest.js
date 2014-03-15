@@ -32,5 +32,32 @@ definer('TemplateTest', function(assert, Template) {
             );
         });
 
+        it('Шаблонизировать без БЭМ', function() {
+            assert.equal(new Template('name', {
+                js: false,
+                bem: false
+            }).match({ block: 'name' }).toString(),
+                '<div></div>'
+            );
+        });
+
+        it('Добавить атрибутов', function() {
+            assert.equal(new Template('picture', {
+                tag: 'img',
+                attrs: { alt: 'image' }
+            }).match({ block: 'picture', attrs: { src: '1.png' }}).toString(),
+                '<img class="picture i-bem" alt="image" src="1.png" data-bem="{&quot;picture&quot;:{}}"/>'
+            );
+        });
+
+        it('Добавить миксов', function() {
+            assert.equal(new Template('picture', {
+                tag: 'img',
+                mix: [{ block: 'image', js: true }]
+            }).match({ block: 'picture', mix: [{ block: 'link' }] }).toString(),
+                '<img class="picture i-bem link image" data-bem="{&quot;picture&quot;:{},&quot;image&quot;:{}}"/>'
+            );
+        });
+
     });
 });

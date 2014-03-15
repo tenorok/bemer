@@ -93,7 +93,9 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
 
             this._checkTypes(typeof Template.Modes[name], [val, bemjsonVal], name);
 
-            if(typeof val === 'object') {
+            if(Array.isArray(val)) {
+                return (bemjsonVal || []).concat(val);
+            } else if(typeof val === 'object') {
                 return object.extend(val, bemjsonVal || {});
             }
 
