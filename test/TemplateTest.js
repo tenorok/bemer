@@ -59,5 +59,43 @@ definer('TemplateTest', function(assert, Template) {
             );
         });
 
+        it('Шаблонизировать с произвольными классами', function() {
+            assert.equal(new Template('name', {
+                cls: 'my1 my2'
+            }).match({ block: 'name' }).toString(),
+                '<div class="my1 my2 name i-bem" data-bem="{&quot;name&quot;:{}}"></div>'
+            );
+        });
+
+        it('Шаблонизировать с добавлением модификаторов', function() {
+            assert.equal(new Template('name', {
+                mods: { theme: 'normal' },
+                elemMods: { fake: true }
+            }).match({ block: 'name' }).toString(),
+                '<div class="name i-bem name_theme_normal" data-bem="{&quot;name&quot;:{}}"></div>'
+            );
+        });
+
+        it('Шаблонизировать с наследованием модификаторов', function() {
+            assert.equal(new Template('name_size_s', {
+                mods: { theme: 'normal' }
+            }).match({ block: 'name', mods: { size: 's' }}).toString(),
+                '<div class="name i-bem name_theme_normal name_size_s" data-bem="{&quot;name&quot;:{}}"></div>'
+            );
+            assert.equal(new Template('name_size_s', {
+                mods: { theme: 'normal' }
+            }).match({ block: 'name', mods: { size: 's', theme: 'dark' }}).toString(),
+                '<div class="name i-bem name_theme_dark name_size_s" data-bem="{&quot;name&quot;:{}}"></div>'
+            );
+        });
+
+        it('Шаблонизировать с добавлением модификаторов элементу', function() {
+            assert.equal(new Template('name__elem', {
+                elemMods: { checked: true }
+            }).match({ block: 'name', elem: 'elem' }).toString(),
+                '<div class="name__elem i-bem name__elem_checked" data-bem="{&quot;name__elem&quot;:{}}"></div>'
+            );
+        });
+
     });
 });
