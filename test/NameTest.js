@@ -79,28 +79,47 @@ definer('NameTest', function(assert, Name) {
             });
         });
 
-        it('Произвольная работа с БЭМ-сущностью и преобразование в строку', function() {
-            var entity = new Name('block_mod');
-            assert.equal(entity.block(), 'block');
-            assert.equal(entity.modName(), 'mod');
-            assert.equal(entity.modVal('val').mod().val, 'val');
-            assert.equal(entity.elem(), '');
-            assert.equal(entity.elem('element').elem(), 'element');
-            assert.equal(entity.elemModName('elemMod').elemMod().name, 'elemMod');
-            assert.equal(entity.toString(), 'block_mod_val__element_elemMod');
+        describe('Произвольная работа с БЭМ-сущностью и преобразование в строку.', function() {
 
-            var entity2 = new Name('block_mod__element_mod');
-            assert.equal(entity2.elem(), 'element');
-            assert.equal(entity2.elemMod('mod2').elemMod().name, 'mod2');
-            assert.equal(entity2.elemMod('mod3', 'val3').elemMod().name, 'mod3');
-            assert.equal(entity2.elemModVal(), 'val3');
-            assert.equal(entity2.toString(), 'block_mod__element_mod3_val3');
+            it('Блок с модификатором', function() {
+                var entity = new Name('block_mod');
+                assert.equal(entity.block(), 'block');
+                assert.equal(entity.modName(), 'mod');
+                assert.equal(entity.toString(), 'block_mod');
+                assert.equal(entity.modVal('val').mod().val, 'val');
+                assert.equal(entity.elem(), '');
+                assert.equal(entity.elem('element').elem(), 'element');
+                assert.equal(entity.elemModName('elemMod').elemMod().name, 'elemMod');
+                assert.equal(entity.toString(), 'block_mod_val__element_elemMod');
+            });
 
-            assert.equal(new Name('block').modVal('val').toString(), 'block');
-            assert.equal(new Name('block__element').elemModVal('val').toString(), 'block__element');
-            assert.equal(new Name().block('block').mod('mod', 'val').elemMod('elemMod').toString(), 'block_mod_val');
+            it('Блок с модификатором и элементом с модификатором', function() {
+                var entity2 = new Name('block_mod__element_mod');
+                assert.equal(entity2.elem(), 'element');
+                assert.equal(entity2.elemMod('mod2').elemMod().name, 'mod2');
+                assert.equal(entity2.elemMod('mod3', 'val3').elemMod().name, 'mod3');
+                assert.equal(entity2.elemModVal(), 'val3');
+                assert.equal(entity2.toString(), 'block_mod__element_mod3_val3');
+            });
 
-            assert.equal(new Name().toString(), '');
+            it('Блок и элемент с назначением модификаторов методами', function() {
+                assert.equal(new Name('block').modVal('val').toString(), 'block');
+                assert.equal(new Name('block__element').elemModVal('val').toString(), 'block__element');
+                assert.equal(new Name().block('block').mod('mod', 'val').elemMod('fake').toString(), 'block_mod_val');
+            });
+
+            it('Булевы модификаторы', function() {
+                assert.equal(new Name().block('block').mod('mod', true).toString(), 'block_mod');
+                assert.equal(new Name().block('block').elem('elem').mod('mod', true).toString(), 'block_mod__elem');
+                assert.equal(new Name().block('block').elem('elem').elemMod('mod', true).toString(), 'block__elem_mod');
+                assert.equal(new Name().block('block').mod('vis', true).elem('elem').elemMod('mod', true).toString(),
+                    'block_vis__elem_mod'
+                );
+            });
+
+            it('Пустое имя', function() {
+                assert.equal(new Name().toString(), '');
+            });
         });
 
     });

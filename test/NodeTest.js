@@ -186,6 +186,12 @@ definer('NodeTest', function(assert, Node) {
                 );
             });
 
+            it('Блок с булевым модификатором', function() {
+                assert.equal(new Node({ block: 'name', mods: { visible: true }}).toString(),
+                    '<div class="name name_visible"></div>'
+                );
+            });
+
             it('Блок с параметрами', function() {
                 assert.equal(new Node({ block: 'name', js: true }).toString(),
                     '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}"></div>'
@@ -209,6 +215,12 @@ definer('NodeTest', function(assert, Node) {
             it('Элемент с пустым списком модификаторов', function() {
                 assert.equal(new Node({ block: 'name', elem: 'el', mods: {}}).toString(),
                     '<div class="name__el"></div>'
+                );
+            });
+
+            it('Элемент с булевым модификатором', function() {
+                assert.equal(new Node({ block: 'name', elem: 'element', elemMods: { visible: true }}).toString(),
+                    '<div class="name__element name__element_visible"></div>'
                 );
             });
 
