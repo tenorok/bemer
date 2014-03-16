@@ -10,7 +10,8 @@ Target.definer = function() {
             'classify',
             'Template',
             'string',
-            'object'
+            'object',
+            'is'
         ],
 
         directories = ['modules/', 'test/'],
