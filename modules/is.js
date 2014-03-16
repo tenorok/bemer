@@ -50,6 +50,18 @@ definer('is', /** @exports is */ function() {
         return is._primitive(arguments, 'boolean');
     };
 
+    is.null = function() {
+        return is._every(arguments, function(n) {
+            return n === null;
+        });
+    };
+
+    is.undefined = function() {
+        return is._every(arguments, function(u) {
+            return typeof u === 'undefined';
+        });
+    };
+
     is.array = function() {
         return is._every(arguments, function() {
             return Array.isArray(this);
@@ -58,9 +70,6 @@ definer('is', /** @exports is */ function() {
 
     is.map = function() {};
     is.instance = function() {};
-
-    is.null = function() {};
-    is.undefined = function() {};
 
     is.arguments = function() {};
     is.function = function() {};
@@ -80,7 +89,7 @@ definer('is', /** @exports is */ function() {
 
     is._every = function(args, callback) {
         return Object.keys(args).every(function(arg) {
-            return callback.call(args[arg]);
+            return callback.call(args[arg], args[arg]);
         });
     };
 

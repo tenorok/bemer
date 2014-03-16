@@ -43,6 +43,33 @@ definer('isTest', function(assert, is) {
             assert.isFalse(is.boolean(1, 2, 'c'));
         });
 
+        it('Проверка на null', function() {
+            assert.isTrue(is.null(null));
+            assert.isTrue(is.null(null, null));
+
+            assert.isFalse(is.null('a'));
+            assert.isFalse(is.null(1));
+            assert.isFalse(is.null([1, 2]));
+            assert.isFalse(is.null({ a: 1 }));
+            assert.isFalse(is.null(arguments));
+            assert.isFalse(is.null(1, 2, 'c'));
+        });
+
+        it('Проверка на undefined', function() {
+            assert.isTrue(is.undefined());
+            assert.isTrue(is.undefined(undefined));
+            assert.isTrue(is.undefined(undefined, undefined));
+
+            assert.isFalse(is.undefined('a'));
+            assert.isFalse(is.undefined(1));
+            assert.isFalse(is.undefined(false));
+            assert.isFalse(is.undefined(null));
+            assert.isFalse(is.undefined([1, 2]));
+            assert.isFalse(is.undefined({ a: 1 }));
+            assert.isFalse(is.undefined(arguments));
+            assert.isFalse(is.undefined(1, 2, 'c'));
+        });
+
         it('Проверка на массив', function() {
             assert.isTrue(is.array([1, 2, 3]));
             assert.isTrue(is.array(new Array(1, 2, 3)));
