@@ -1,5 +1,8 @@
 module.exports = function(grunt) {
 
+    var Target = require('./grunt/Target'),
+        module = grunt.option('module') || 'main';
+
     grunt.initConfig({
         clean: {
             githooks: ['.git/hooks/*'],
@@ -9,13 +12,8 @@ module.exports = function(grunt) {
             githooks: { command: 'cp .githooks/* .git/hooks/' },
             jsdoc: { command: './node_modules/.bin/jsdoc -d jsdoc modules/' }
         },
-        definer: require('./grunt/Target').definer(),
-        mochaTest: {
-            options: {
-                reporter: 'spec'
-            },
-            main: { src: ['test/tmp/*'] }
-        }
+        definer: Target.definer(),
+        mochaTest: Target.mocha(module)
     });
 
     grunt.loadNpmTasks('grunt-contrib-clean');
@@ -28,7 +26,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('test', [
         'clean:test',
-        'definer:' + (grunt.option('module') || 'main'),
+        'definer:' + module,
         'mochaTest'
     ]);
 

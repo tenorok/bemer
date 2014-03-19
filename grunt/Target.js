@@ -43,4 +43,15 @@ Target.definer = function() {
     return target;
 };
 
+Target.mocha = function(module) {
+
+    var target = { main: { src: ['test/tmp/*'] }};
+
+    if(module !== 'main') {
+        target.options = { reporter: 'spec' };
+    }
+
+    return target;
+};
+
 module.exports = Target;
