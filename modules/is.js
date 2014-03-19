@@ -121,7 +121,12 @@ definer('is', /** @exports is */ function() {
         });
     };
 
-    is.nan = function() {};
+    is.nan = function() {
+        return is._every(arguments, function() {
+            return is.number(this) && this != +this;
+        });
+    };
+
     is.regexp = function() {};
 
     is.type = function() {};

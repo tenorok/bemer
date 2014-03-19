@@ -154,5 +154,20 @@ definer('isTest', function(assert, is) {
             assert.isFalse(is.date('a'));
         });
 
+        it('Проверка на NaN', function() {
+            assert.isTrue(is.nan(NaN));
+            assert.isTrue(is.nan(new Number(NaN), NaN));
+
+            assert.isFalse(is.nan(undefined));
+            assert.isFalse(is.nan(arguments));
+            assert.isFalse(is.nan([1, 2, 3]));
+            assert.isFalse(is.nan(true, false));
+            assert.isFalse(is.nan(function() {}));
+            assert.isFalse(is.nan({ a: 1 }));
+            assert.isFalse(is.nan(0));
+            assert.isFalse(is.nan(/x/));
+            assert.isFalse(is.nan('a'));
+        });
+
     });
 });
