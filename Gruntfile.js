@@ -11,6 +11,9 @@ module.exports = function(grunt) {
         },
         definer: require('./grunt/Target').definer(),
         mochaTest: {
+            options: {
+                reporter: 'spec'
+            },
             main: { src: ['test/tmp/*'] }
         }
     });
