@@ -81,9 +81,15 @@ definer('is', /** @exports is */ function() {
         });
     };
 
+    is.function = function() {
+        return is._every(arguments, function() {
+            return typeof this === 'function';
+        });
+    };
+
     is.native = function() {
         return is._every(arguments, function() {
-            return typeof this === 'function' && is.reNative.test(this);
+            return is.function(this) && is.reNative.test(this);
         });
     };
 
@@ -109,7 +115,6 @@ definer('is', /** @exports is */ function() {
         });
     };
 
-    is.function = function() {};
     is.date = function() {};
     is.nan = function() {};
     is.regexp = function() {};

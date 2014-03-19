@@ -94,6 +94,21 @@ definer('isTest', function(assert, is) {
             assert.isFalse(is.argument(Object.create({ a: 1 })));
         });
 
+        it('Проверка на функцию', function() {
+            assert.isTrue(is.function(Object.prototype.toString));
+            assert.isTrue(is.function(Number.valueOf, Date.prototype.getTime));
+            assert.isTrue(is.function(function A() {}));
+
+            assert.isFalse(is.function(arguments));
+            assert.isFalse(is.function([1, 2, 3]));
+            assert.isFalse(is.function(true, false));
+            assert.isFalse(is.function(new Date));
+            assert.isFalse(is.function({ a: 1 }));
+            assert.isFalse(is.function(0));
+            assert.isFalse(is.function(/x/));
+            assert.isFalse(is.function('a'));
+        });
+
         it('Проверка на нативную функцию', function() {
             assert.isTrue(is.native(Object.prototype.toString));
             assert.isTrue(is.native(Number.valueOf, Date.prototype.getTime));
