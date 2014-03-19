@@ -115,7 +115,12 @@ definer('is', /** @exports is */ function() {
         });
     };
 
-    is.date = function() {};
+    is.date = function() {
+        return is._every(arguments, function() {
+            return typeof this === 'object' && is.proto.object.toString.call(this) === is.class.date || false;
+        });
+    };
+
     is.nan = function() {};
     is.regexp = function() {};
 

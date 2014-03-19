@@ -140,5 +140,19 @@ definer('isTest', function(assert, is) {
             assert.isFalse(is.map(true), 'Boolean');
         });
 
+        it('Проверка на дату', function() {
+            assert.isTrue(is.date(new Date));
+            assert.isTrue(is.date(new Date, new Date));
+
+            assert.isFalse(is.date(arguments));
+            assert.isFalse(is.date([1, 2, 3]));
+            assert.isFalse(is.date(true, false));
+            assert.isFalse(is.date(function() {}));
+            assert.isFalse(is.date({ a: 1 }));
+            assert.isFalse(is.date(0));
+            assert.isFalse(is.date(/x/));
+            assert.isFalse(is.date('a'));
+        });
+
     });
 });
