@@ -84,5 +84,46 @@ definer('isTest', function(assert, is) {
             assert.isFalse(is.array(1, 2, 'c'));
         });
 
+        it('Проверка на аргументы', function() {
+            assert.isTrue(is.argument(arguments));
+
+            assert.isFalse(is.argument({}));
+            assert.isFalse(is.argument([]));
+            assert.isFalse(is.argument(null));
+            assert.isFalse(is.argument(new Object({ a: 1 })));
+            assert.isFalse(is.argument(Object.create({ a: 1 })));
+        });
+
+        it('Проверка на нативную функцию', function() {
+            assert.isTrue(is.native(Object.prototype.toString));
+            assert.isTrue(is.native(Number.valueOf, Date.prototype.getTime));
+
+            assert.isFalse(is.native(function() {}));
+            assert.isFalse(is.native(function A() {}, function b() {}));
+        });
+
+        it('Проверка на простой объект/хэш/карту', function() {
+            function Foo(a) { this.a = a; }
+
+            assert.isTrue(is.map({}), 'Пустой хэш');
+            assert.isTrue(is.map({ a: 1 }), 'Простой хэш');
+            assert.isTrue(is.map({ 'constructor': Foo }), 'Хэш с полем по имени конструктора');
+            assert.isTrue(is.map({ a: 1 }, { 'constructor': null }), 'Два хэша');
+
+            assert.isFalse(is.map([1, 2, 3]), 'Массив');
+            assert.isFalse(is.map(new Foo(1)), 'Экземпляр Foo');
+
+            assert.isFalse(is.map(null), 'null');
+            assert.isTrue(is.map(Object.create(null)), 'Object.create');
+            assert.isTrue(is.map({ 'valueOf': 0 }), 'Хэш с полем valueOf');
+
+            assert.isFalse(is.map(arguments), 'arguments');
+            assert.isFalse(is.map(Error), 'Error');
+            assert.isFalse(is.map(Math), 'Math');
+
+            assert.isFalse(is.map('a'), 'Строка');
+            assert.isFalse(is.map(true), 'Boolean');
+        });
+
     });
 });

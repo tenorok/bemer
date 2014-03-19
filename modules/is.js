@@ -38,6 +38,12 @@ definer('is', /** @exports is */ function() {
         string: String.prototype
     };
 
+    is.reNative = RegExp('^' +
+        String(is.proto.object.toString)
+            .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+            .replace(/toString| for [^\]]+/g, '.*?') + '$'
+    );
+
     is.string = function() {
         return is._primitive(arguments, 'string');
     };
@@ -68,10 +74,41 @@ definer('is', /** @exports is */ function() {
         });
     };
 
-    is.map = function() {};
-    is.instance = function() {};
+    is.argument = function() {
+        return is._every(arguments, function() {
+            return typeof this === 'object' && typeof this.length == 'number' &&
+                is.proto.object.toString.call(this) === is.class.arguments || false;
+        });
+    };
 
-    is.arguments = function() {};
+    is.native = function() {
+        return is._every(arguments, function() {
+            return typeof this === 'function' && is.reNative.test(this);
+        });
+    };
+
+    is.map = function() {
+        return is._every(arguments, function() {
+            if(!(is.proto.object.toString.call(this) === is.class.object) || is.argument(this)) {
+                return false;
+            }
+
+            if(is.native(this.valueOf)) {
+                var protoOfValueOf = Object.getPrototypeOf(this.valueOf);
+                if(protoOfValueOf) {
+                    var protoOfprotoOfValueOf = Object.getPrototypeOf(protoOfValueOf);
+                    if(protoOfprotoOfValueOf) {
+                        return this === protoOfprotoOfValueOf || Object.getPrototypeOf(this) === protoOfprotoOfValueOf;
+                    }
+                }
+            }
+
+            var last;
+            for(var i in this) { last = i; }
+            return is.undefined(last) || this.hasOwnProperty(last);
+        });
+    };
+
     is.function = function() {};
     is.date = function() {};
     is.nan = function() {};
