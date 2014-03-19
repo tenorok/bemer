@@ -169,5 +169,19 @@ definer('isTest', function(assert, is) {
             assert.isFalse(is.nan('a'));
         });
 
+        it('Проверка на регулярное выражение', function() {
+            assert.isTrue(is.regexp(/x/));
+            assert.isTrue(is.regexp(RegExp('a'), /b/));
+
+            assert.isFalse(is.regexp(undefined));
+            assert.isFalse(is.regexp(arguments));
+            assert.isFalse(is.regexp([1, 2, 3]));
+            assert.isFalse(is.regexp(true, false));
+            assert.isFalse(is.regexp(function() {}));
+            assert.isFalse(is.regexp({ a: 1 }));
+            assert.isFalse(is.regexp(0));
+            assert.isFalse(is.regexp('a'));
+        });
+
     });
 });

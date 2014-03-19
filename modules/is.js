@@ -127,7 +127,12 @@ definer('is', /** @exports is */ function() {
         });
     };
 
-    is.regexp = function() {};
+    is.regexp = function() {
+        return is._every(arguments, function() {
+            return (is.function(this) || typeof this === 'object') &&
+                is.proto.object.toString.call(this) === is.class.regexp || false;
+        });
+    };
 
     is.type = function() {};
     is.every = function() {};
