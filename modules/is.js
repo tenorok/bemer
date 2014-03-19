@@ -134,7 +134,25 @@ definer('is', /** @exports is */ function() {
         });
     };
 
-    is.type = function() {};
+    is.type = function() {
+        var args = arguments,
+            firstType;
+
+        ['string', 'nan', 'number', 'boolean', 'null', 'undefined', 'array',
+         'argument', 'function', 'map', 'date', 'regexp'].some(function(type) {
+            if(is[type](args[0])) {
+                firstType = type;
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        return is._every(args, function(that) {
+            return is[firstType](that);
+        }) ? firstType : 'mixed';
+    };
+
     is.every = function() {};
 
     is._primitive = function(args, type) {

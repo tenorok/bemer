@@ -6,6 +6,7 @@ definer('isTest', function(assert, is) {
             assert.isTrue(is.string(new String('a')));
             assert.isTrue(is.string('a', new String('b'), 'c'));
 
+            assert.isFalse(is.string('a', 1));
             assert.isFalse(is.string(1));
             assert.isFalse(is.string(true));
             assert.isFalse(is.string([1, 2]));
@@ -181,6 +182,32 @@ definer('isTest', function(assert, is) {
             assert.isFalse(is.regexp({ a: 1 }));
             assert.isFalse(is.regexp(0));
             assert.isFalse(is.regexp('a'));
+        });
+
+        it('Получение типа данных', function() {
+            assert.equal(is.type('a'), 'string');
+            assert.equal(is.type(100, 0), 'number');
+            assert.equal(is.type(true, false), 'boolean');
+
+            assert.equal(is.type(null), 'null');
+            assert.equal(is.type(undefined), 'undefined');
+
+            assert.equal(is.type([1, 2, 3], [4, 5]), 'array');
+            assert.equal(is.type(arguments), 'argument');
+
+            assert.equal(is.type(function() {}), 'function');
+
+            assert.equal(is.type({ a: 1 }, { b: 2 }), 'map');
+
+            assert.equal(is.type(new Date), 'date');
+            assert.equal(is.type(NaN), 'nan');
+            assert.equal(is.type(/a/, /b/), 'regexp');
+
+            assert.equal(is.type('a', 100), 'mixed');
+            assert.equal(is.type(null, undefined), 'mixed');
+            assert.equal(is.type([1], arguments, {}), 'mixed');
+            assert.equal(is.type(new Date, NaN), 'mixed');
+            assert.equal(is.type(function() {}, RegExp('a')), 'mixed');
         });
 
     });
