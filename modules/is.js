@@ -49,7 +49,13 @@ definer('is', /** @exports is */ function() {
     };
 
     is.number = function() {
-        return is._primitive(arguments, 'number');
+        return !is.nan.apply(this, arguments) && is._primitive(arguments, 'number');
+    };
+
+    is.nan = function() {
+        return is._every(arguments, function(n) {
+            return typeof n === 'number' && isNaN(n) && !is.undefined(n);
+        });
     };
 
     is.boolean = function() {
@@ -121,12 +127,6 @@ definer('is', /** @exports is */ function() {
         });
     };
 
-    is.nan = function() {
-        return is._every(arguments, function() {
-            return is.number(this) && this != +this;
-        });
-    };
-
     is.regexp = function() {
         return is._every(arguments, function() {
             return (is.function(this) || typeof this === 'object') &&
@@ -138,7 +138,7 @@ definer('is', /** @exports is */ function() {
         var args = arguments,
             firstType;
 
-        ['string', 'nan', 'number', 'boolean', 'null', 'undefined', 'array',
+        ['string', 'number', 'nan', 'boolean', 'null', 'undefined', 'array',
          'argument', 'function', 'map', 'date', 'regexp'].some(function(type) {
             if(is[type](args[0])) {
                 firstType = type;
@@ -153,7 +153,9 @@ definer('is', /** @exports is */ function() {
         }) ? firstType : 'mixed';
     };
 
-    is.every = function() {};
+    is.every = function() {
+        return is.type.apply(this, arguments) !== 'mixed';
+    };
 
     is._primitive = function(args, type) {
         return is._every(args, function() {

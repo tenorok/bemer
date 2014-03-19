@@ -18,16 +18,31 @@ definer('isTest', function(assert, is) {
         it('Проверка на число', function() {
             assert.isTrue(is.number(1));
             assert.isTrue(is.number(1.2));
-            assert.isTrue(is.number(NaN));
             assert.isTrue(is.number(new Number(1)));
             assert.isTrue(is.number(1, new Number(2), 3));
 
+            assert.isFalse(is.number(NaN));
             assert.isFalse(is.number('a'));
             assert.isFalse(is.number(true));
             assert.isFalse(is.number([1, 2]));
             assert.isFalse(is.number({ a: 1 }));
             assert.isFalse(is.number(arguments));
             assert.isFalse(is.number(1, 2, 'c'));
+        });
+
+        it('Проверка на NaN', function() {
+            assert.isTrue(is.nan(NaN));
+            assert.isTrue(is.nan(NaN, NaN));
+
+            assert.isFalse(is.nan(undefined));
+            assert.isFalse(is.nan(arguments));
+            assert.isFalse(is.nan([1, 2, 3]));
+            assert.isFalse(is.nan(true, false));
+            assert.isFalse(is.nan(function() {}));
+            assert.isFalse(is.nan({ a: 1 }));
+            assert.isFalse(is.nan(0));
+            assert.isFalse(is.nan(/x/));
+            assert.isFalse(is.nan('a'));
         });
 
         it('Проверка на логический тип', function() {
@@ -155,21 +170,6 @@ definer('isTest', function(assert, is) {
             assert.isFalse(is.date('a'));
         });
 
-        it('Проверка на NaN', function() {
-            assert.isTrue(is.nan(NaN));
-            assert.isTrue(is.nan(new Number(NaN), NaN));
-
-            assert.isFalse(is.nan(undefined));
-            assert.isFalse(is.nan(arguments));
-            assert.isFalse(is.nan([1, 2, 3]));
-            assert.isFalse(is.nan(true, false));
-            assert.isFalse(is.nan(function() {}));
-            assert.isFalse(is.nan({ a: 1 }));
-            assert.isFalse(is.nan(0));
-            assert.isFalse(is.nan(/x/));
-            assert.isFalse(is.nan('a'));
-        });
-
         it('Проверка на регулярное выражение', function() {
             assert.isTrue(is.regexp(/x/));
             assert.isTrue(is.regexp(RegExp('a'), /b/));
@@ -203,11 +203,28 @@ definer('isTest', function(assert, is) {
             assert.equal(is.type(NaN), 'nan');
             assert.equal(is.type(/a/, /b/), 'regexp');
 
+            assert.equal(is.type(100, NaN), 'mixed');
+            assert.equal(is.type(NaN, 100), 'mixed');
             assert.equal(is.type('a', 100), 'mixed');
             assert.equal(is.type(null, undefined), 'mixed');
             assert.equal(is.type([1], arguments, {}), 'mixed');
             assert.equal(is.type(new Date, NaN), 'mixed');
             assert.equal(is.type(function() {}, RegExp('a')), 'mixed');
+        });
+
+        it('Проверка на единый тип данных', function() {
+            assert.isTrue(is.every('a', 'b', 'c'));
+            assert.isTrue(is.every(100, 0));
+            assert.isTrue(is.every(/a/, /b/));
+            assert.isTrue(is.every(true, false));
+            assert.isTrue(is.every(undefined));
+            assert.isTrue(is.every(new Date));
+
+            assert.isFalse(is.every(100, NaN));
+            assert.isFalse(is.every(NaN, 100));
+            assert.isFalse(is.every(true, {}));
+            assert.isFalse(is.every('a', 100));
+            assert.isFalse(is.every([1, 2, 3], arguments));
         });
 
     });
