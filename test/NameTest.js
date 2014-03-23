@@ -79,6 +79,19 @@ definer('NameTest', function(assert, Name) {
             });
         });
 
+        it('Проверить на блок', function() {
+            assert.isTrue(new Name('block').isBlock());
+            assert.isTrue(new Name('block_mod_val').isBlock());
+            assert.isFalse(new Name('block__elem').isBlock());
+        });
+
+        it('Проверить на элемент', function() {
+            assert.isFalse(new Name('block').isElem());
+            assert.isFalse(new Name('block_mod_val').isElem());
+            assert.isTrue(new Name('block__elem').isElem());
+            assert.isTrue(new Name('block__elem_mod_val').isElem());
+        });
+
         describe('Произвольная работа с БЭМ-сущностью и преобразование в строку.', function() {
 
             it('Блок с модификатором', function() {
