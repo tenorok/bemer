@@ -186,6 +186,12 @@ definer('NodeTest', function(assert, Node) {
                 );
             });
 
+            it('Блок с булевым модификатором', function() {
+                assert.equal(new Node({ block: 'name', mods: { visible: true }}).toString(),
+                    '<div class="name name_visible"></div>'
+                );
+            });
+
             it('Блок с параметрами', function() {
                 assert.equal(new Node({ block: 'name', js: true }).toString(),
                     '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}"></div>'
@@ -206,6 +212,18 @@ definer('NodeTest', function(assert, Node) {
                 assert.equal(new Node({ block: 'name', elem: 'el' }).toString(), '<div class="name__el"></div>');
             });
 
+            it('Элемент с пустым списком модификаторов', function() {
+                assert.equal(new Node({ block: 'name', elem: 'el', mods: {}}).toString(),
+                    '<div class="name__el"></div>'
+                );
+            });
+
+            it('Элемент с булевым модификатором', function() {
+                assert.equal(new Node({ block: 'name', elem: 'element', elemMods: { visible: true }}).toString(),
+                    '<div class="name__element name__element_visible"></div>'
+                );
+            });
+
             it('Элемент с модификатором у блока', function() {
                 assert.equal(new Node({
                     block: 'name',
@@ -224,6 +242,15 @@ definer('NodeTest', function(assert, Node) {
                     elemMods: { theme: 'normal' }
                 }).toString(),
                     '<div class="name_size_s__element name_size_s__element_theme_normal"></div>'
+                );
+            });
+
+            it('Блок с содержимым', function() {
+                assert.equal(new Node({
+                    block: 'name',
+                    content: 'Параграф текста'
+                }).toString(),
+                    '<div class="name">Параграф текста</div>'
                 );
             });
 

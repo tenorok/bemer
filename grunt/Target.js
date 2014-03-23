@@ -7,16 +7,25 @@ Target.definer = function() {
             'Tag',
             'Node',
             'Match',
+            'classify',
+            'Template',
             'string',
-            'object'
+            'object',
+            'is'
         ],
 
         directories = ['modules/', 'test/'],
+        verbose = ['info', 'error'],
+        clean = {
+            inherit: 'node_modules/inherit/lib/inherit.js'
+        },
 
         target = {
             main: {
                 target: 'test/tmp/main.js',
-                directory: directories
+                directory: directories,
+                verbose: verbose,
+                clean: clean
             }
         };
 
@@ -25,9 +34,22 @@ Target.definer = function() {
         target[moduleName] = {
             module: testName,
             target: 'test/tmp/' + testName + '.js',
-            directory: ['modules/', 'test/']
+            directory: directories,
+            verbose: verbose,
+            clean: clean
         };
     });
+
+    return target;
+};
+
+Target.mocha = function(module) {
+
+    var target = { main: { src: ['test/tmp/*'] }};
+
+    if(module !== 'main') {
+        target.options = { reporter: 'spec' };
+    }
 
     return target;
 };

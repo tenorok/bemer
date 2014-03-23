@@ -68,6 +68,7 @@ definer('TagTest', function(assert, Tag) {
             assert.deepEqual(tag.content('Первый').content(), ['Первый']);
             assert.deepEqual(tag.addContent('Второй').addContent('Третий').content(), ['Первый', 'Второй', 'Третий']);
             assert.deepEqual(tag.content('').content(), ['']);
+            assert.deepEqual(new Tag().addContent('1').addContent(['2', '3']).content(), ['1', '2', '3']);
         });
 
         it('Получить строковое представление тега', function() {

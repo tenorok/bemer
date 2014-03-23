@@ -153,7 +153,7 @@ definer('Node', /** @exports Node */ function(Tag, Name, object) {
 
             if(node.bem === false) return this._tag.getClass();
 
-            if(this.isBlock() || this.isElem() && !node.mods) {
+            if(this.isBlock() || this.isElem() && !node.mods || object.isEmpty(node.mods)) {
                 this._tag.addClass(this._name.toString());
             }
 
@@ -186,6 +186,10 @@ definer('Node', /** @exports Node */ function(Tag, Name, object) {
 
             if(!object.isEmpty(this._params)) {
                 this._tag.attr(Node.bemAttr, this._params);
+            }
+
+            if(this._node.content) {
+                this._tag.addContent(this._node.content);
             }
 
             return this._tag.toString();

@@ -209,7 +209,7 @@ definer('Name', /** @exports Name */ function() {
             if(this._modName) {
                 name.push(mod, this._modName);
 
-                if(this._modVal) {
+                if(this._modVal && this._modVal !== true) {
                     name.push(mod, this._modVal);
                 }
             }
@@ -220,7 +220,7 @@ definer('Name', /** @exports Name */ function() {
                 if(this._elemModName) {
                     name.push(mod, this._elemModName);
 
-                    if(this._elemModVal) {
+                    if(this._elemModVal && this._elemModVal !== true) {
                         name.push(mod, this._elemModVal);
                     }
                 }
