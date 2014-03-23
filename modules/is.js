@@ -7,17 +7,6 @@ definer('is', /** @exports is */ function() {
      */
     function is() {}
 
-    is.constructor = {
-        string: String,
-        number: Number,
-        boolean: Boolean,
-        array: Array,
-        object: Object,
-        func: Function,
-        date: Date,
-        regexp: RegExp
-    };
-
     is.class = {
         string: '[object String]',
         number: '[object Number]',
@@ -31,15 +20,10 @@ definer('is', /** @exports is */ function() {
         error: '[object Error]'
     };
 
-    is.proto = {
-        array: Array.prototype,
-        error: Error.prototype,
-        object: Object.prototype,
-        string: String.prototype
-    };
+    is.toString = Object.prototype.toString;
 
     is.reNative = RegExp('^' +
-        String(is.proto.object.toString)
+        String(is.toString)
             .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
             .replace(/toString| for [^\]]+/g, '.*?') + '$'
     );
@@ -82,8 +66,8 @@ definer('is', /** @exports is */ function() {
 
     is.argument = function() {
         return is._every(arguments, function() {
-            return typeof this === 'object' && typeof this.length == 'number' &&
-                is.proto.object.toString.call(this) === is.class.arguments || false;
+            return typeof this === 'object' && typeof this.length === 'number' &&
+                is._isToString(this, 'arguments') || false;
         });
     };
 
@@ -101,7 +85,7 @@ definer('is', /** @exports is */ function() {
 
     is.map = function() {
         return is._every(arguments, function() {
-            if(!(is.proto.object.toString.call(this) === is.class.object) || is.argument(this)) {
+            if(!is._isToString(this, 'object') || is.argument(this)) {
                 return false;
             }
 
@@ -123,14 +107,13 @@ definer('is', /** @exports is */ function() {
 
     is.date = function() {
         return is._every(arguments, function() {
-            return typeof this === 'object' && is.proto.object.toString.call(this) === is.class.date || false;
+            return typeof this === 'object' && is._isToString(this, 'date') || false;
         });
     };
 
     is.regexp = function() {
         return is._every(arguments, function() {
-            return (is.function(this) || typeof this === 'object') &&
-                is.proto.object.toString.call(this) === is.class.regexp || false;
+            return (is.function(this) || typeof this === 'object') && is._isToString(this, 'regexp') || false;
         });
     };
 
@@ -159,8 +142,7 @@ definer('is', /** @exports is */ function() {
 
     is._primitive = function(args, type) {
         return is._every(args, function() {
-            return typeof this === type ||
-                typeof this === 'object' && is.proto.object.toString.call(this) === is.class[type] || false;
+            return typeof this === type || typeof this === 'object' && is._isToString(this, type) || false;
         });
     };
 
@@ -168,6 +150,10 @@ definer('is', /** @exports is */ function() {
         return Object.keys(args).every(function(arg) {
             return callback.call(args[arg], args[arg]);
         });
+    };
+
+    is._isToString = function(object, type) {
+        return is.toString.call(object) === is.class[type];
     };
 
     return is;
