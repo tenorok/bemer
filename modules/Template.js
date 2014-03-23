@@ -1,4 +1,4 @@
-definer('Template', /** @exports Template */ function(Match, classify, Node, object) {
+definer('Template', /** @exports Template */ function(Match, classify, Node, object, string, is) {
 
     /**
      * Модуль шаблонизации BEMJSON-узла.
@@ -88,32 +88,38 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
          * @returns {*}
          */
         _getMode: function(modes, bemjson, name) {
-            var val = typeof modes[name] === 'function' ? modes[name].call(modes) : modes[name],
-                bemjsonVal = bemjson[name];
+            var val = is.function(modes[name]) ? modes[name].call(modes) : modes[name],
+                bemjsonVal = bemjson[name],
+                resolvedVal = bemjsonVal || val;
 
-            this._checkTypes(typeof Template.Modes[name], [val, bemjsonVal], name);
+            this._checkTypes(is.type(Template.Modes[name]), [val, bemjsonVal], name);
 
-            if(Array.isArray(val)) {
-                return (bemjsonVal || []).concat(val);
-            } else if(typeof val === 'object') {
-                return object.extend(val, bemjsonVal || {});
+            if(is.array(val, bemjsonVal)) {
+                return bemjsonVal.concat(val);
+            } else if(is.map(val, bemjsonVal)) {
+                return object.extend(val, bemjsonVal);
             }
 
-            return bemjsonVal || val;
+            if(name === 'content' && is.string(resolvedVal)) {
+                return string.htmlEscape(resolvedVal);
+            }
+
+            return resolvedVal;
         },
 
         /**
-         * Проверить тип данных мод.
+         * Проверить тип данных для моды.
          *
          * @private
          * @param {string} valid Эталонный тип
          * @param {*[]} values Список значений к проверке
-         * @param {string} name Имя моды для вывода отладочной ошибки
+         * @param {string} name Имя моды
          * @throws {TypeError} Неверный тип данных
          */
         _checkTypes: function(valid, values, name) {
+            if(name === 'content') return;
             values.forEach(function(val) {
-                if(val !== undefined && typeof val !== valid) {
+                if(val !== undefined && is.type(val) !== valid) {
                     throw new TypeError(val + ' is wrong type of mode ' + name);
                 }
             });

@@ -16,7 +16,7 @@ definer('TemplateTest', function(assert, Template) {
             assert.isNull(new Template('name__element2', {}).match({ block: 'name', elem: 'element' }));
         });
 
-        it('Шаблонизировать блок и элемент с заменой тега', function() {
+        it('Шаблонизировать блок с заменой тега', function() {
             assert.equal(new Template('name', {
                 tag: 'span'
             }).match({ block: 'name' }).toString(),
@@ -94,6 +94,42 @@ definer('TemplateTest', function(assert, Template) {
                 elemMods: { checked: true }
             }).match({ block: 'name', elem: 'elem' }).toString(),
                 '<div class="name__elem i-bem name__elem_checked" data-bem="{&quot;name__elem&quot;:{}}"></div>'
+            );
+        });
+
+        it('Установить блоку содержимое', function() {
+            assert.equal(new Template('name', {
+                content: '>>Заэкранированный текст<<'
+            }).match({ block: 'name' }).toString(),
+                '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">&gt;&gt;Заэкранированный текст&lt;&lt;</div>'
+            );
+            assert.equal(new Template('name', {
+                content: ['первый', ' и ', 'второй']
+            }).match({ block: 'name' }).toString(),
+                '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">первый и второй</div>'
+            );
+            assert.equal(new Template('name', {
+                content: ['один']
+            }).match({ block: 'name', content: 'два' }).toString(),
+                '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">два</div>'
+            );
+        });
+
+        it('Использовать конструктор и кастомную моду', function() {
+            assert.equal(new Template('name', {
+                __constructor: function(bemjson) {
+                    this.bemjson = bemjson;
+                },
+                isIndex: function() {
+                    return this.bemjson.index;
+                },
+                mods: function() {
+                    if(this.isIndex()) {
+                        return { theme: 'normal' };
+                    }
+                }
+            }).match({ block: 'name', index: true }).toString(),
+                '<div class="name i-bem name_theme_normal" data-bem="{&quot;name&quot;:{}}"></div>'
             );
         });
 
