@@ -1,4 +1,4 @@
-definer('Tag', /** @exports Tag */ function(string) {
+definer('Tag', /** @exports Tag */ function(string, is) {
 
     /**
      * Модуль работы с тегом.
@@ -155,7 +155,7 @@ definer('Tag', /** @exports Tag */ function(string) {
         attr: function(name, val) {
             if(!arguments.length) return this._attr;
 
-            if(typeof name === 'object') {
+            if(is.map(name)) {
                 Object.keys(name).forEach(function(attr) {
                     this.attr(attr, name[attr]);
                 }, this);
@@ -164,7 +164,7 @@ definer('Tag', /** @exports Tag */ function(string) {
                 return this._attr[name];
             }
 
-            if(typeof val === 'object') {
+            if(is.array(val) || is.map(val)) {
                 val = string.htmlEscape(JSON.stringify(val));
             }
 
