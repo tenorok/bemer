@@ -133,7 +133,7 @@ definer('isTest', function(assert, is) {
             assert.isFalse(is.native(function A() {}, function b() {}));
         });
 
-        it('Проверка на простой объект/хэш/карту', function() {
+        it('Проверка на простой объект (хэш/карту)', function() {
             function Foo(a) { this.a = a; }
 
             assert.isTrue(is.map({}), 'Пустой хэш');

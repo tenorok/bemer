@@ -7,6 +7,11 @@ definer('is', /** @exports is */ function() {
      */
     function is() {}
 
+    /**
+     * Строковое представление классов типов данных.
+     *
+     * @type {object}
+     */
     is.class = {
         string: '[object String]',
         number: '[object Number]',
@@ -20,70 +25,146 @@ definer('is', /** @exports is */ function() {
         error: '[object Error]'
     };
 
+    /**
+     * Нативный метод приведения к строковому представлению.
+     *
+     * @type {function}
+     */
     is.toString = Object.prototype.toString;
 
+    /**
+     * Регулярное выражение для проверки функции на нативную.
+     *
+     * @type {regexp}
+     */
     is.reNative = RegExp('^' +
         String(is.toString)
             .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
             .replace(/toString| for [^\]]+/g, '.*?') + '$'
     );
 
-    is.string = function() {
+    /**
+     * Проверить параметры на строку.
+     *
+     * @param {...subject} subject Параметры
+     * @returns {boolean}
+     */
+    is.string = function(subject) {
         return is._primitive(arguments, 'string');
     };
 
-    is.number = function() {
+    /**
+     * Проверить параметры на число.
+     *
+     * @param {...subject} subject Параметры
+     * @returns {boolean}
+     */
+    is.number = function(subject) {
         return !is.nan.apply(this, arguments) && is._primitive(arguments, 'number');
     };
 
-    is.nan = function() {
+    /**
+     * Проверить параметры на NaN.
+     *
+     * @param {...subject} subject Параметры
+     * @returns {boolean}
+     */
+    is.nan = function(subject) {
         return is._every(arguments, function(n) {
             return typeof n === 'number' && isNaN(n) && !is.undefined(n);
         });
     };
 
-    is.boolean = function() {
+    /**
+     * Проверить параметры на логический тип.
+     *
+     * @param {...subject} subject Параметры
+     * @returns {boolean}
+     */
+    is.boolean = function(subject) {
         return is._primitive(arguments, 'boolean');
     };
 
-    is.null = function() {
+    /**
+     * Проверить параметры на null.
+     *
+     * @param {...subject} subject Параметры
+     * @returns {boolean}
+     */
+    is.null = function(subject) {
         return is._every(arguments, function(n) {
             return n === null;
         });
     };
 
-    is.undefined = function() {
+    /**
+     * Проверить параметры на undefined.
+     *
+     * @param {...subject} subject Параметры
+     * @returns {boolean}
+     */
+    is.undefined = function(subject) {
         return is._every(arguments, function(u) {
             return typeof u === 'undefined';
         });
     };
 
-    is.array = function() {
+    /**
+     * Проверить параметры на массив.
+     *
+     * @param {...subject} subject Параметры
+     * @returns {boolean}
+     */
+    is.array = function(subject) {
         return is._every(arguments, function() {
             return Array.isArray(this);
         });
     };
 
-    is.argument = function() {
+    /**
+     * Проверить параметры на аргументы.
+     *
+     * @param {...subject} subject Параметры
+     * @returns {boolean}
+     */
+    is.argument = function(subject) {
         return is._every(arguments, function() {
             return typeof this === 'object' && typeof this.length === 'number' &&
                 is._isToString(this, 'arguments') || false;
         });
     };
 
-    is.function = function() {
+    /**
+     * Проверить параметры на функцию.
+     *
+     * @param {...subject} subject Параметры
+     * @returns {boolean}
+     */
+    is.function = function(subject) {
         return is._every(arguments, function() {
             return typeof this === 'function';
         });
     };
 
-    is.native = function() {
+    /**
+     * Проверить параметры на нативную функцию.
+     *
+     * @param {...subject} subject Параметры
+     * @returns {boolean}
+     */
+    is.native = function(subject) {
         return is._every(arguments, function() {
             return is.function(this) && is.reNative.test(this);
         });
     };
 
-    is.map = function() {
+    /**
+     * Проверить параметры на простой объект (хэш/карту).
+     *
+     * @param {...subject} subject Параметры
+     * @returns {boolean}
+     */
+    is.map = function(subject) {
         return is._every(arguments, function() {
             if(!is._isToString(this, 'object') || is.argument(this)) {
                 return false;
@@ -105,19 +186,40 @@ definer('is', /** @exports is */ function() {
         });
     };
 
-    is.date = function() {
+    /**
+     * Проверить параметры на дату.
+     *
+     * @param {...subject} subject Параметры
+     * @returns {boolean}
+     */
+    is.date = function(subject) {
         return is._every(arguments, function() {
             return typeof this === 'object' && is._isToString(this, 'date') || false;
         });
     };
 
-    is.regexp = function() {
+    /**
+     * Проверить параметры на регулярное выражение.
+     *
+     * @param {...subject} subject Параметры
+     * @returns {boolean}
+     */
+    is.regexp = function(subject) {
         return is._every(arguments, function() {
             return (is.function(this) || typeof this === 'object') && is._isToString(this, 'regexp') || false;
         });
     };
 
-    is.type = function() {
+    /**
+     * Узнать тип параметров.
+     *
+     * Для параметров различных типов данных
+     * будет возвращён `mixed`.
+     *
+     * @param {...subject} subject Параметры
+     * @returns {string}
+     */
+    is.type = function(subject) {
         var args = arguments,
             firstType;
 
@@ -136,24 +238,68 @@ definer('is', /** @exports is */ function() {
         }) ? firstType : 'mixed';
     };
 
-    is.every = function() {
+    /**
+     * Проверить параметры на единый тип данных.
+     *
+     * @param {...subject} subject Параметры
+     * @returns {boolean}
+     */
+    is.every = function(subject) {
         return is.type.apply(this, arguments) !== 'mixed';
     };
 
+    /**
+     * Проверить параметры на указанный примитивный тип данных.
+     *
+     * @private
+     * @param {arguments} args Аргументы базового метода
+     * @param {string} type Тип данных для проверки
+     * @returns {boolean}
+     */
     is._primitive = function(args, type) {
         return is._every(args, function() {
             return typeof this === type || typeof this === 'object' && is._isToString(this, type) || false;
         });
     };
 
+    /**
+     * Запустить цикл `every` по аргументам функции.
+     *
+     * @private
+     * @param {arguments} args Аргументы
+     * @param {is~everyCallback} callback Колбек
+     * @returns {boolean}
+     */
     is._every = function(args, callback) {
         return Object.keys(args).every(function(arg) {
             return callback.call(args[arg], args[arg]);
         });
     };
 
-    is._isToString = function(object, type) {
-        return is.toString.call(object) === is.class[type];
+    /**
+     * Колбек вызывается для каждого аргумента функции
+     * в переборе через `every` методом `is._every`.
+     *
+     * Колбек должен вернуть логическое значение
+     * для прерывания или продолжения выполнения цикла.
+     *
+     * @callback is~everyCallback
+     * @this {*} subject Аргумент
+     * @param {*} subject Аргумент
+     * @returns {boolean}
+     */
+
+    /**
+     * Проверить строковое представление объекта
+     * на заданный класс типа данных.
+     *
+     * @private
+     * @param {subject} subject Объект
+     * @param {string} type Имя класса типа данных
+     * @returns {boolean}
+     */
+    is._isToString = function(subject, type) {
+        return is.toString.call(subject) === is.class[type];
     };
 
     return is;
