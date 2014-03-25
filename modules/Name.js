@@ -102,6 +102,24 @@ definer('Name', /** @exports Name */ function() {
         },
 
         /**
+         * Проверить сущность на блок.
+         *
+         * @returns {boolean}
+         */
+        isBlock: function() {
+            return !this.isElem();
+        },
+
+        /**
+         * Проверить сущность на элемент.
+         *
+         * @returns {boolean}
+         */
+        isElem: function() {
+            return !!this._elem;
+        },
+
+        /**
          * Получить/установить имя блока.
          *
          * @param {string} [name] Имя блока

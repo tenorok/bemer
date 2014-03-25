@@ -80,9 +80,7 @@ definer('Node', /** @exports Node */ function(Tag, Name, object) {
          * @returns {boolean}
          */
         isElem: function() {
-            return Object.keys(this._node).some(function(key) {
-                return key === 'elem';
-            });
+            return !!this._node.elem;
         },
 
         /**
