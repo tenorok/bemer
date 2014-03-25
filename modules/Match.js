@@ -1,4 +1,4 @@
-definer('Match', /** @exports Match */ function(Name) {
+definer('Match', /** @exports Match */ function(Name, object) {
 
     /**
      * Модуль проверки БЭМ-узла на соответствие шаблону.
@@ -42,6 +42,21 @@ definer('Match', /** @exports Match */ function(Name) {
         },
 
         /**
+         * Проверить узел на точное соответствие (эквивалент) шаблону.
+         *
+         * @param {object} node Узел
+         * @returns {boolean}
+         */
+        equal: function(node) {
+            return (
+                this._block(node.block) &&
+                this._equalBlockMod(node.mods) &&
+                this._elem(node.elem) &&
+                this._equalElemMod(node.elemMods)
+            );
+        },
+
+        /**
          * Проверить блок на соответствие шаблону.
          *
          * @private
@@ -61,6 +76,21 @@ definer('Match', /** @exports Match */ function(Name) {
          * @returns {boolean}
          */
         _blockMod: function(mods) {
+            if(this._pattern.isBlock() && !this._pattern.modName() && !this._pattern.modVal()) {
+                return true;
+            }
+
+            return this._equalBlockMod(mods);
+        },
+
+        /**
+         * Проверить модификаторы блока на точное соответствие шаблону.
+         *
+         * @private
+         * @param {object} mods Модификаторы блока узла
+         * @returns {boolean}
+         */
+        _equalBlockMod: function(mods) {
             return this._anyMod(this._pattern.modName(), this._pattern.modVal(), mods);
         },
 
@@ -89,6 +119,21 @@ definer('Match', /** @exports Match */ function(Name) {
          * @returns {boolean}
          */
         _elemMod: function(mods) {
+            if(this._pattern.isElem() && !this._pattern.elemModName() && !this._pattern.elemModVal()) {
+                return true;
+            }
+
+            return this._equalElemMod(mods);
+        },
+
+        /**
+         * Проверить модификаторы элемента на точное соответствие шаблону.
+         *
+         * @private
+         * @param {object} mods Модификаторы элемента узла
+         * @returns {boolean}
+         */
+        _equalElemMod: function(mods) {
             return this._anyMod(this._pattern.elemModName(), this._pattern.elemModVal(), mods);
         },
 
@@ -110,7 +155,7 @@ definer('Match', /** @exports Match */ function(Name) {
                 return false;
             }
 
-            return Object.keys(mods).some(function(name) {
+            return object.isEmpty(mods) || Object.keys(mods).some(function(name) {
                 return this._mod(patternName, patternVal, name, mods[name]);
             }, this);
         },
