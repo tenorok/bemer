@@ -24,19 +24,26 @@ definer('object', /** @exports object */ function(is) {
     /**
      * Расширить объект рекурсивно.
      *
-     * @param {object} object Расширяемый объект
+     * @param {object} obj Расширяемый объект
      * @param {object} source Расширяющий объект
      * @returns {object}
      */
-    object.deepExtend = function(object, source) {
+    object.deepExtend = function(obj, source) {
         return Object.keys(source).reduce(function(extended, key) {
+            var extendedItem = extended[key],
+                sourceItem = source[key],
+                isMapSourceItem = is.map(sourceItem);
 
-            extended[key] = is.map(extended[key], source[key])
-                ? this.deepExtend(extended[key], source[key])
-                : source[key];
+            if(is.map(extendedItem) && isMapSourceItem) {
+                extended[key] = this.deepExtend(extendedItem, sourceItem);
+            } else if(isMapSourceItem) {
+                extended[key] = object.clone(sourceItem);
+            } else {
+                extended[key] = sourceItem;
+            }
 
             return extended;
-        }.bind(this), object);
+        }.bind(this), obj);
     };
 
     /**
@@ -57,6 +64,16 @@ definer('object', /** @exports object */ function(is) {
      */
     object.clone = function(obj) {
         return object.extend({}, obj);
+    };
+
+    /**
+     * Клонировать объект рекурсивно.
+     *
+     * @param {object} obj Объект
+     * @returns {object}
+     */
+    object.deepClone = function(obj) {
+        return object.deepExtend({}, obj);
     };
 
     return object;

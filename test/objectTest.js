@@ -75,11 +75,19 @@ definer('objectTest', function(assert, object) {
             assert.isTrue(object.isEmpty(Foo));
         });
 
-        it('Клонироать объект', function() {
+        it('Клонировать объект', function() {
             var a = {},
                 b = object.clone(a);
             b.foo = 100;
             assert.isUndefined(a.foo);
+        });
+
+        it('Клонировать объект рекурсивно', function() {
+            var a = { b: { c: 100 }},
+                d = object.deepClone(a);
+
+            d.b.c = 200;
+            assert.equal(a.b.c, 100);
         });
 
     });
