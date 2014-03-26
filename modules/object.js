@@ -1,4 +1,4 @@
-definer('object', /** @exports object */ function() {
+definer('object', /** @exports object */ function(is) {
 
     /**
      * Модуль работы с объектами.
@@ -19,6 +19,24 @@ definer('object', /** @exports object */ function() {
             extended[key] = source[key];
             return extended;
         }, object);
+    };
+
+    /**
+     * Расширить объект рекурсивно.
+     *
+     * @param {object} object Расширяемый объект
+     * @param {object} source Расширяющий объект
+     * @returns {object}
+     */
+    object.deepExtend = function(object, source) {
+        return Object.keys(source).reduce(function(extended, key) {
+
+            extended[key] = is.map(extended[key], source[key])
+                ? this.deepExtend(extended[key], source[key])
+                : source[key];
+
+            return extended;
+        }.bind(this), object);
     };
 
     /**
