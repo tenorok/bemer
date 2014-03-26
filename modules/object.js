@@ -1,4 +1,4 @@
-definer('object', /** @exports object */ function() {
+definer('object', /** @exports object */ function(is) {
 
     /**
      * Модуль работы с объектами.
@@ -22,6 +22,31 @@ definer('object', /** @exports object */ function() {
     };
 
     /**
+     * Расширить объект рекурсивно.
+     *
+     * @param {object} obj Расширяемый объект
+     * @param {object} source Расширяющий объект
+     * @returns {object}
+     */
+    object.deepExtend = function(obj, source) {
+        return Object.keys(source).reduce(function(extended, key) {
+            var extendedItem = extended[key],
+                sourceItem = source[key],
+                isMapSourceItem = is.map(sourceItem);
+
+            if(is.map(extendedItem) && isMapSourceItem) {
+                extended[key] = this.deepExtend(extendedItem, sourceItem);
+            } else if(isMapSourceItem) {
+                extended[key] = object.clone(sourceItem);
+            } else {
+                extended[key] = sourceItem;
+            }
+
+            return extended;
+        }.bind(this), obj);
+    };
+
+    /**
      * Проверить объект на наличие полей.
      *
      * @param {object} object Объект
@@ -39,6 +64,16 @@ definer('object', /** @exports object */ function() {
      */
     object.clone = function(obj) {
         return object.extend({}, obj);
+    };
+
+    /**
+     * Клонировать объект рекурсивно.
+     *
+     * @param {object} obj Объект
+     * @returns {object}
+     */
+    object.deepClone = function(obj) {
+        return object.deepExtend({}, obj);
     };
 
     return object;

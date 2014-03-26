@@ -5,6 +5,54 @@ definer('objectTest', function(assert, object) {
             assert.deepEqual(object.extend({ a: 1 }, { b: 2 }), { a: 1, b: 2 });
         });
 
+        it('Расширить объект рекурсивно', function() {
+            assert.deepEqual(object.deepExtend(
+                {
+                    a: 1,
+                    b: {
+                        c: 2,
+                        d: {
+                            e: 3,
+                            f: {
+                                g: 4,
+                                h: {
+                                    i: 5
+                                },
+                                j: 6
+                            }
+                        }
+                    }
+                },
+                {
+                    a: 6,
+                    b: {
+                        c: 7,
+                        d: {
+                            f: {
+                                g: 8,
+                                h: 9
+                            }
+                        }
+                    }
+                }
+            ),
+                {
+                    a: 6,
+                    b: {
+                        c: 7,
+                        d: {
+                            e: 3,
+                            f: {
+                                g: 8,
+                                h: 9,
+                                j: 6
+                            }
+                        }
+                    }
+                }
+            );
+        });
+
         it('Расширить объект только собственными свойствами', function() {
             function Foo() {
                 this.a = 1;
@@ -27,11 +75,19 @@ definer('objectTest', function(assert, object) {
             assert.isTrue(object.isEmpty(Foo));
         });
 
-        it('Клонироать объект', function() {
+        it('Клонировать объект', function() {
             var a = {},
                 b = object.clone(a);
             b.foo = 100;
             assert.isUndefined(a.foo);
+        });
+
+        it('Клонировать объект рекурсивно', function() {
+            var a = { b: { c: 100 }},
+                d = object.deepClone(a);
+
+            d.b.c = 200;
+            assert.equal(a.b.c, 100);
         });
 
     });
