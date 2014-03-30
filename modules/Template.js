@@ -98,8 +98,8 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
          * @returns {Template}
          */
         extend: function(template) {
-            this.Modes = classify(template.Modes, this._modes);
-            return this;
+            template.Modes = classify(this.Modes, template._modes);
+            return template;
         },
 
         /**
