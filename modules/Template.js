@@ -23,11 +23,19 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
         }, []);
 
         /**
+         * Моды для преобразования узла.
+         *
+         * @private
+         * @type {object}
+         */
+        this._modes = [].slice.call(arguments, -1)[0];
+
+        /**
          * Стандартные моды.
          *
          * @type {object}
          */
-        this.modes = {
+        this.defaultModes = {
             js: true,
             bem: true,
             mods: {},
@@ -45,7 +53,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
          * @private
          * @type {Function}
          */
-        this._Modes = classify(classify(this.modes), [].slice.call(arguments, -1)[0]);
+        this.Modes = classify(classify(this.defaultModes), this._modes);
     }
 
     Template.prototype = {
@@ -74,13 +82,24 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
          * @returns {Node}
          */
         transform: function(bemjson) {
-            var modes = new this._Modes(bemjson);
+            var modes = new this.Modes(bemjson);
 
-            Object.keys(this.modes).forEach(function(mode) {
+            Object.keys(this.defaultModes).forEach(function(mode) {
                 bemjson[mode] = this._getMode(modes, bemjson, mode);
             }, this);
 
             return new Node(bemjson);
+        },
+
+        /**
+         * Наследовать шаблон.
+         *
+         * @param {Template} template Базовый шаблон
+         * @returns {Template}
+         */
+        extend: function(template) {
+            this.Modes = classify(template.Modes, this._modes);
+            return this;
         },
 
         /**
@@ -97,7 +116,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
                 bemjsonVal = bemjson[name],
                 resolvedVal = bemjsonVal || val;
 
-            this._checkTypes(is.type(this.modes[name]), [val, bemjsonVal], name);
+            this._checkTypes(is.type(this.defaultModes[name]), [val, bemjsonVal], name);
 
             if(is.array(val, bemjsonVal)) {
                 return bemjsonVal.concat(val);

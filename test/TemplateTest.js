@@ -160,5 +160,17 @@ definer('TemplateTest', function(assert, Template) {
 
         });
 
+        describe('Наследование шаблонов.', function() {
+
+            it('Одиночное наследование', function() {
+                assert.equal(new Template('child', { mods: function() { return { a: this.__base().a, b: 2 }; }})
+                    .extend(new Template('parent', { mods: function() { return { a: 1 }; }}))
+                    .match({ block: 'child' }).toString(),
+                    '<div class="child i-bem child_a_1 child_b_2" data-bem="{&quot;child&quot;:{}}"></div>'
+                );
+            });
+
+        });
+
     });
 });
