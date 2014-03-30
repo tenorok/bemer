@@ -4,18 +4,48 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
      * Модуль шаблонизации BEMJSON-узла.
      *
      * @constructor
-     * @param {string} pattern Шаблон для матчинга
+     * @param {...string} pattern Шаблоны для матчинга
      * @param {object} modes Моды для преобразования узла
      */
     function Template(pattern, modes) {
 
+        var patterns = [].slice.call(arguments, 0, -1);
+
         /**
-         * Экземпляр матчера.
+         * Экземпляры матчера.
          *
          * @private
-         * @type {Match}
+         * @type {Match[]}
          */
-        this._match = new Match(pattern);
+        this._matches = Object.keys(patterns).reduce(function(matches, key) {
+            matches.push(new Match(patterns[key]));
+            return matches;
+        }, []);
+
+        /**
+         * Моды для преобразования узла.
+         *
+         * @private
+         * @type {object}
+         */
+        this._modes = [].slice.call(arguments, -1)[0];
+
+        /**
+         * Стандартные моды.
+         *
+         * @type {object}
+         */
+        this.defaultModes = {
+            js: true,
+            bem: true,
+            mods: {},
+            elemMods: {},
+            attrs: {},
+            mix: [],
+            tag: 'div',
+            cls: '',
+            content: ''
+        };
 
         /**
          * Класс по модам.
@@ -23,32 +53,8 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
          * @private
          * @type {Function}
          */
-        this._Modes = classify(Template.Base, modes);
+        this.Modes = classify(classify(this.defaultModes), this._modes);
     }
-
-    /**
-     * Стандартные моды.
-     *
-     * @type {object}
-     */
-    Template.Modes = {
-        js: true,
-        bem: true,
-        mods: {},
-        elemMods: {},
-        attrs: {},
-        mix: [],
-        tag: 'div',
-        cls: '',
-        content: ''
-    };
-
-    /**
-     * Базовый шаблон со стандартными модами.
-     *
-     * @type {Function}
-     */
-    Template.Base = classify(object.clone(Template.Modes));
 
     Template.prototype = {
 
@@ -59,7 +65,14 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
          * @returns {Node|null} Экземпляр БЭМ-узла или null при несоответствии BEMJSON шаблону
          */
         match: function(bemjson) {
-            return this._match.is(bemjson) ? this.transform(bemjson) : null;
+
+            for(var i = 0; i < this._matches.length; i++) {
+                if(this._matches[i].is(bemjson)) {
+                    return this.transform(bemjson);
+                }
+            }
+
+            return null;
         },
 
         /**
@@ -69,13 +82,24 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
          * @returns {Node}
          */
         transform: function(bemjson) {
-            var modes = new this._Modes(bemjson);
+            var modes = new this.Modes(bemjson);
 
-            Object.keys(Template.Modes).forEach(function(mode) {
+            Object.keys(this.defaultModes).forEach(function(mode) {
                 bemjson[mode] = this._getMode(modes, bemjson, mode);
             }, this);
 
             return new Node(bemjson);
+        },
+
+        /**
+         * Наследовать шаблон.
+         *
+         * @param {Template} template Базовый шаблон
+         * @returns {Template}
+         */
+        extend: function(template) {
+            template.Modes = classify(this.Modes, template._modes);
+            return template;
         },
 
         /**
@@ -92,7 +116,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
                 bemjsonVal = bemjson[name],
                 resolvedVal = bemjsonVal || val;
 
-            this._checkTypes(is.type(Template.Modes[name]), [val, bemjsonVal], name);
+            this._checkTypes(is.type(this.defaultModes[name]), [val, bemjsonVal], name);
 
             if(is.array(val, bemjsonVal)) {
                 return bemjsonVal.concat(val);

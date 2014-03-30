@@ -142,7 +142,7 @@ definer('Match', /** @exports Match */ function(Name, object) {
          *
          * @private
          * @param {string} patternName Шаблон имени модификатора
-         * @param {string} patternVal Шаблон имени значения модификатора
+         * @param {string} patternVal Шаблон значения модификатора
          * @param {object} mods Модификаторы элемента узла
          * @returns {boolean}
          */
@@ -165,7 +165,7 @@ definer('Match', /** @exports Match */ function(Name, object) {
          *
          * @private
          * @param {string} patternName Шаблон имени модификатора
-         * @param {string} patternVal Шаблон имени значения модификатора
+         * @param {string} patternVal Шаблон значения модификатора
          * @param {string} name Имя проверяемого модификатора
          * @param {string} val Значение проверяемого модификатора
          * @returns {boolean}

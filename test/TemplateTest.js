@@ -133,5 +133,63 @@ definer('TemplateTest', function(assert, Template) {
             );
         });
 
+        describe('Несколько селекторов.', function() {
+
+            it('Несколько блоков', function() {
+                assert.equal(new Template('name1', 'name2', 'name3', {}).match({ block: 'name2' }).toString(),
+                    '<div class="name2 i-bem" data-bem="{&quot;name2&quot;:{}}"></div>'
+                );
+                assert.isNull(new Template('name1', 'name2', 'name3', {}).match({ block: 'name4' }));
+            });
+
+            it('Блоки с модификаторами', function() {
+                assert.equal(new Template('name1', 'name2_mod_val', 'name3', {}).match(
+                    { block: 'name2', mods: { mod: 'val' }}
+                ).toString(),
+                    '<div class="name2 i-bem name2_mod_val" data-bem="{&quot;name2&quot;:{}}"></div>'
+                );
+            });
+
+            it('Элементы', function() {
+                assert.equal(new Template('block', 'block__elem', 'block__elem2', {}).match(
+                    { block: 'block', elem: 'elem2' }
+                ).toString(),
+                    '<div class="block__elem2 i-bem" data-bem="{&quot;block__elem2&quot;:{}}"></div>'
+                );
+            });
+
+        });
+
+        describe('Наследование шаблонов.', function() {
+
+            it('Одиночное наследование', function() {
+                assert.equal(new Template('parent', { mods: function() { return { a: 1 }; }})
+                    .extend(new Template('child', { mods: function() { return { a: this.__base().a, b: 2 }; }}))
+                    .match({ block: 'child' }).toString(),
+                    '<div class="child i-bem child_a_1 child_b_2" data-bem="{&quot;child&quot;:{}}"></div>'
+                );
+            });
+
+            it('Цепочка наследований', function() {
+                assert.equal(new Template('grand', { js: false, mods: function() { return { a: 1 }; }})
+                    .extend(new Template('parent', { mods: function() { return { a: 2 }; }}))
+                    .extend(new Template('child', { mods: function() { return { a: this.__base().a, b: 2 }; }}))
+                    .match({ block: 'child' }).toString(),
+                    '<div class="child child_a_2 child_b_2"></div>'
+                );
+            });
+
+            it('Длинная цепочка наследований', function() {
+                assert.equal(new Template('great', { js: false, mods: { a: 1 }})
+                    .extend(new Template('grand', { mods: function() { return { a: 2 }; }}))
+                    .extend(new Template('parent', { mods: function() { return { a: this.__base().a + 1 }; }}))
+                    .extend(new Template('child', { mods: function() { return { a: this.__base().a + 1 }; }}))
+                    .match({ block: 'child' }).toString(),
+                    '<div class="child child_a_4"></div>'
+                );
+            });
+
+        });
+
     });
 });

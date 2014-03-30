@@ -214,7 +214,7 @@ definer('MatchTest', function(assert, Match) {
 
         });
 
-        describe('Проверить на неточное соответствие', function() {
+        describe('Проверить на неточное соответствие.', function() {
 
             it('Блок', function() {
                 assert.isTrue(new Match('block').is({ block: 'block', mods: { size: 's' }}));
@@ -247,7 +247,7 @@ definer('MatchTest', function(assert, Match) {
 
         });
 
-        describe('Проверить на точное соответствие (эквивалент)', function() {
+        describe('Проверить на точное соответствие (эквивалент).', function() {
 
             it('Блок', function() {
                 var match = new Match('block');
