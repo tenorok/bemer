@@ -133,5 +133,32 @@ definer('TemplateTest', function(assert, Template) {
             );
         });
 
+        describe('Несколько селекторов.', function() {
+
+            it('Несколько блоков', function() {
+                assert.equal(new Template('name1', 'name2', 'name3', {}).match({ block: 'name2' }).toString(),
+                    '<div class="name2 i-bem" data-bem="{&quot;name2&quot;:{}}"></div>'
+                );
+                assert.isNull(new Template('name1', 'name2', 'name3', {}).match({ block: 'name4' }));
+            });
+
+            it('Блоки с модификаторами', function() {
+                assert.equal(new Template('name1', 'name2_mod_val', 'name3', {}).match(
+                    { block: 'name2', mods: { mod: 'val' }}
+                ).toString(),
+                    '<div class="name2 i-bem name2_mod_val" data-bem="{&quot;name2&quot;:{}}"></div>'
+                );
+            });
+
+            it('Элементы', function() {
+                assert.equal(new Template('block', 'block__elem', 'block__elem2', {}).match(
+                    { block: 'block', elem: 'elem2' }
+                ).toString(),
+                    '<div class="block__elem2 i-bem" data-bem="{&quot;block__elem2&quot;:{}}"></div>'
+                );
+            });
+
+        });
+
     });
 });
