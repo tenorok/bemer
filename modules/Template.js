@@ -121,6 +121,23 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
         },
 
         /**
+         * Проверить шаблон на соответствие.
+         *
+         * Вернёт `true`, если хотя бы один селектор
+         * текущего шаблона и проверяемого пройдёт неточную проверку.
+         *
+         * @param {Template} template Шаблон
+         * @returns {boolean}
+         */
+        is: function(template) {
+            return this._matches.some(function(match) {
+                return Object.keys(template._patterns).some(function(key) {
+                    return match.is(template._patterns[key]);
+                });
+            });
+        },
+
+        /**
          * Получить значение моды.
          *
          * @private
