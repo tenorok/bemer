@@ -1,4 +1,4 @@
-definer('Match', /** @exports Match */ function(Name, object) {
+definer('Match', /** @exports Match */ function(Name, object, is) {
 
     /**
      * Модуль проверки БЭМ-узла на соответствие шаблону.
@@ -27,12 +27,69 @@ definer('Match', /** @exports Match */ function(Name, object) {
     Match.prototype = {
 
         /**
+         * Проверить узел или имя на соответствие шаблону.
+         *
+         * @param {object|string} test Узел или имя БЭМ-сущности
+         * @returns {boolean}
+         */
+        is: function(test) {
+            return this[is.string(test) ? '_isName' : '_isNode'](test);
+        },
+
+        /**
+         * Проверить узел или имя на точное соответствие (эквивалент) шаблону.
+         *
+         * @param {object|string} test Узел или имя БЭМ-сущности
+         * @returns {boolean}
+         */
+        equal: function(test) {
+            return this[is.string(test) ? '_equalName' : '_equalNode'](test);
+        },
+
+        /**
+         * Проверить имя на неточное или точное соответствие шаблону.
+         *
+         * @private
+         * @param {string} name Имя БЭМ-сущности
+         * @param {string} method Имя метода для проверки узла: `_isNode` или `_equalNode`
+         * @returns {boolean}
+         */
+        _name: function(name, method) {
+            name = new Name(name);
+
+            var mods = {};
+            mods[name.modName()] = name.modVal();
+
+            var elemMods = {};
+            elemMods[name.elemModName()] = name.elemModVal();
+
+            return this[method]({
+                block: name.block(),
+                mods: mods,
+                elem: name.elem(),
+                elemMods: elemMods
+            });
+        },
+
+        /**
+         * Проверить имя на соответствие шаблону.
+         *
+         * @private
+         * @param {string} name Имя БЭМ-сущности
+         * @returns {boolean}
+         */
+        _isName: function(name) {
+            return this._name(name, '_isNode');
+        },
+
+        /**
          * Проверить узел на соответствие шаблону.
          *
+         * @private
          * @param {object} node Узел
          * @returns {boolean}
          */
-        is: function(node) {
+        _isNode: function(node) {
             return (
                 this._block(node.block) &&
                 this._blockMod(node.mods) &&
@@ -42,12 +99,24 @@ definer('Match', /** @exports Match */ function(Name, object) {
         },
 
         /**
+         * Проверить имя на точное соответствие (эквивалент) шаблону.
+         *
+         * @private
+         * @param {string} name Имя БЭМ-сущности
+         * @returns {boolean}
+         */
+        _equalName: function(name) {
+            return this._name(name, '_equalNode');
+        },
+
+        /**
          * Проверить узел на точное соответствие (эквивалент) шаблону.
          *
+         * @private
          * @param {object} node Узел
          * @returns {boolean}
          */
-        equal: function(node) {
+        _equalNode: function(node) {
             return (
                 this._block(node.block) &&
                 this._equalBlockMod(node.mods) &&
