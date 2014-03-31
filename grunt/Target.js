@@ -9,6 +9,7 @@ Target.definer = function() {
             'Match',
             'classify',
             'Template',
+            'Pool',
             'string',
             'object',
             'is'
