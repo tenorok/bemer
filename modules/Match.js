@@ -134,7 +134,7 @@ definer('Match', /** @exports Match */ function(Name, object, is) {
          */
         _block: function(block) {
             var pattern = this._pattern.block();
-            return pattern === Match.any || pattern === block;
+            return pattern === Match.any || block === Match.any || pattern === block;
         },
 
         /**
@@ -177,7 +177,7 @@ definer('Match', /** @exports Match */ function(Name, object, is) {
                 return true;
             }
 
-            return pattern === Match.any || pattern === elem;
+            return pattern === Match.any || elem === Match.any || pattern === elem;
         },
 
         /**
@@ -241,17 +241,25 @@ definer('Match', /** @exports Match */ function(Name, object, is) {
          */
         _mod: function(patternName, patternVal, name, val) {
 
-            if(patternName === Match.any && patternVal === Match.any) {
+            if(patternName === Match.any && patternVal === Match.any || name === Match.any && val === Match.any) {
                 return true;
             }
 
             if(patternName === Match.any) {
-                return patternVal === val;
+                return val === Match.any || patternVal === val;
+            }
+
+            if(name === Match.any) {
+                return patternVal === Match.any || patternVal === val;
             }
 
             // Вторая проверка на булев модификатор
             if(patternVal === Match.any || !patternVal && val === true) {
-                return patternName === name;
+                return name === Match.any || patternName === name;
+            }
+
+            if(val === Match.any) {
+                return patternName === Match.any || patternName === name;
             }
 
             return patternName === name && patternVal === val;
