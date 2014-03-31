@@ -18,15 +18,22 @@ definer('Pool', /** @exports Pool */ function() {
     Pool.prototype = {
 
         /**
-         * Добавить шаблон.
+         * Добавить шаблон или несколько шаблонов.
          *
          * @param {...Template} template Шаблон к добавлению
          * @returns {Pool}
          */
         add: function(template) {
-            Array.prototype.push.apply(this.pool, Array.prototype.slice.call(arguments));
+            var args = arguments,
+                templates = Object.keys(args).reduce(function(templates, key) {
+                    return templates.concat(args[key].split());
+                }, []);
+
+            this.pool = this.pool.concat(templates);
             return this;
-        }
+        },
+
+        is: function(template) {}
 
     };
 
