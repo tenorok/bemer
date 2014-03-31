@@ -191,5 +191,13 @@ definer('TemplateTest', function(assert, Template) {
 
         });
 
+        it('Разбивка на шаблоны с единичными селекторами', function() {
+            var templates = new Template('one', 'two', 'three', {}).split();
+            assert.isNotNull(templates[0].match({ block: 'one' }));
+            assert.isNotNull(templates[1].match({ block: 'two' }));
+            assert.isNotNull(templates[2].match({ block: 'three' }));
+            assert.isNull(templates[2].match({ block: 'four' }));
+        });
+
     });
 });

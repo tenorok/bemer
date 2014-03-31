@@ -9,18 +9,13 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
      */
     function Template(pattern, modes) {
 
-        var patterns = [].slice.call(arguments, 0, -1);
-
         /**
-         * Экземпляры матчера.
+         * Шаблоны для матчинга.
          *
          * @private
-         * @type {Match[]}
+         * @type {string[]}
          */
-        this._matches = Object.keys(patterns).reduce(function(matches, key) {
-            matches.push(new Match(patterns[key]));
-            return matches;
-        }, []);
+        this._patterns = [].slice.call(arguments, 0, -1);
 
         /**
          * Моды для преобразования узла.
@@ -29,6 +24,17 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
          * @type {object}
          */
         this._modes = [].slice.call(arguments, -1)[0];
+
+        /**
+         * Экземпляры матчера.
+         *
+         * @private
+         * @type {Match[]}
+         */
+        this._matches = Object.keys(this._patterns).reduce(function(matches, key) {
+            matches.push(new Match(this._patterns[key]));
+            return matches;
+        }.bind(this), []);
 
         /**
          * Стандартные моды.
@@ -100,6 +106,18 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
         extend: function(template) {
             template.Modes = classify(this.Modes, template._modes);
             return template;
+        },
+
+        /**
+         * Разбить шаблон на шаблоны с единичными селекторами.
+         *
+         * @returns {Template[]}
+         */
+        split: function() {
+            return Object.keys(this._patterns).reduce(function(templates, key) {
+                templates.push(new Template(this._patterns[key], this._modes));
+                return templates;
+            }.bind(this), []);
         },
 
         /**
