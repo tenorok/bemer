@@ -10,7 +10,7 @@ definer('Pool', /** @exports Pool */ function() {
         /**
          * Список шаблонов.
          *
-         * @type {array}
+         * @type {Template[]}
          */
         this.pool = [];
     }
@@ -33,7 +33,30 @@ definer('Pool', /** @exports Pool */ function() {
             return this;
         },
 
-        is: function(template) {}
+        /**
+         * Найти индексы подходящих для наследования шаблонов
+         * для каждого селектора указанного шаблона.
+         *
+         * Результатом всегда возвращается массив индексов
+         * или `null`, если подходящие шаблоны не были найдены.
+         *
+         * @param {Template} template Шаблон для поиска
+         * @returns {number[]|null}
+         */
+        is: function(template) {
+            var indexes = [];
+
+            template.split().forEach(function(currentTemplate) {
+                this.pool.some(function(poolTemplate, index) {
+                    if(poolTemplate.is(currentTemplate)) {
+                        indexes.push(index);
+                        return true;
+                    }
+                });
+            }, this);
+
+            return indexes.length ? indexes : null;
+        }
 
     };
 
