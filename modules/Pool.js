@@ -64,6 +64,22 @@ definer('Pool', /** @exports Pool */ function() {
             }, this);
 
             return indexes.length ? indexes : null;
+        },
+
+        /**
+         * Найти шаблон для BEMJSON.
+         *
+         * @param {object} bemjson BEMJSON
+         * @returns {Node|null} Экземпляр БЭМ-узла или null при отсутствии подходящего шаблона
+         */
+        find: function(bemjson) {
+            for(var index = this.pool.length - 1; index >= 0; index--) {
+                var node = this.pool[index].match(bemjson);
+                if(node) {
+                    return node;
+                }
+            }
+            return null;
         }
 
     };
