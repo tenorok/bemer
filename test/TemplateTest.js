@@ -191,5 +191,42 @@ definer('TemplateTest', function(assert, Template) {
 
         });
 
+        it('Разбивка на шаблоны с единичными селекторами', function() {
+            var templates = new Template('one', 'two', 'three', {}).split();
+            assert.isNotNull(templates[0].match({ block: 'one' }));
+            assert.isNotNull(templates[1].match({ block: 'two' }));
+            assert.isNotNull(templates[2].match({ block: 'three' }));
+            assert.isNull(templates[2].match({ block: 'four' }));
+        });
+
+        describe('Проверка шаблонов на соответствие.', function() {
+
+            it('Блок', function() {
+                var template = new Template('block', {});
+                assert.isTrue(template.is(new Template('block', {})));
+                assert.isTrue(template.is(new Template('block_mod_val', {})));
+                assert.isFalse(template.is(new Template('block1', {})));
+            });
+
+            it('Блок с модификатором', function() {
+                var template = new Template('block_mod_val', {});
+                assert.isFalse(template.is(new Template('block', {})));
+                assert.isTrue(template.is(new Template('block_mod_val', {})));
+                assert.isFalse(template.is(new Template('block1', {})));
+                assert.isFalse(template.is(new Template('block_mod', {})));
+                assert.isFalse(template.is(new Template('block_mod_foo', {})));
+                assert.isTrue(template.is(new Template('block_mod_*', {})));
+            });
+
+            it('Несколько блоков', function() {
+                var template = new Template('block1', 'block2', 'block3', {});
+                assert.isTrue(template.is(new Template('block2', {})));
+                assert.isTrue(template.is(new Template('block4', 'block1', {})));
+                assert.isTrue(template.is(new Template('block1_mod_val', 'block1', {})));
+                assert.isFalse(template.is(new Template('block4', 'block5', {})));
+            });
+
+        });
+
     });
 });

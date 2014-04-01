@@ -1,4 +1,4 @@
-definer('Match', /** @exports Match */ function(Name, object) {
+definer('Match', /** @exports Match */ function(Name, object, is) {
 
     /**
      * Модуль проверки БЭМ-узла на соответствие шаблону.
@@ -27,12 +27,69 @@ definer('Match', /** @exports Match */ function(Name, object) {
     Match.prototype = {
 
         /**
+         * Проверить узел или имя на соответствие шаблону.
+         *
+         * @param {object|string} test Узел или имя БЭМ-сущности
+         * @returns {boolean}
+         */
+        is: function(test) {
+            return this[is.string(test) ? '_isName' : '_isNode'](test);
+        },
+
+        /**
+         * Проверить узел или имя на точное соответствие (эквивалент) шаблону.
+         *
+         * @param {object|string} test Узел или имя БЭМ-сущности
+         * @returns {boolean}
+         */
+        equal: function(test) {
+            return this[is.string(test) ? '_equalName' : '_equalNode'](test);
+        },
+
+        /**
+         * Проверить имя на неточное или точное соответствие шаблону.
+         *
+         * @private
+         * @param {string} name Имя БЭМ-сущности
+         * @param {string} method Имя метода для проверки узла: `_isNode` или `_equalNode`
+         * @returns {boolean}
+         */
+        _name: function(name, method) {
+            name = new Name(name);
+
+            var mods = {};
+            mods[name.modName()] = name.modVal();
+
+            var elemMods = {};
+            elemMods[name.elemModName()] = name.elemModVal();
+
+            return this[method]({
+                block: name.block(),
+                mods: mods,
+                elem: name.elem(),
+                elemMods: elemMods
+            });
+        },
+
+        /**
+         * Проверить имя на соответствие шаблону.
+         *
+         * @private
+         * @param {string} name Имя БЭМ-сущности
+         * @returns {boolean}
+         */
+        _isName: function(name) {
+            return this._name(name, '_isNode');
+        },
+
+        /**
          * Проверить узел на соответствие шаблону.
          *
+         * @private
          * @param {object} node Узел
          * @returns {boolean}
          */
-        is: function(node) {
+        _isNode: function(node) {
             return (
                 this._block(node.block) &&
                 this._blockMod(node.mods) &&
@@ -42,12 +99,24 @@ definer('Match', /** @exports Match */ function(Name, object) {
         },
 
         /**
+         * Проверить имя на точное соответствие (эквивалент) шаблону.
+         *
+         * @private
+         * @param {string} name Имя БЭМ-сущности
+         * @returns {boolean}
+         */
+        _equalName: function(name) {
+            return this._name(name, '_equalNode');
+        },
+
+        /**
          * Проверить узел на точное соответствие (эквивалент) шаблону.
          *
+         * @private
          * @param {object} node Узел
          * @returns {boolean}
          */
-        equal: function(node) {
+        _equalNode: function(node) {
             return (
                 this._block(node.block) &&
                 this._equalBlockMod(node.mods) &&
@@ -65,7 +134,7 @@ definer('Match', /** @exports Match */ function(Name, object) {
          */
         _block: function(block) {
             var pattern = this._pattern.block();
-            return pattern === Match.any || pattern === block;
+            return pattern === Match.any || block === Match.any || pattern === block;
         },
 
         /**
@@ -108,7 +177,7 @@ definer('Match', /** @exports Match */ function(Name, object) {
                 return true;
             }
 
-            return pattern === Match.any || pattern === elem;
+            return pattern === Match.any || elem === Match.any || pattern === elem;
         },
 
         /**
@@ -172,17 +241,25 @@ definer('Match', /** @exports Match */ function(Name, object) {
          */
         _mod: function(patternName, patternVal, name, val) {
 
-            if(patternName === Match.any && patternVal === Match.any) {
+            if(patternName === Match.any && patternVal === Match.any || name === Match.any && val === Match.any) {
                 return true;
             }
 
             if(patternName === Match.any) {
-                return patternVal === val;
+                return val === Match.any || patternVal === val;
+            }
+
+            if(name === Match.any) {
+                return patternVal === Match.any || patternVal === val;
             }
 
             // Вторая проверка на булев модификатор
             if(patternVal === Match.any || !patternVal && val === true) {
-                return patternName === name;
+                return name === Match.any || patternName === name;
+            }
+
+            if(val === Match.any) {
+                return patternName === Match.any || patternName === name;
             }
 
             return patternName === name && patternVal === val;
