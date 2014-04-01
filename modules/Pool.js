@@ -29,7 +29,15 @@ definer('Pool', /** @exports Pool */ function() {
                     return templates.concat(args[key].split());
                 }, []);
 
-            this.pool = this.pool.concat(templates);
+            templates.forEach(function(template) {
+                var indexes = this.is(template);
+
+                // Так как шаблоны разбиты по единичным селекторам,
+                // результатом поиска может быть только один индекс или null.
+                this.pool.push(indexes ? this.pool[indexes[0]].extend(template) : template);
+
+            }, this);
+
             return this;
         },
 
