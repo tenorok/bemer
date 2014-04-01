@@ -45,6 +45,12 @@ definer('PoolTest', function(assert, Pool, Template) {
                     .is(new Template('block1', 'block3', {})), [0, 2]);
             });
 
+            it('В пуле несколько подходящих шаблонов', function() {
+                assert.deepEqual(new Pool()
+                    .add(new Template('block', {}), new Template('block', 'block_mod_val', {}))
+                    .is(new Template('block_mod_val', {})), [2]);
+            });
+
             it('Поиск несуществующего шаблона', function() {
                 assert.isNull(new Pool()
                     .add(new Template('block', {}))

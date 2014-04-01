@@ -47,12 +47,12 @@ definer('Pool', /** @exports Pool */ function() {
             var indexes = [];
 
             template.split().forEach(function(currentTemplate) {
-                this.pool.some(function(poolTemplate, index) {
-                    if(poolTemplate.is(currentTemplate)) {
+                for(var index = this.pool.length - 1; index >= 0; index--) {
+                    if(this.pool[index].is(currentTemplate)) {
                         indexes.push(index);
-                        return true;
+                        break;
                     }
-                });
+                }
             }, this);
 
             return indexes.length ? indexes : null;
