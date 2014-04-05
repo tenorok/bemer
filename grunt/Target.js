@@ -10,6 +10,7 @@ Target.definer = function() {
             'classify',
             'Template',
             'Pool',
+            'Tree',
             'string',
             'object',
             'is'
