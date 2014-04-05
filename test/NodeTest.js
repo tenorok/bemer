@@ -254,6 +254,18 @@ definer('NodeTest', function(assert, Node) {
                 );
             });
 
+            it('Блок с вложенным блоком', function() {
+                assert.equal(new Node({
+                    block: 'name',
+                    content: new Node({
+                        block: 'inner',
+                        content: 'Параграф текста'
+                    })
+                }).toString(),
+                    '<div class="name"><div class="inner">Параграф текста</div></div>'
+                );
+            });
+
         });
 
     });
