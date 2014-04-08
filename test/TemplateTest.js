@@ -228,5 +228,45 @@ definer('TemplateTest', function(assert, Template) {
 
         });
 
+        describe('Применение стандартного шаблона.', function() {
+
+            it('Блок', function() {
+                assert.equal(Template.base({ block: 'a' }).toString(),
+                    '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}"></div>'
+                );
+            });
+
+            it('Блок с модификатором', function() {
+                assert.equal(Template.base({ block: 'a', mods: { b: 'c' }}).toString(),
+                    '<div class="a i-bem a_b_c" data-bem="{&quot;a&quot;:{}}"></div>'
+                );
+            });
+
+            it('Элемент', function() {
+                assert.equal(Template.base({ block: 'a', elem: 'b' }).toString(),
+                    '<div class="a__b i-bem" data-bem="{&quot;a__b&quot;:{}}"></div>'
+                );
+            });
+
+            it('Элемент с модификатором', function() {
+                assert.equal(Template.base({ block: 'a', elem: 'b', elemMods: { c: 'd' }}).toString(),
+                    '<div class="a__b i-bem a__b_c_d" data-bem="{&quot;a__b&quot;:{}}"></div>'
+                );
+            });
+
+            it('Блок с модификатором и элементом', function() {
+                assert.equal(Template.base({ block: 'a', mods: { c: 'd' }, elem: 'b' }).toString(),
+                    '<div class="i-bem a_c_d__b" data-bem="{&quot;a__b&quot;:{}}"></div>'
+                );
+            });
+
+            it('Блок с модификатором и элемент с модификатором', function() {
+                assert.equal(Template.base({ block: 'a', mods: { c: 'd' }, elem: 'b', elemMods: { e: 'f' }}).toString(),
+                    '<div class="i-bem a_c_d__b a_c_d__b_e_f" data-bem="{&quot;a__b&quot;:{}}"></div>'
+                );
+            });
+
+        });
+
     });
 });

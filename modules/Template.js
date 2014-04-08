@@ -62,6 +62,16 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
         this.Modes = classify(classify(this.defaultModes), this._modes);
     }
 
+    /**
+     * Получить БЭМ-узел на основе BEMJSON по базому шаблону.
+     *
+     * @param {object} bemjson Входящий BEMJSON
+     * @returns {Node}
+     */
+    Template.base = function(bemjson) {
+        return new Template('*', {}).transform(bemjson);
+    };
+
     Template.prototype = {
 
         /**
@@ -82,7 +92,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
         },
 
         /**
-         * Преобразовать BEMJSON.
+         * Получить БЭМ-узел на основе BEMJSON.
          *
          * @param {object} bemjson Входящий BEMJSON
          * @returns {Node}
