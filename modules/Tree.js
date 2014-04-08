@@ -34,16 +34,20 @@ definer('Tree', /** @exports Tree */ function(Template) {
 
     Tree.prototype = {
 
-        expand: function() {},
-
         toString: function() {
-            var node = this._pool.find(this._tree);
 
-            if(node) {
-                return node.toString();
-            }
+            return this._getNode(this._tree).toString();
+        },
 
-            return Template.base(this._tree).toString();
+        /**
+         * Получить БЭМ-узел на основе BEMJSON.
+         *
+         * @private
+         * @param {object} bemjson BEMJSON
+         * @returns {Node}
+         */
+        _getNode: function(bemjson) {
+            return this._pool.find(bemjson) || Template.base(bemjson);
         }
 
     };
