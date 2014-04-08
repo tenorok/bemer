@@ -32,20 +32,6 @@ definer('Tree', /** @exports Tree */ function(Template) {
         this._block = tree.block || '';
     }
 
-    /**
-     * Стандартные шаблоны.
-     *
-     * @type {object}
-     * @property {Template} block Блока
-     * @property {Template} elem Элемента
-     * @property {Template} blockModElem Блока с модификатором и элемента
-     */
-    Tree.defaultTemplates = {
-        block: new Template('*', {}),
-        elem: new Template('*__*', {}),
-        blockModElem: new Template('*_*_*__*', {})
-    };
-
     Tree.prototype = {
 
         expand: function() {},
@@ -57,12 +43,7 @@ definer('Tree', /** @exports Tree */ function(Template) {
                 return node.toString();
             }
 
-            for(var key in Tree.defaultTemplates) {
-                node = Tree.defaultTemplates[key].match(this._tree);
-                if(node) {
-                    return node.toString();
-                }
-            }
+            return Template.base(this._tree).toString();
         }
 
     };
