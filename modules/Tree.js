@@ -75,7 +75,7 @@ definer('Tree', /** @exports Tree */ function(Template, is) {
         },
 
         /**
-         * Получить БЭМ-узел на основе BEMJSON
+         * Рекурсивно получить БЭМ-узел с его контентом на основе BEMJSON
          * или просто вернуть полученный примитив.
          *
          * @private
@@ -83,7 +83,14 @@ definer('Tree', /** @exports Tree */ function(Template, is) {
          * @returns {Node|*}
          */
         _getNode: function(bemjson) {
-            return is.map(bemjson) ? this._pool.find(bemjson) || Template.base(bemjson) : bemjson;
+
+            if(is.map(bemjson)) {
+                var node = this._pool.find(bemjson) || Template.base(bemjson);
+                node.content(this._getContent(bemjson.content));
+                return node;
+            }
+
+            return bemjson;
         }
 
     };

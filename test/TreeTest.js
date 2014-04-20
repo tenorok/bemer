@@ -93,6 +93,50 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     '</div>');
             });
 
+            it('Массив вложенных блоков и примитивов', function() {
+                var tree = new Tree({ block: 'a', content: [{ block: 'b' }, 'text', { block: 'c' }] },
+                    new Pool().add(new Template('b', 'c', { js: false }))
+                );
+                assert.equal(tree.toString(),
+                    '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">' +
+                        '<div class="b"></div>' +
+                        'text' +
+                        '<div class="c"></div>' +
+                    '</div>');
+            });
+
+            it('Три вложенных друг в друга блока', function() {
+                var tree = new Tree({ block: 'a', content: { block: 'b', content: { block: 'c' }}},
+                    new Pool().add(new Template('a', 'b', 'c', { js: false }))
+                );
+                assert.equal(tree.toString(),
+                    '<div class="a">' +
+                        '<div class="b">' +
+                            '<div class="c"></div>' +
+                        '</div>' +
+                    '</div>');
+            });
+
+            it('Пять вложенных друг в друга блока', function() {
+                var tree = new Tree({ block: 'a', content: [
+                        { block: 'b' },
+                        { block: 'c', content: [
+                            { block: 'd' },
+                            { block: 'e' }
+                        ] }
+                    ] },
+                    new Pool().add(new Template('*', { js: false }))
+                );
+                assert.equal(tree.toString(),
+                    '<div class="a">' +
+                        '<div class="b"></div>' +
+                        '<div class="c">' +
+                            '<div class="d"></div>' +
+                            '<div class="e"></div>' +
+                        '</div>' +
+                    '</div>');
+            });
+
         });
 
         it('Раскрыть контекст блока для вложенного элемента', function() {
