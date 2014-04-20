@@ -1,4 +1,4 @@
-definer('Tree', /** @exports Tree */ function(Template) {
+definer('Tree', /** @exports Tree */ function(Template, is) {
 
     /**
      * Модуль работы с BEMJSON-деревом.
@@ -34,20 +34,56 @@ definer('Tree', /** @exports Tree */ function(Template) {
 
     Tree.prototype = {
 
-        toString: function() {
-
-            return this._getNode(this._tree).toString();
-        },
-
         /**
-         * Получить БЭМ-узел на основе BEMJSON.
+         * Развернуть дерево в набор экземпляров БЭМ-узлов.
          *
-         * @private
          * @param {object} bemjson BEMJSON
          * @returns {Node}
          */
+        expand: function(bemjson) {
+            return this._getNode(bemjson).content(this._getContent(bemjson.content));
+        },
+
+        /**
+         * Получить строковое представление дерева.
+         *
+         * @returns {string}
+         */
+        toString: function() {
+            return this.expand(this._tree).toString();
+        },
+
+        /**
+         * Получить узел или примитив
+         * или список узлов и примитивов
+         * на основе контента.
+         *
+         * @private
+         * @param {*} bemjson BEMJSON, массив или примитив
+         * @returns {*}
+         */
+        _getContent: function(bemjson) {
+
+            if(is.array(bemjson)) {
+                return bemjson.reduce(function(list, elem) {
+                    list.push(this._getNode(elem));
+                    return list;
+                }.bind(this), []);
+            }
+
+            return this._getNode(bemjson);
+        },
+
+        /**
+         * Получить БЭМ-узел на основе BEMJSON
+         * или просто вернуть полученный примитив.
+         *
+         * @private
+         * @param {*} bemjson BEMJSON или примитив
+         * @returns {Node|*}
+         */
         _getNode: function(bemjson) {
-            return this._pool.find(bemjson) || Template.base(bemjson);
+            return is.map(bemjson) ? this._pool.find(bemjson) || Template.base(bemjson) : bemjson;
         }
 
     };
