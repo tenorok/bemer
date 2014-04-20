@@ -19,6 +19,11 @@ definer('NodeTest', function(assert, Node) {
             assert.equal(new Node({ block: 'name', elem: 'e', elemMods: { a: 'b' }}).getName().toString(), 'name__e');
         });
 
+        it('Получить/установить контент', function() {
+            assert.equal(new Node({ block: 'name' }).content(), '');
+            assert.equal(new Node({ block: 'name' }).content('text').content(), 'text');
+        });
+
         describe('Получить js-параметры узла.', function() {
 
             it('Блок без инициализации', function() {
@@ -160,7 +165,7 @@ definer('NodeTest', function(assert, Node) {
             ]);
         });
 
-        describe('Получить строкове представление БЭМ-сущности.', function() {
+        describe('Получить строковое представление БЭМ-сущности.', function() {
 
             it('Блок', function() {
                 assert.equal(new Node({ block: 'name' }).toString(), '<div class="name"></div>');

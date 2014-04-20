@@ -186,7 +186,7 @@ definer('Tag', /** @exports Tag */ function(string, is) {
         /**
          * Получить/установить содержимое тега.
          *
-         * @param {string|string[]} content Содержимое
+         * @param {string|string[]} [content] Содержимое
          * @returns {string[]|Tag}
          */
         content: function(content) {
