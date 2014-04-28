@@ -184,7 +184,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
             if(is.array(val, bemjsonVal)) {
                 return bemjsonVal.concat(val);
             } else if(is.map(val, bemjsonVal)) {
-                return object.extend(val, bemjsonVal);
+                return object.extend(object.clone(val), bemjsonVal);
             }
 
             if(name === 'content' && is.string(resolvedVal)) {
