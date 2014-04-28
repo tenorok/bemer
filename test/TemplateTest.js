@@ -261,25 +261,25 @@ definer('TemplateTest', function(assert, Template) {
 
             it('Элемент', function() {
                 assert.equal(Template.base({ block: 'a', elem: 'b' }).toString(),
-                    '<div class="a__b i-bem" data-bem="{&quot;a__b&quot;:{}}"></div>'
+                    '<div class="a__b"></div>'
                 );
             });
 
             it('Элемент с модификатором', function() {
                 assert.equal(Template.base({ block: 'a', elem: 'b', elemMods: { c: 'd' }}).toString(),
-                    '<div class="a__b i-bem a__b_c_d" data-bem="{&quot;a__b&quot;:{}}"></div>'
+                    '<div class="a__b a__b_c_d"></div>'
                 );
             });
 
             it('Блок с модификатором и элементом', function() {
                 assert.equal(Template.base({ block: 'a', mods: { c: 'd' }, elem: 'b' }).toString(),
-                    '<div class="i-bem a_c_d__b" data-bem="{&quot;a__b&quot;:{}}"></div>'
+                    '<div class="a_c_d__b"></div>'
                 );
             });
 
             it('Блок с модификатором и элемент с модификатором', function() {
                 assert.equal(Template.base({ block: 'a', mods: { c: 'd' }, elem: 'b', elemMods: { e: 'f' }}).toString(),
-                    '<div class="i-bem a_c_d__b a_c_d__b_e_f" data-bem="{&quot;a__b&quot;:{}}"></div>'
+                    '<div class="a_c_d__b a_c_d__b_e_f"></div>'
                 );
             });
 
