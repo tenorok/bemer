@@ -1,4 +1,4 @@
-definer('Template', /** @exports Template */ function(Match, classify, Node, object, string, is) {
+definer('Template', /** @exports Template */ function(Match, classify, Node, Name, object, string, is) {
 
     /**
      * Модуль шаблонизации BEMJSON-узла.
@@ -41,17 +41,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
          *
          * @type {object}
          */
-        this.defaultModes = {
-            js: true,
-            bem: true,
-            mods: {},
-            elemMods: {},
-            attrs: {},
-            mix: [],
-            tag: 'div',
-            cls: '',
-            content: ''
-        };
+        this.defaultModes = this._getDefaultModes();
 
         /**
          * Класс по модам.
@@ -145,6 +135,34 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, obj
                     return match.is(template._patterns[key]);
                 });
             });
+        },
+
+        /**
+         * Получить стандартные моды.
+         *
+         * Если среди селекторов шаблона присутствует хотя бы
+         * один блок, то будут отданы стандартные моды для блоков.
+         *
+         * @private
+         * @returns {object}
+         */
+        _getDefaultModes: function() {
+
+            var hasBlock = this._patterns.some(function(pattern) {
+                return new Name(pattern).isBlock();
+            }, this);
+
+            return {
+                js: hasBlock,
+                bem: true,
+                mods: {},
+                elemMods: {},
+                attrs: {},
+                mix: [],
+                tag: 'div',
+                cls: '',
+                content: ''
+            };
         },
 
         /**

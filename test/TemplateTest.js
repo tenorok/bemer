@@ -12,8 +12,16 @@ definer('TemplateTest', function(assert, Template) {
             assert.equal(new Template('name__element', {}).match({
                 block: 'name',
                 elem: 'element'
-            }).toString(), '<div class="name__element i-bem" data-bem="{&quot;name__element&quot;:{}}"></div>');
+            }).toString(), '<div class="name__element"></div>');
             assert.isNull(new Template('name__element2', {}).match({ block: 'name', elem: 'element' }));
+        });
+
+        it('Шаблонизировать элемент с включенным js', function() {
+            assert.equal(new Template('name__element', {}).match({
+                block: 'name',
+                elem: 'element',
+                js: true
+            }).toString(), '<div class="name__element i-bem" data-bem="{&quot;name__element&quot;:{}}"></div>');
         });
 
         it('Шаблонизировать блок с заменой тега', function() {
@@ -28,7 +36,7 @@ definer('TemplateTest', function(assert, Template) {
             assert.equal(new Template('my__*', {
                 tag: function() { return 'img'; }
             }).match({ block: 'my', elem: 'image' }).toString(),
-                '<img class="my__image i-bem" data-bem="{&quot;my__image&quot;:{}}"/>'
+                '<img class="my__image"/>'
             );
         });
 
@@ -93,7 +101,7 @@ definer('TemplateTest', function(assert, Template) {
             assert.equal(new Template('name__elem', {
                 elemMods: { checked: true }
             }).match({ block: 'name', elem: 'elem' }).toString(),
-                '<div class="name__elem i-bem name__elem_checked" data-bem="{&quot;name__elem&quot;:{}}"></div>'
+                '<div class="name__elem name__elem_checked"></div>'
             );
         });
 
@@ -151,10 +159,19 @@ definer('TemplateTest', function(assert, Template) {
             });
 
             it('Элементы', function() {
+                assert.equal(new Template('block__elem', 'block__elem2', {}).match(
+                    { block: 'block', elem: 'elem2' }
+                ).toString(),
+                    '<div class="block__elem2"></div>'
+                );
+            });
+
+            it('Блок и элементы', function() {
                 assert.equal(new Template('block', 'block__elem', 'block__elem2', {}).match(
                     { block: 'block', elem: 'elem2' }
                 ).toString(),
-                    '<div class="block__elem2 i-bem" data-bem="{&quot;block__elem2&quot;:{}}"></div>'
+                    '<div class="block__elem2 i-bem" data-bem="{&quot;block__elem2&quot;:{}}"></div>',
+                    'Применяются базовые моды для блоков, потому что в списке селекторов присутствует блок'
                 );
             });
 
