@@ -86,6 +86,23 @@ definer('isTest', function(assert, is) {
             assert.isFalse(is.undefined(1, 2, 'c'));
         });
 
+        it('Проверка на примитив', function() {
+            assert.isTrue(is.primitive('a'));
+            assert.isTrue(is.primitive(1, 2, 3));
+            assert.isTrue(is.primitive(true));
+            assert.isTrue(is.primitive('a', 1, false));
+            assert.isTrue(is.primitive(NaN));
+            assert.isTrue(is.primitive(null));
+            assert.isTrue(is.primitive(undefined));
+
+            assert.isFalse(is.primitive({}));
+            assert.isFalse(is.primitive([1, 2, 3]));
+            assert.isFalse(is.primitive(arguments));
+            assert.isFalse(is.primitive(function() {}));
+            assert.isFalse(is.primitive(new Date));
+            assert.isFalse(is.primitive(/x/));
+        });
+
         it('Проверка на массив', function() {
             assert.isTrue(is.array([1, 2, 3]));
             assert.isTrue(is.array(new Array(1, 2, 3)));
