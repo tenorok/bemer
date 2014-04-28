@@ -15,27 +15,27 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
 
             it('Элемент', function() {
                 var tree = new Tree({ block: 'a', elem: 'b' }, new Pool());
-                assert.equal(tree.toString(), '<div class="a__b i-bem" data-bem="{&quot;a__b&quot;:{}}"></div>');
+                assert.equal(tree.toString(), '<div class="a__b"></div>');
             });
 
             it('Элемент с модификатором', function() {
                 var tree = new Tree({ block: 'a', elem: 'b', elemMods: { c: 'd' }}, new Pool());
                 assert.equal(tree.toString(),
-                    '<div class="a__b i-bem a__b_c_d" data-bem="{&quot;a__b&quot;:{}}"></div>'
+                    '<div class="a__b a__b_c_d"></div>'
                 );
             });
 
             it('Блок с модификатором и элементом', function() {
                 var tree = new Tree({ block: 'a', mods: { c: 'd' }, elem: 'b' }, new Pool());
                 assert.equal(tree.toString(),
-                    '<div class="i-bem a_c_d__b" data-bem="{&quot;a__b&quot;:{}}"></div>'
+                    '<div class="a_c_d__b"></div>'
                 );
             });
 
             it('Блок с модификатором и элемент с модификатором', function() {
                 var tree = new Tree({ block: 'a', mods: { c: 'd' }, elem: 'b', elemMods: { e: 'f' }}, new Pool());
                 assert.equal(tree.toString(),
-                    '<div class="i-bem a_c_d__b a_c_d__b_e_f" data-bem="{&quot;a__b&quot;:{}}"></div>'
+                    '<div class="a_c_d__b a_c_d__b_e_f"></div>'
                 );
             });
 
@@ -139,14 +139,52 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
 
         });
 
-        it('Раскрыть контекст блока для вложенного элемента', function() {
-            var tree = new Tree({
-                block: 'a',
-                content: {
-                    elem: 'b'
-                }
-            }, new Pool().add(new Template('a', { js: false })));
-            assert.equal(tree.toString(), '<div class="a"><div class="a__b"></div></div>');
+        describe('Раскрытие контекста блока', function() {
+
+            it('Вложенный элемент', function() {
+                var tree = new Tree({
+                    block: 'a',
+                    content: {
+                        elem: 'b'
+                    }
+                }, new Pool().add(new Template('a', { js: false })));
+                assert.equal(tree.toString(), '<div class="a"><div class="a__b"></div></div>');
+            });
+
+            it('Распределённая структура вложенных элементов', function() {
+                var tree = new Tree({
+                    block: 'a',
+                    content: {
+                        elem: 'b',
+                        content: [
+                            {
+                                block: 'c',
+                                content: {
+                                    elem: 'd'
+                                }
+                            },
+                            {
+                                elem: 'e',
+                                content: {
+                                    elem: 'f'
+                                }
+                            }
+                        ]
+                    }
+                }, new Pool().add(new Template('a', 'c', { js: false })));
+                assert.equal(tree.toString(),
+                    '<div class="a">' +
+                        '<div class="a__b">' +
+                            '<div class="c">' +
+                                '<div class="c__d"></div>' +
+                            '</div>' +
+                            '<div class="a__e">' +
+                                '<div class="a__f"></div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>');
+            });
+
         });
 
     });

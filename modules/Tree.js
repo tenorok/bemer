@@ -41,7 +41,7 @@ definer('Tree', /** @exports Tree */ function(Template, is) {
          * @returns {Node}
          */
         expand: function(bemjson) {
-            return this._getNode(bemjson).content(this._getContent(bemjson.content));
+            return this._getNode(bemjson);
         },
 
         /**
@@ -60,18 +60,19 @@ definer('Tree', /** @exports Tree */ function(Template, is) {
          *
          * @private
          * @param {*} bemjson BEMJSON, массив или примитив
+         * @param {string} ctxBlock Контекст блока
          * @returns {*}
          */
-        _getContent: function(bemjson) {
+        _getContent: function(bemjson, ctxBlock) {
 
             if(is.array(bemjson)) {
                 return bemjson.reduce(function(list, elem) {
-                    list.push(this._getNode(elem));
+                    list.push(this._getNode(elem, ctxBlock));
                     return list;
                 }.bind(this), []);
             }
 
-            return this._getNode(bemjson);
+            return this._getNode(bemjson, ctxBlock);
         },
 
         /**
@@ -80,13 +81,19 @@ definer('Tree', /** @exports Tree */ function(Template, is) {
          *
          * @private
          * @param {*} bemjson BEMJSON или примитив
+         * @param {string} [ctxBlock] Контекст блока
          * @returns {Node|*}
          */
-        _getNode: function(bemjson) {
+        _getNode: function(bemjson, ctxBlock) {
 
             if(is.map(bemjson)) {
+
+                if(bemjson.elem && !bemjson.block && ctxBlock) {
+                    bemjson.block = ctxBlock;
+                }
+
                 var node = this._pool.find(bemjson) || Template.base(bemjson);
-                node.content(this._getContent(bemjson.content));
+                node.content(this._getContent(bemjson.content, bemjson.block));
                 return node;
             }
 
