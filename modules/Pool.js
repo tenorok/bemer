@@ -80,6 +80,16 @@ definer('Pool', /** @exports Pool */ function() {
                 }
             }
             return null;
+        },
+
+        /**
+         * Удалить все шаблоны.
+         *
+         * @returns {Pool}
+         */
+        clean: function() {
+            this.pool = [];
+            return this;
         }
 
     };
