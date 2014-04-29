@@ -110,6 +110,18 @@ definer('is', /** @exports is */ function() {
     };
 
     /**
+     * Проверить параметры на примитив.
+     *
+     * @param {...subject} subject Параметры
+     * @returns {boolean}
+     */
+    is.primitive = function(subject) {
+        return is._every(arguments, function(p) {
+            return is.string(p) || is.number(p) || is.nan(p) || is.boolean(p) || is.null(p) || is.undefined(p);
+        });
+    };
+
+    /**
      * Проверить параметры на массив.
      *
      * @param {...subject} subject Параметры

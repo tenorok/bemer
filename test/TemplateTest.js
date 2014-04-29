@@ -12,8 +12,16 @@ definer('TemplateTest', function(assert, Template) {
             assert.equal(new Template('name__element', {}).match({
                 block: 'name',
                 elem: 'element'
-            }).toString(), '<div class="name__element i-bem" data-bem="{&quot;name__element&quot;:{}}"></div>');
+            }).toString(), '<div class="name__element"></div>');
             assert.isNull(new Template('name__element2', {}).match({ block: 'name', elem: 'element' }));
+        });
+
+        it('Шаблонизировать элемент с включенным js', function() {
+            assert.equal(new Template('name__element', {}).match({
+                block: 'name',
+                elem: 'element',
+                js: true
+            }).toString(), '<div class="name__element i-bem" data-bem="{&quot;name__element&quot;:{}}"></div>');
         });
 
         it('Шаблонизировать блок с заменой тега', function() {
@@ -28,7 +36,7 @@ definer('TemplateTest', function(assert, Template) {
             assert.equal(new Template('my__*', {
                 tag: function() { return 'img'; }
             }).match({ block: 'my', elem: 'image' }).toString(),
-                '<img class="my__image i-bem" data-bem="{&quot;my__image&quot;:{}}"/>'
+                '<img class="my__image"/>'
             );
         });
 
@@ -93,7 +101,7 @@ definer('TemplateTest', function(assert, Template) {
             assert.equal(new Template('name__elem', {
                 elemMods: { checked: true }
             }).match({ block: 'name', elem: 'elem' }).toString(),
-                '<div class="name__elem i-bem name__elem_checked" data-bem="{&quot;name__elem&quot;:{}}"></div>'
+                '<div class="name__elem name__elem_checked"></div>'
             );
         });
 
@@ -151,10 +159,19 @@ definer('TemplateTest', function(assert, Template) {
             });
 
             it('Элементы', function() {
+                assert.equal(new Template('block__elem', 'block__elem2', {}).match(
+                    { block: 'block', elem: 'elem2' }
+                ).toString(),
+                    '<div class="block__elem2"></div>'
+                );
+            });
+
+            it('Блок и элементы', function() {
                 assert.equal(new Template('block', 'block__elem', 'block__elem2', {}).match(
                     { block: 'block', elem: 'elem2' }
                 ).toString(),
-                    '<div class="block__elem2 i-bem" data-bem="{&quot;block__elem2&quot;:{}}"></div>'
+                    '<div class="block__elem2 i-bem" data-bem="{&quot;block__elem2&quot;:{}}"></div>',
+                    'Применяются базовые моды для блоков, потому что в списке селекторов присутствует блок'
                 );
             });
 
@@ -224,6 +241,118 @@ definer('TemplateTest', function(assert, Template) {
                 assert.isTrue(template.is(new Template('block4', 'block1', {})));
                 assert.isTrue(template.is(new Template('block1_mod_val', 'block1', {})));
                 assert.isFalse(template.is(new Template('block4', 'block5', {})));
+            });
+
+        });
+
+        describe('Применение стандартного шаблона.', function() {
+
+            it('Блок', function() {
+                assert.equal(Template.base({ block: 'a' }).toString(),
+                    '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}"></div>'
+                );
+            });
+
+            it('Блок с модификатором', function() {
+                assert.equal(Template.base({ block: 'a', mods: { b: 'c' }}).toString(),
+                    '<div class="a i-bem a_b_c" data-bem="{&quot;a&quot;:{}}"></div>'
+                );
+            });
+
+            it('Элемент', function() {
+                assert.equal(Template.base({ block: 'a', elem: 'b' }).toString(),
+                    '<div class="a__b"></div>'
+                );
+            });
+
+            it('Элемент с модификатором', function() {
+                assert.equal(Template.base({ block: 'a', elem: 'b', elemMods: { c: 'd' }}).toString(),
+                    '<div class="a__b a__b_c_d"></div>'
+                );
+            });
+
+            it('Блок с модификатором и элементом', function() {
+                assert.equal(Template.base({ block: 'a', mods: { c: 'd' }, elem: 'b' }).toString(),
+                    '<div class="a_c_d__b"></div>'
+                );
+            });
+
+            it('Блок с модификатором и элемент с модификатором', function() {
+                assert.equal(Template.base({ block: 'a', mods: { c: 'd' }, elem: 'b', elemMods: { e: 'f' }}).toString(),
+                    '<div class="a_c_d__b a_c_d__b_e_f"></div>'
+                );
+            });
+
+        });
+
+        describe('Переопределение мод', function() {
+
+            it('Для примитивных значений приоритет у bemjson', function() {
+
+                assert.equal(new Template('name', { tag: 'span' }).match({ block: 'name', tag: 'i' }).toString(),
+                    '<i class="name i-bem" data-bem="{&quot;name&quot;:{}}"></i>',
+                    'строка'
+                );
+
+                assert.equal(new Template('name', { js: true }).match({ block: 'name', js: false }).toString(),
+                    '<div class="name"></div>',
+                    'логический тип'
+                );
+
+            });
+
+            it('Массивы конкатенируются', function() {
+                assert.equal(new Template('name', { mix: [{ block: 'mix2' }] }).match({
+                    block: 'name', mix: [{ block: 'mix1' }]
+                }).toString(),
+                    '<div class="name i-bem mix1 mix2" data-bem="{&quot;name&quot;:{}}"></div>'
+                );
+            });
+
+            it('Объекты (карты) наследуются с приоритетом у bemjson', function() {
+                assert.equal(new Template('name', { mods: { a: 'b' }}).match({
+                    block: 'name', mods: { a: 'c', d: 'e' }
+                }).toString(),
+                    '<div class="name i-bem name_a_c name_d_e" data-bem="{&quot;name&quot;:{}}"></div>'
+                );
+            });
+
+            describe('Переопределение функцией в шаблоне', function() {
+
+                it('Примитивные значения', function() {
+
+                    assert.equal(new Template('name', { tag: function() { return 'span'; }}).match({
+                        block: 'name', tag: 'i'
+                    }).toString(),
+                        '<span class="name i-bem" data-bem="{&quot;name&quot;:{}}"></span>',
+                        'строка'
+                    );
+
+                    assert.equal(new Template('name', { js: function() { return true; }}).match({
+                        block: 'name', js: false
+                    }).toString(),
+                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}"></div>',
+                        'логический тип'
+                    );
+
+                });
+
+                it('Массивы конкатенируются', function() {
+                    assert.equal(new Template('name', { mix: function() { return [{ block: 'mix2' }]; }}).match({
+                        block: 'name', mix: [{ block: 'mix1' }]
+                    }).toString(),
+                        '<div class="name i-bem mix1 mix2" data-bem="{&quot;name&quot;:{}}"></div>'
+                    );
+                });
+
+                it('Объекты (карты) наследуются с приоритетом у шаблона', function() {
+                    assert.equal(new Template('name', { mods: function() { return { a: 'b' }; }}).match({
+                        block: 'name', mods: { a: 'c', d: 'e' }
+                    }).toString(),
+                        '<div class="name i-bem name_a_b name_d_e" data-bem="{&quot;name&quot;:{}}"></div>'
+                    );
+                });
+
             });
 
         });

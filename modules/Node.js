@@ -175,6 +175,19 @@ definer('Node', /** @exports Node */ function(Tag, Name, object) {
         },
 
         /**
+         * Получить/установить содержимое узла.
+         *
+         * @param {*} [content] Содержимое
+         * @returns {*|Node}
+         */
+        content: function(content) {
+            if(content === undefined) return this._node.content || '';
+
+            this._node.content = content;
+            return this;
+        },
+
+        /**
          * Получить строковое представление узла.
          *
          * @returns {string}
