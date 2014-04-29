@@ -312,7 +312,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 })));
                 assert.equal(tree.toString(),
                     '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">' +
-                        '<div class="b i-bem" data-bem="{&quot;a&quot;:{}}">text</div>' +
+                        '<div class="b i-bem" data-bem="{&quot;b&quot;:{}}">text</div>' +
                     '</div>');
             });
 
