@@ -14,7 +14,8 @@ Target.definer = function() {
             'string',
             'object',
             'is',
-            'functions'
+            'functions',
+            'bemer'
         ],
 
         directories = ['modules/', 'test/'],
