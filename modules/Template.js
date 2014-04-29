@@ -168,6 +168,13 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
         /**
          * Получить значение моды.
          *
+         * Значения в виде массивов конкатенируются.
+         *
+         * Значения в виде объектов (карт) наследуются.
+         *
+         * Если значение в шаблоне скалярное, то приоритет у BEMJSON.
+         * Если значение в шаблоне задано функцией, то приоритет у шаблона.
+         *
          * @private
          * @param {Object} modes Экземпляр класса по модам
          * @param {object} bemjson Входящий BEMJSON
@@ -175,23 +182,43 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
          * @returns {*}
          */
         _getMode: function(modes, bemjson, name) {
-            var val = is.function(modes[name]) ? modes[name].call(modes) : modes[name],
+            var isValFunc = is.function(modes[name]),
+                val = isValFunc ? modes[name].call(modes) : modes[name],
                 bemjsonVal = bemjson[name],
-                resolvedVal = bemjsonVal || val;
+                priorityVal = this._getPriorityValue(isValFunc, val, bemjsonVal);
 
             this._checkTypes(is.type(this.defaultModes[name]), [val, bemjsonVal], name);
 
             if(is.array(val, bemjsonVal)) {
                 return bemjsonVal.concat(val);
             } else if(is.map(val, bemjsonVal)) {
-                return object.extend(object.clone(val), bemjsonVal);
+                return isValFunc
+                    ? object.extend(bemjsonVal, val)
+                    : object.extend(object.clone(val), bemjsonVal);
             }
 
-            if(name === 'content' && is.string(resolvedVal)) {
-                return string.htmlEscape(resolvedVal);
+            if(name === 'content' && is.string(priorityVal)) {
+                return string.htmlEscape(priorityVal);
             }
 
-            return resolvedVal;
+            return priorityVal;
+        },
+
+        /**
+         * Получить приоритетное значение моды.
+         *
+         * Если значение моды в шаблоне задано функцией,
+         * то оно является приоритетным.
+         *
+         * @private
+         * @param {boolean} isValFunc Значение моды в шаблоне может быть задано функцией
+         * @param {*} val Значение моды в шаблоне
+         * @param {*} bemjsonVal Значение моды в BEMJSON
+         * @returns {*}
+         */
+        _getPriorityValue: function(isValFunc, val, bemjsonVal) {
+            if(isValFunc) return val;
+            return is.undefined(bemjsonVal) ? val : bemjsonVal;
         },
 
         /**

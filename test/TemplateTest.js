@@ -285,5 +285,77 @@ definer('TemplateTest', function(assert, Template) {
 
         });
 
+        describe('Переопределение мод', function() {
+
+            it('Для примитивных значений приоритет у bemjson', function() {
+
+                assert.equal(new Template('name', { tag: 'span' }).match({ block: 'name', tag: 'i' }).toString(),
+                    '<i class="name i-bem" data-bem="{&quot;name&quot;:{}}"></i>',
+                    'строка'
+                );
+
+                assert.equal(new Template('name', { js: true }).match({ block: 'name', js: false }).toString(),
+                    '<div class="name"></div>',
+                    'логический тип'
+                );
+
+            });
+
+            it('Массивы конкатенируются', function() {
+                assert.equal(new Template('name', { mix: [{ block: 'mix2' }] }).match({
+                    block: 'name', mix: [{ block: 'mix1' }]
+                }).toString(),
+                    '<div class="name i-bem mix1 mix2" data-bem="{&quot;name&quot;:{}}"></div>'
+                );
+            });
+
+            it('Объекты (карты) наследуются с приоритетом у bemjson', function() {
+                assert.equal(new Template('name', { mods: { a: 'b' }}).match({
+                    block: 'name', mods: { a: 'c', d: 'e' }
+                }).toString(),
+                    '<div class="name i-bem name_a_c name_d_e" data-bem="{&quot;name&quot;:{}}"></div>'
+                );
+            });
+
+            describe('Переопределение функцией в шаблоне', function() {
+
+                it('Примитивные значения', function() {
+
+                    assert.equal(new Template('name', { tag: function() { return 'span'; }}).match({
+                        block: 'name', tag: 'i'
+                    }).toString(),
+                        '<span class="name i-bem" data-bem="{&quot;name&quot;:{}}"></span>',
+                        'строка'
+                    );
+
+                    assert.equal(new Template('name', { js: function() { return true; }}).match({
+                        block: 'name', js: false
+                    }).toString(),
+                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}"></div>',
+                        'логический тип'
+                    );
+
+                });
+
+                it('Массивы конкатенируются', function() {
+                    assert.equal(new Template('name', { mix: function() { return [{ block: 'mix2' }]; }}).match({
+                        block: 'name', mix: [{ block: 'mix1' }]
+                    }).toString(),
+                        '<div class="name i-bem mix1 mix2" data-bem="{&quot;name&quot;:{}}"></div>'
+                    );
+                });
+
+                it('Объекты (карты) наследуются с приоритетом у шаблона', function() {
+                    assert.equal(new Template('name', { mods: function() { return { a: 'b' }; }}).match({
+                        block: 'name', mods: { a: 'c', d: 'e' }
+                    }).toString(),
+                        '<div class="name i-bem name_a_b name_d_e" data-bem="{&quot;name&quot;:{}}"></div>'
+                    );
+                });
+
+            });
+
+        });
+
     });
 });
