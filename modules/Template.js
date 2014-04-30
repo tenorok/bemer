@@ -53,6 +53,13 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
     }
 
     /**
+     * Стандартное значение моды `tag`.
+     *
+     * @type {string}
+     */
+    Template.tag = 'div';
+
+    /**
      * Получить БЭМ-узел на основе BEMJSON по базому шаблону.
      *
      * @param {object} bemjson Входящий BEMJSON
@@ -159,7 +166,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
                 elemMods: {},
                 attrs: {},
                 mix: [],
-                tag: 'div',
+                tag: Template.tag,
                 cls: '',
                 content: ''
             };

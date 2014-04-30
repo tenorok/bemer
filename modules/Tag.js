@@ -14,7 +14,7 @@ definer('Tag', /** @exports Tag */ function(string, is) {
          * @private
          * @type {string}
          */
-        this._name = name || 'div';
+        this._name = name || Tag.defaultName;
 
         /**
          * Список классов тега.
@@ -48,6 +48,13 @@ definer('Tag', /** @exports Tag */ function(string, is) {
          */
         this._content = [];
     }
+
+    /**
+     * Имя тега по умолчанию.
+     *
+     * @type {string}
+     */
+    Tag.defaultName = 'div';
 
     /**
      * Список одиночных HTML-тегов.
