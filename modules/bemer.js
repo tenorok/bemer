@@ -1,4 +1,4 @@
-definer('bemer', /** @exports bemer */ function(Tree, Template, Pool, functions) {
+definer('bemer', /** @exports bemer */ function(Tree, Template, Pool, functions, Name, Node, object) {
 
     var pool = new Pool();
 
@@ -35,6 +35,61 @@ definer('bemer', /** @exports bemer */ function(Tree, Template, Pool, functions)
      */
     bemer.clean = function() {
         pool.clean();
+        return this;
+    };
+
+    /**
+     * Стандартные настройки шаблонизации.
+     *
+     * @type {object}
+     */
+    var defaultConfig = {
+        delimiters: {
+            mod: Name.delimiters.mod,
+            elem: Name.delimiters.elem
+        },
+        tag: Template.tag,
+        bemClass: Node.bemClass,
+        bemAttr: Node.bemAttr
+    };
+
+    /**
+     * Установить/сбросить настройки шаблонизации.
+     * При вызове без параметра настройки сбрасываются до стандартных.
+     *
+     * @param {object} [config] Настройки
+     *
+     * @param {object} [config.delimiters] Разделители имён
+     * @param {string} [config.delimiters.mod=_] Разделитель блока и модификатора,
+     * элемента и модификатора, модификатора и значения
+     * @param {string} [config.delimiters.elem=__] Разделитель блока и элемента
+     *
+     * @param {string} [config.tag=div] Стандартное имя тега
+     * @param {string} [config.bemClass=i-bem] Имя класса для js-инициализации
+     * @param {string} [config.bemAttr=data-bem] Имя атрибута для хранения параметров инициализации
+     *
+     * @returns {bemer}
+     */
+    bemer.config = function(config) {
+
+        config = config || defaultConfig;
+
+        if(config.delimiters) {
+            object.extend(Name.delimiters, config.delimiters);
+        }
+
+        if(config.tag) {
+            Template.tag = config.tag;
+        }
+
+        if(config.bemClass) {
+            Node.bemClass = config.bemClass;
+        }
+
+        if(config.bemAttr) {
+            Node.bemAttr = config.bemAttr;
+        }
+
         return this;
     };
 
