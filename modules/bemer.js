@@ -4,12 +4,17 @@ definer('bemer', /** @exports bemer */ function(Tree, Template, Pool, functions)
 
     /**
      * Модуль обвязки для удобной работы с шаблонизатором.
-     *
      * Экспортируется в глобальный контекст.
      *
+     * Шаблонизировать BEMJSON на основе имеющихся шаблонов.
+     *
      * @class
+     * @param {object} bemjson BEMJSON
+     * @returns {string}
      */
-    function bemer() {}
+    function bemer(bemjson) {
+        return new Tree(bemjson, pool).toString();
+    }
 
     /**
      * Добавить шаблон.
@@ -21,16 +26,6 @@ definer('bemer', /** @exports bemer */ function(Tree, Template, Pool, functions)
     bemer.match = function(pattern, modes) {
         pool.add(functions.apply(Template, arguments));
         return this;
-    };
-
-    /**
-     * Шаблонизировать BEMJSON на основе имеющихся шаблонов.
-     *
-     * @param {object} bemjson BEMJSON
-     * @returns {string}
-     */
-    bemer.apply = function(bemjson) {
-        return new Tree(bemjson, pool).toString();
     };
 
     /**
