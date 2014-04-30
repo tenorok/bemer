@@ -66,7 +66,9 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
      * @returns {Node}
      */
     Template.base = function(bemjson) {
-        return new Template(new Node(bemjson).isBlock() ? '*' : '*__*', {}).transform(bemjson);
+        return new Template(
+            new Node(bemjson).isBlock() ? '*' : '*' + Name.delimiters.elem + '*', {}
+        ).transform(bemjson);
     };
 
     Template.prototype = {
