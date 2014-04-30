@@ -187,8 +187,6 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
                 bemjsonVal = bemjson[name],
                 priorityVal = this._getPriorityValue(isValFunc, val, bemjsonVal);
 
-            this._checkTypes(is.type(this.defaultModes[name]), [val, bemjsonVal], name);
-
             if(is.array(val, bemjsonVal)) {
                 return bemjsonVal.concat(val);
             } else if(is.map(val, bemjsonVal)) {
@@ -219,24 +217,6 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
         _getPriorityValue: function(isValFunc, val, bemjsonVal) {
             if(isValFunc) return val;
             return is.undefined(bemjsonVal) ? val : bemjsonVal;
-        },
-
-        /**
-         * Проверить тип данных для моды.
-         *
-         * @private
-         * @param {string} valid Эталонный тип
-         * @param {*[]} values Список значений к проверке
-         * @param {string} name Имя моды
-         * @throws {TypeError} Неверный тип данных
-         */
-        _checkTypes: function(valid, values, name) {
-            if(name === 'content') return;
-            values.forEach(function(val) {
-                if(val !== undefined && is.type(val) !== valid) {
-                    throw new TypeError(val + ' is wrong type of mode ' + name);
-                }
-            });
         }
 
     };
