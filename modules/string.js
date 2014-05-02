@@ -90,6 +90,16 @@ definer('string', /** @exports string */ function() {
         return string.replace(/\s+/g, ' ');
     };
 
+    /**
+     * Удалить HTML-теги.
+     *
+     * @param {string} string Строка
+     * @returns {string}
+     */
+    string.stripTags = function(string) {
+        return string.replace(/<\/?[^>]+>/gi, '');
+    };
+
     return string;
 
 });

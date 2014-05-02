@@ -25,5 +25,9 @@ definer('stringTest', function(assert, string) {
             assert.equal(string.collapse('Just   text  in    paragraph.'), 'Just text in paragraph.');
         });
 
+        it('Удалить HTML-теги', function() {
+            assert.equal(string.stripTags('<p>Text and <a href="#">link</a>.</p>'), 'Text and link.');
+        });
+
     });
 });
