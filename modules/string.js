@@ -8,7 +8,7 @@ definer('string', /** @exports string */ function() {
     function string() {}
 
     /**
-     * Экранирование строки текста.
+     * Заэкранировать строку текста.
      *
      * @param {string} string Строка
      * @returns {string}
@@ -31,7 +31,7 @@ definer('string', /** @exports string */ function() {
     };
 
     /**
-     * Экранирование html-строки.
+     * Заэкранировать html-строку.
      *
      * @param {string} string Строка
      * @returns {string}
@@ -46,6 +46,26 @@ definer('string', /** @exports string */ function() {
         };
 
         return string.replace(/[&<>"']/g, function(match) {
+            return htmlEscapes[match];
+        });
+    };
+
+    /**
+     * Разэкранировать html-строку.
+     *
+     * @param {string} string Строка
+     * @returns {string}
+     */
+    string.unHtmlEscape = function(string) {
+        var htmlEscapes = {
+            '&amp;': '&',
+            '&lt;': '<',
+            '&gt;': '>',
+            '&quot;': '"',
+            '&#39;': '\''
+        };
+
+        return string.replace(/&amp;|&lt;|&gt;|&quot;|&#39;/g, function(match) {
             return htmlEscapes[match];
         });
     };

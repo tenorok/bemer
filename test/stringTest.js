@@ -9,6 +9,10 @@ definer('stringTest', function(assert, string) {
             assert.equal(string.htmlEscape('&<>"\'\/'), '&amp;&lt;&gt;&quot;&#39;\/');
         });
 
+        it('Разэкранировать html-строку', function() {
+            assert.equal(string.unHtmlEscape('&amp;&lt;&gt;&quot;&#39;\/'), '&<>"\'\/');
+        });
+
         it('Обрезать пробелы с начала и конца строки', function() {
             assert.equal(string.trim('   string   '), 'string');
         });
