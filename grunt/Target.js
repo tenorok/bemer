@@ -13,7 +13,9 @@ Target.definer = function() {
             'Tree',
             'string',
             'object',
-            'is'
+            'is',
+            'functions',
+            'bemer'
         ],
 
         directories = ['modules/', 'test/'],

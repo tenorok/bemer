@@ -3,7 +3,7 @@ definer('Tree', /** @exports Tree */ function(Template, is) {
     /**
      * Модуль работы с BEMJSON-деревом.
      *
-     * @class
+     * @constructor
      */
     function Tree(tree, pool) {
 

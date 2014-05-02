@@ -102,5 +102,17 @@ definer('PoolTest', function(assert, Pool, Template) {
 
         });
 
+        describe('Очистка списка шаблонов.', function() {
+
+            it('Удалить все шаблоны', function() {
+                assert.equal(new Pool()
+                    .add(new Template('block1', {}))
+                    .add(new Template('block2', {}))
+                    .add(new Template('block3', {}))
+                    .clean().pool.length, 0);
+            });
+
+        });
+
     });
 });

@@ -53,13 +53,22 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
     }
 
     /**
+     * Стандартное значение моды `tag`.
+     *
+     * @type {string}
+     */
+    Template.tag = 'div';
+
+    /**
      * Получить БЭМ-узел на основе BEMJSON по базому шаблону.
      *
      * @param {object} bemjson Входящий BEMJSON
      * @returns {Node}
      */
     Template.base = function(bemjson) {
-        return new Template(new Node(bemjson).isBlock() ? '*' : '*__*', {}).transform(bemjson);
+        return new Template(
+            new Node(bemjson).isBlock() ? '*' : '*' + Name.delimiters.elem + '*', {}
+        ).transform(bemjson);
     };
 
     Template.prototype = {
@@ -159,7 +168,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
                 elemMods: {},
                 attrs: {},
                 mix: [],
-                tag: 'div',
+                tag: Template.tag,
                 cls: '',
                 content: ''
             };
@@ -186,8 +195,6 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
                 val = isValFunc ? modes[name].call(modes) : modes[name],
                 bemjsonVal = bemjson[name],
                 priorityVal = this._getPriorityValue(isValFunc, val, bemjsonVal);
-
-            this._checkTypes(is.type(this.defaultModes[name]), [val, bemjsonVal], name);
 
             if(is.array(val, bemjsonVal)) {
                 return bemjsonVal.concat(val);
@@ -219,24 +226,6 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
         _getPriorityValue: function(isValFunc, val, bemjsonVal) {
             if(isValFunc) return val;
             return is.undefined(bemjsonVal) ? val : bemjsonVal;
-        },
-
-        /**
-         * Проверить тип данных для моды.
-         *
-         * @private
-         * @param {string} valid Эталонный тип
-         * @param {*[]} values Список значений к проверке
-         * @param {string} name Имя моды
-         * @throws {TypeError} Неверный тип данных
-         */
-        _checkTypes: function(valid, values, name) {
-            if(name === 'content') return;
-            values.forEach(function(val) {
-                if(val !== undefined && is.type(val) !== valid) {
-                    throw new TypeError(val + ' is wrong type of mode ' + name);
-                }
-            });
         }
 
     };

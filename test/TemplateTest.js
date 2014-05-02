@@ -24,6 +24,13 @@ definer('TemplateTest', function(assert, Template) {
             }).toString(), '<div class="name__element i-bem" data-bem="{&quot;name__element&quot;:{}}"></div>');
         });
 
+        it('Шаблонизировать блок с js-параметрами', function() {
+            assert.equal(new Template('name', {}).match({
+                block: 'name',
+                js: { foo: 100 }
+            }).toString(), '<div class="name i-bem" data-bem="{&quot;name&quot;:{&quot;foo&quot;:100}}"></div>');
+        });
+
         it('Шаблонизировать блок с заменой тега', function() {
             assert.equal(new Template('name', {
                 tag: 'span'
