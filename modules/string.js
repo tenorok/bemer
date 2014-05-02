@@ -80,6 +80,16 @@ definer('string', /** @exports string */ function() {
         return string.replace(/\s+$/, '');
     };
 
+    /**
+     * Удалить повторяющиеся пробелы.
+     *
+     * @param {string} string Строка
+     * @returns {string}
+     */
+    string.collapse = function(string) {
+        return string.replace(/\s+/g, ' ');
+    };
+
     return string;
 
 });

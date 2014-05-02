@@ -21,5 +21,9 @@ definer('stringTest', function(assert, string) {
             assert.equal(string.rtrim(' string   '), ' string');
         });
 
+        it('Удалить повторяющиеся пробелы', function() {
+            assert.equal(string.collapse('Just   text  in    paragraph.'), 'Just text in paragraph.');
+        });
+
     });
 });
