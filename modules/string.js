@@ -50,6 +50,36 @@ definer('string', /** @exports string */ function() {
         });
     };
 
+    /**
+     * Обрезать пробелы с начала и конца строки.
+     *
+     * @param {string} string Строка
+     * @returns {string}
+     */
+    string.trim = function(string) {
+        return string.replace(/^\s+|\s+$/g, '');
+    };
+
+    /**
+     * Обрезать пробелы с начала строки.
+     *
+     * @param {string} string Строка
+     * @returns {string}
+     */
+    string.ltrim = function(string) {
+        return string.replace(/^\s+/, '');
+    };
+
+    /**
+     * Обрезать пробелы с конца строки.
+     *
+     * @param {string} string Строка
+     * @returns {string}
+     */
+    string.rtrim = function(string) {
+        return string.replace(/\s+$/, '');
+    };
+
     return string;
 
 });
