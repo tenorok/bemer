@@ -160,6 +160,20 @@ definer('string', /** @exports string */ function(is) {
             string.slice(index + 1);
     };
 
+    /**
+     * Повторить строку заданное количество раз с указанным разделителем.
+     *
+     *
+     * @param {string} string Строка
+     * @param {number} n Количество повторений
+     * @param {string} [separator] Разделитель
+     * @returns {string}
+     */
+    string.repeat = function(string, n, separator) {
+        separator = separator || '';
+        return new Array(n + 1).join(separator + string).slice(separator.length);
+    };
+
     return string;
 
 });

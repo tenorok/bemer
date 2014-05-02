@@ -51,5 +51,14 @@ definer('stringTest', function(assert, string) {
             assert.equal(string.lower('ABCD', 2), 'ABcD');
         });
 
+        it('Повторить строку заданное количество раз', function() {
+            assert.equal(string.repeat('a', 4), 'aaaa');
+        });
+
+        it('Повторить строку заданное количество раз с указанным разделителем', function() {
+            assert.equal(string.repeat('a', 3, '-'), 'a-a-a');
+            assert.equal(string.repeat('a', 3, '%%%'), 'a%%%a%%%a');
+        });
+
     });
 });
