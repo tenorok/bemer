@@ -1,4 +1,4 @@
-definer('string', /** @exports string */ function() {
+definer('string', /** @exports string */ function(is) {
 
     /**
      * Модуль работы со строками.
@@ -118,6 +118,46 @@ definer('string', /** @exports string */ function() {
      */
     string.stripTags = function(string) {
         return string.replace(/<\/?[^>]+>/gi, '');
+    };
+
+    /**
+     * Перевести строку или заданный символ в верхний регистр.
+     *
+     * @param {string} string Строка
+     * @param {number} [index] Порядковый номер символа
+     * @returns {string}
+     */
+    string.upper = function(string, index) {
+        return this._changeCase('toUpperCase', string, index);
+    };
+
+    /**
+     * Перевести строку или заданный символ в нижний регистр.
+     *
+     * @param {string} string Строка
+     * @param {number} [index] Порядковый номер символа
+     * @returns {string}
+     */
+    string.lower = function(string, index) {
+        return this._changeCase('toLowerCase', string, index);
+    };
+
+    /**
+     * Перевести строку или заданный символ в указанный регистр.
+     *
+     * @private
+     * @param {string} method Имя метода для смены регистра
+     * @param {string} string Строка
+     * @param {number} [index] Порядковый номер символа
+     * @returns {string}
+     */
+    string._changeCase = function(method, string, index) {
+        if(is.undefined(index)) {
+            return string[method]();
+        }
+        return string.slice(0, index) +
+            string.charAt(index)[method]() +
+            string.slice(index + 1);
     };
 
     return string;
