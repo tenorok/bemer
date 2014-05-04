@@ -130,24 +130,6 @@ definer('TemplateTest', function(assert, Template) {
             );
         });
 
-        it('Использовать конструктор и кастомную моду', function() {
-            assert.equal(new Template('name', {
-                __constructor: function(bemjson) {
-                    this.bemjson = bemjson;
-                },
-                isIndex: function() {
-                    return this.bemjson.index;
-                },
-                mods: function() {
-                    if(this.isIndex()) {
-                        return { theme: 'normal' };
-                    }
-                }
-            }).match({ block: 'name', index: true }).toString(),
-                '<div class="name i-bem name_theme_normal" data-bem="{&quot;name&quot;:{}}"></div>'
-            );
-        });
-
         describe('Несколько селекторов.', function() {
 
             it('Несколько блоков', function() {
@@ -292,7 +274,7 @@ definer('TemplateTest', function(assert, Template) {
 
         });
 
-        describe('Переопределение мод', function() {
+        describe('Переопределение мод.', function() {
 
             it('Для примитивных значений приоритет у bemjson', function() {
 
@@ -324,7 +306,7 @@ definer('TemplateTest', function(assert, Template) {
                 );
             });
 
-            describe('Переопределение функцией в шаблоне', function() {
+            describe('Переопределение функцией в шаблоне.', function() {
 
                 it('Примитивные значения', function() {
 
@@ -357,6 +339,216 @@ definer('TemplateTest', function(assert, Template) {
                         block: 'name', mods: { a: 'c', d: 'e' }
                     }).toString(),
                         '<div class="name i-bem name_a_b name_d_e" data-bem="{&quot;name&quot;:{}}"></div>'
+                    );
+                });
+
+            });
+
+            describe('Тестирование внутреннего конструктора.', function() {
+
+                it('Переопределение внутреннего конструктора и кастомная мода', function() {
+                    assert.equal(new Template('name', {
+                        __constructor: function(bemjson) {
+                            this.json = bemjson;
+                        },
+                        isIndex: function() {
+                            return this.json.index;
+                        },
+                        mods: function() {
+                            if(this.isIndex()) {
+                                return { theme: 'normal' };
+                            }
+                        }
+                    }).match({ block: 'name', index: true }).toString(),
+                        '<div class="name i-bem name_theme_normal" data-bem="{&quot;name&quot;:{}}"></div>'
+                    );
+                });
+
+                it('Использовать поле bemjson в кастомной моде', function() {
+                    assert.equal(new Template('name', {
+                        isIndex: function() {
+                            return this.bemjson.index;
+                        },
+                        mods: function() {
+                            if(this.isIndex()) {
+                                return { theme: 'normal' };
+                            }
+                        }
+                    }).match({ block: 'name', index: true }).toString(),
+                        '<div class="name i-bem name_theme_normal" data-bem="{&quot;name&quot;:{}}"></div>'
+                    );
+                });
+
+            });
+
+            describe('Тестирование внешнего конструктора.', function() {
+
+                it('Добавить внешний конструктор', function() {
+                    assert.equal(new Template('name', {
+                        construct: function(bemjson, data) {
+                            this.blockName = bemjson.block;
+                        },
+                        content: function() {
+                            return this.blockName;
+                        }
+                    }).match({ block: 'name', index: true }).toString(),
+                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">name</div>'
+                    );
+                });
+
+            });
+
+            describe('Тестирование функций-помощников.', function() {
+
+                it('Экранировать строку текста', function() {
+                    assert.equal(new Template('name', {
+                        attrs: function() {
+                            return {
+                                'data-escape': this.escape(this.bemjson.text)
+                            };
+                        }
+                    }).match({
+                            block: 'name',
+                            js: false,
+                            text: '\\,"\'\n\r\t\u2028\u2029'
+                        }).toString(),
+                        '<div class="name" data-escape="\\\\,\\"\\\'\\n\\r\\t\\u2028\\u2029"></div>'
+                    );
+                });
+
+                it('Экранировать html-строку', function() {
+                    assert.equal(new Template('name', {
+                        attrs: function() {
+                            return {
+                                'data-escape': this.htmlEscape(this.bemjson.text)
+                            };
+                        }
+                    }).match({
+                            block: 'name',
+                            js: false,
+                            text: '&<>"\'\/'
+                        }).toString(),
+                        '<div class="name" data-escape="&amp;&lt;&gt;&quot;&#39;\/"></div>'
+                    );
+                });
+
+                it('Разэкранировать html-строку', function() {
+                    assert.equal(new Template('name', {
+                        attrs: function() {
+                            return {
+                                'data-escape': this.unHtmlEscape(this.bemjson.text)
+                            };
+                        }
+                    }).match({
+                            block: 'name',
+                            js: false,
+                            text: '&amp;&lt;&gt;&quot;&#39;\/'
+                        }).toString(),
+                        '<div class="name" data-escape="&<>"\'\/"></div>'
+                    );
+                });
+
+                it('Обрезать пробелы с начала и конца строки', function() {
+                    assert.equal(new Template('name', {
+                        content: function() {
+                            return this.trim(this.bemjson.content);
+                        }
+                    }).match({
+                        block: 'name',
+                        content: '   text   '
+                    }).toString(),
+                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">text</div>'
+                    );
+                });
+
+                it('Обрезать пробелы с начала строки', function() {
+                    assert.equal(new Template('name', {
+                        content: function() {
+                            return this.ltrim(this.bemjson.content);
+                        }
+                    }).match({
+                            block: 'name',
+                            content: '   text   '
+                        }).toString(),
+                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">text   </div>'
+                    );
+                });
+
+                it('Обрезать пробелы с конца строки', function() {
+                    assert.equal(new Template('name', {
+                        content: function() {
+                            return this.rtrim(this.bemjson.content);
+                        }
+                    }).match({
+                            block: 'name',
+                            content: '   text   '
+                        }).toString(),
+                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">   text</div>'
+                    );
+                });
+
+                it('Удалить повторяющиеся пробелы', function() {
+                    assert.equal(new Template('name', {
+                        content: function() {
+                            return this.collapse(this.bemjson.content);
+                        }
+                    }).match({
+                            block: 'name',
+                            content: 'Just   text  in    paragraph.'
+                        }).toString(),
+                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">Just text in paragraph.</div>'
+                    );
+                });
+
+                it('Удалить HTML-теги', function() {
+                    assert.equal(new Template('name', {
+                        content: function() {
+                            return this.stripTags(this.bemjson.content);
+                        }
+                    }).match({
+                            block: 'name',
+                            content: '<p>Text and <a href="#">link</a>.</p>'
+                        }).toString(),
+                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">Text and link.</div>'
+                    );
+                });
+
+                it('Перевести строку в верхний регистр', function() {
+                    assert.equal(new Template('name', {
+                        content: function() {
+                            return this.upper(this.bemjson.content);
+                        }
+                    }).match({
+                            block: 'name',
+                            content: 'abcd'
+                        }).toString(),
+                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">ABCD</div>'
+                    );
+                });
+
+                it('Перевести строку в нижний регистр', function() {
+                    assert.equal(new Template('name', {
+                        content: function() {
+                            return this.lower(this.bemjson.content);
+                        }
+                    }).match({
+                            block: 'name',
+                            content: 'ABCD'
+                        }).toString(),
+                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">abcd</div>'
+                    );
+                });
+
+                it('Повторить строку заданное количество раз с указанным разделителем', function() {
+                    assert.equal(new Template('name', {
+                        content: function() {
+                            return this.repeat(this.bemjson.content, 3, '+');
+                        }
+                    }).match({
+                            block: 'name',
+                            content: 'a'
+                        }).toString(),
+                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">a+a+a</div>'
                     );
                 });
 
