@@ -1,4 +1,4 @@
-definer('Template', /** @exports Template */ function(Match, classify, Node, Name, object, string, is) {
+definer('Template', /** @exports Template */ function(Match, classify, Node, Name, Helpers, object, string, is) {
 
     /**
      * Модуль шаблонизации BEMJSON-узла.
@@ -26,6 +26,14 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
         this._modes = [].slice.call(arguments, -1)[0];
 
         /**
+         * Функции-помощники.
+         *
+         * @private
+         * @type {Helpers}
+         */
+        this._helpers = new Helpers();
+
+        /**
          * Экземпляры матчера.
          *
          * @private
@@ -37,19 +45,12 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
         }.bind(this), []);
 
         /**
-         * Стандартные моды.
-         *
-         * @type {object}
-         */
-        this.defaultModes = this._getDefaultModes();
-
-        /**
          * Класс по модам.
          *
          * @private
          * @type {Function}
          */
-        this.Modes = classify(classify(this.defaultModes), this._modes);
+        this.Modes = this._classifyModes();
     }
 
     /**
@@ -99,7 +100,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
         transform: function(bemjson) {
             var modes = new this.Modes(bemjson);
 
-            Object.keys(this.defaultModes).forEach(function(mode) {
+            Object.keys(this._getDefaultModes()).forEach(function(mode) {
                 bemjson[mode] = this._getMode(modes, bemjson, mode);
             }, this);
 
@@ -144,6 +145,39 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
                     return match.is(template._patterns[key]);
                 });
             });
+        },
+
+        /**
+         * Добавить пользовательскую функцию-помощник.
+         *
+         * @param {string} name Имя функции
+         * @param {Function} callback Тело функции
+         * @returns {Template}
+         */
+        helper: function(name, callback) {
+            this._helpers.add(name, callback);
+            this.Modes = this._classifyModes();
+            return this;
+        },
+
+        /**
+         * Сформировать класс на основе базовых полей.
+         *
+         * @private
+         * @returns {Function}
+         */
+        _classifyModes: function() {
+            return classify(classify(this._getBaseProps()), this._modes);
+        },
+
+        /**
+         * Получить базовые поля для класса.
+         *
+         * @private
+         * @returns {object}
+         */
+        _getBaseProps: function() {
+            return object.extend(this._getDefaultModes(), this._helpers.get());
         },
 
         /**

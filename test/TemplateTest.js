@@ -552,6 +552,26 @@ definer('TemplateTest', function(assert, Template) {
                     );
                 });
 
+                it('Добавление пользовательских функций-помощников', function() {
+                    assert.equal(new Template('name', {
+                        content: function() {
+                            return this.bang(this.sum(this.bemjson.content, 200));
+                        }
+                    })
+                        .helper('sum', function(a, b) {
+                            return a + b;
+                        })
+                        .helper('bang', function(str) {
+                            return str + '!';
+                        })
+                        .match({
+                            block: 'name',
+                            content: 100
+                        }).toString(),
+                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">300!</div>'
+                    );
+                });
+
             });
 
         });
