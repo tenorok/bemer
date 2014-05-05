@@ -78,13 +78,14 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
          * Применить BEMJSON к шаблону.
          *
          * @param {object} bemjson Входящий BEMJSON
+         * @param {object} [data] Данные по сущности в дереве
          * @returns {Node|null} Экземпляр БЭМ-узла или null при несоответствии BEMJSON шаблону
          */
-        match: function(bemjson) {
+        match: function(bemjson, data) {
 
             for(var i = 0; i < this._matches.length; i++) {
                 if(this._matches[i].is(bemjson)) {
-                    return this.transform(bemjson);
+                    return this.transform(bemjson, data);
                 }
             }
 
@@ -95,10 +96,11 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
          * Получить БЭМ-узел на основе BEMJSON.
          *
          * @param {object} bemjson Входящий BEMJSON
+         * @param {object} [data] Данные по сущности в дереве
          * @returns {Node}
          */
-        transform: function(bemjson) {
-            var modes = new this.Modes(bemjson);
+        transform: function(bemjson, data) {
+            var modes = new this.Modes(bemjson, data);
 
             Object.keys(this._getDefaultModes()).forEach(function(mode) {
                 bemjson[mode] = this._getMode(modes, bemjson, mode);

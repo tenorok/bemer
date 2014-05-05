@@ -400,6 +400,30 @@ definer('TemplateTest', function(assert, Template) {
 
             describe('Тестирование функций-помощников.', function() {
 
+                it('Проверить на первый элемент среди сестринских', function() {
+                    assert.equal(new Template('name', {
+                        content: function() {
+                            return this.isFirst();
+                        }
+                    }).match({
+                            block: 'name'
+                        }).toString(),
+                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">true</div>'
+                    );
+                });
+
+                it('Проверить на последний элемент среди сестринских', function() {
+                    assert.equal(new Template('name', {
+                        content: function() {
+                            return this.isLast();
+                        }
+                    }).match({
+                            block: 'name'
+                        }).toString(),
+                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">true</div>'
+                    );
+                });
+
                 it('Экранировать строку текста', function() {
                     assert.equal(new Template('name', {
                         attrs: function() {
