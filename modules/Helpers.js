@@ -47,12 +47,32 @@ definer('Helpers', /** @exports Helpers */ function(object, string) {
          */
         _getConstructor: function() {
             return {
+
+                /**
+                 * Внутренний конструктор.
+                 *
+                 * @private
+                 * @param {object} bemjson BEMJSON заматченной сущности
+                 * @param {object} [data] Данные по сущности в дереве
+                 * @param {number} [data.index=0] Индекс сущности среди сестринских элементов
+                 * @param {number} [data.length=1] Количество сестринских элементов, включая текущий
+                 */
                 __constructor: function(bemjson, data) {
                     this.bemjson = bemjson;
-                    this.data = data;
+                    this.data = object.extend({
+                        index: 0,
+                        length: 1
+                    }, data || {});
                     this.construct.apply(this, arguments);
                 },
-                construct: function() {}
+
+                /**
+                 * Внешний конструктор.
+                 *
+                 * @param {object} bemjson BEMJSON заматченной сущности
+                 * @param {object} [data] Данные по сущности в дереве
+                 */
+                construct: function(bemjson, data) {}
             };
         },
 
@@ -64,8 +84,25 @@ definer('Helpers', /** @exports Helpers */ function(object, string) {
          */
         _getHelpers: function() {
             return object.extend({
-                isFirst: function() {},
-                isLast: function() {}
+
+                /**
+                 * Проверить на первый элемент среди сестринских.
+                 *
+                 * @returns {boolean}
+                 */
+                isFirst: function() {
+                    return this.data.index === 0;
+                },
+
+                /**
+                 * Проверить на последний элемент среди сестринских.
+                 *
+                 * @returns {boolean}
+                 */
+                isLast: function() {
+                    return this.data.index + 1 === this.data.length;
+                }
+
             }, this._getStringHelpers());
         },
 
