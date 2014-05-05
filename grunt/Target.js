@@ -11,6 +11,7 @@ Target.definer = function() {
             'Template',
             'Pool',
             'Tree',
+            'Helpers',
             'string',
             'object',
             'is',
