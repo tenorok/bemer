@@ -11,13 +11,15 @@ definer('object', /** @exports object */ function(is) {
      * Расширить объект.
      *
      * @param {object} object Расширяемый объект
-     * @param {object} source Расширяющий объект
+     * @param {...object} source Расширяющие объекты
      * @returns {object}
      */
     object.extend = function(object, source) {
-        return Object.keys(source).reduce(function(extended, key) {
-            extended[key] = source[key];
-            return extended;
+        return [].slice.call(arguments, 1).reduce(function(object, source) {
+            return Object.keys(source).reduce(function(extended, key) {
+                extended[key] = source[key];
+                return extended;
+            }, object);
         }, object);
     };
 
@@ -25,25 +27,27 @@ definer('object', /** @exports object */ function(is) {
      * Расширить объект рекурсивно.
      *
      * @param {object} obj Расширяемый объект
-     * @param {object} source Расширяющий объект
+     * @param {...object} source Расширяющие объекты
      * @returns {object}
      */
     object.deepExtend = function(obj, source) {
-        return Object.keys(source).reduce(function(extended, key) {
-            var extendedItem = extended[key],
-                sourceItem = source[key],
-                isMapSourceItem = is.map(sourceItem);
+        return [].slice.call(arguments, 1).reduce(function(object, source) {
+            return Object.keys(source).reduce(function(extended, key) {
+                var extendedItem = extended[key],
+                    sourceItem = source[key],
+                    isMapSourceItem = is.map(sourceItem);
 
-            if(is.map(extendedItem) && isMapSourceItem) {
-                extended[key] = this.deepExtend(extendedItem, sourceItem);
-            } else if(isMapSourceItem) {
-                extended[key] = object.clone(sourceItem);
-            } else {
-                extended[key] = sourceItem;
-            }
+                if(is.map(extendedItem) && isMapSourceItem) {
+                    extended[key] = this.deepExtend(extendedItem, sourceItem);
+                } else if(isMapSourceItem) {
+                    extended[key] = object.clone(sourceItem);
+                } else {
+                    extended[key] = sourceItem;
+                }
 
-            return extended;
-        }.bind(this), obj);
+                return extended;
+            }.bind(this), obj);
+        }.bind(this), object);
     };
 
     /**

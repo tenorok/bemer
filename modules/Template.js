@@ -1,4 +1,4 @@
-definer('Template', /** @exports Template */ function(Match, classify, Node, Name, object, string, is) {
+definer('Template', /** @exports Template */ function(Match, classify, Node, Name, Helpers, object, string, is) {
 
     /**
      * Модуль шаблонизации BEMJSON-узла.
@@ -26,6 +26,14 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
         this._modes = [].slice.call(arguments, -1)[0];
 
         /**
+         * Функции-помощники.
+         *
+         * @private
+         * @type {Helpers}
+         */
+        this._helpers = new Helpers();
+
+        /**
          * Экземпляры матчера.
          *
          * @private
@@ -37,19 +45,12 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
         }.bind(this), []);
 
         /**
-         * Стандартные моды.
-         *
-         * @type {object}
-         */
-        this.defaultModes = this._getDefaultModes();
-
-        /**
          * Класс по модам.
          *
          * @private
          * @type {Function}
          */
-        this.Modes = classify(classify(this.defaultModes), this._modes);
+        this.Modes = this._classifyModes();
     }
 
     /**
@@ -63,12 +64,13 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
      * Получить БЭМ-узел на основе BEMJSON по базому шаблону.
      *
      * @param {object} bemjson Входящий BEMJSON
+     * @param {object} [data] Данные по сущности в дереве
      * @returns {Node}
      */
-    Template.base = function(bemjson) {
+    Template.base = function(bemjson, data) {
         return new Template(
             new Node(bemjson).isBlock() ? '*' : '*' + Name.delimiters.elem + '*', {}
-        ).transform(bemjson);
+        ).transform(bemjson, data);
     };
 
     Template.prototype = {
@@ -77,13 +79,14 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
          * Применить BEMJSON к шаблону.
          *
          * @param {object} bemjson Входящий BEMJSON
+         * @param {object} [data] Данные по сущности в дереве
          * @returns {Node|null} Экземпляр БЭМ-узла или null при несоответствии BEMJSON шаблону
          */
-        match: function(bemjson) {
+        match: function(bemjson, data) {
 
             for(var i = 0; i < this._matches.length; i++) {
                 if(this._matches[i].is(bemjson)) {
-                    return this.transform(bemjson);
+                    return this.transform(bemjson, data);
                 }
             }
 
@@ -94,12 +97,13 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
          * Получить БЭМ-узел на основе BEMJSON.
          *
          * @param {object} bemjson Входящий BEMJSON
+         * @param {object} [data] Данные по сущности в дереве
          * @returns {Node}
          */
-        transform: function(bemjson) {
-            var modes = new this.Modes(bemjson);
+        transform: function(bemjson, data) {
+            var modes = new this.Modes(bemjson, data);
 
-            Object.keys(this.defaultModes).forEach(function(mode) {
+            Object.keys(this._getDefaultModes()).forEach(function(mode) {
                 bemjson[mode] = this._getMode(modes, bemjson, mode);
             }, this);
 
@@ -124,7 +128,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
          */
         split: function() {
             return Object.keys(this._patterns).reduce(function(templates, key) {
-                templates.push(new Template(this._patterns[key], this._modes));
+                templates.push(new Template(this._patterns[key], this._modes).helper(this._helpers.get()));
                 return templates;
             }.bind(this), []);
         },
@@ -144,6 +148,47 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
                     return match.is(template._patterns[key]);
                 });
             });
+        },
+
+        /**
+         * Добавить пользовательскую функцию-помощник.
+         *
+         * @param {string|object} nameOrList Имя функции или карта помощников
+         * @param {Function} [callback] Тело функции
+         * @returns {Template}
+         */
+        helper: function(nameOrList, callback) {
+
+            if(is.string(nameOrList)) {
+                this._helpers.add(nameOrList, callback);
+            } else {
+                Object.keys(nameOrList).forEach(function(name) {
+                    this._helpers.add(name, nameOrList[name]);
+                }, this);
+            }
+
+            this.Modes = this._classifyModes();
+            return this;
+        },
+
+        /**
+         * Сформировать класс на основе базовых полей.
+         *
+         * @private
+         * @returns {Function}
+         */
+        _classifyModes: function() {
+            return classify(classify(this._getBaseProps()), this._modes);
+        },
+
+        /**
+         * Получить базовые поля для класса.
+         *
+         * @private
+         * @returns {object}
+         */
+        _getBaseProps: function() {
+            return object.extend(this._getDefaultModes(), this._helpers.get());
         },
 
         /**

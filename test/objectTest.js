@@ -5,6 +5,11 @@ definer('objectTest', function(assert, object) {
             assert.deepEqual(object.extend({ a: 1 }, { b: 2 }), { a: 1, b: 2 });
         });
 
+        it('Расширить несколько объектов', function() {
+            assert.deepEqual(object.extend({ a: 1 }, { b: 2 }, { c: 3 }), { a: 1, b: 2, c: 3 });
+            assert.deepEqual(object.extend({ a: 1 }, { b: 2 }, { a: 3 }), { a: 3, b: 2 });
+        });
+
         it('Расширить объект рекурсивно', function() {
             assert.deepEqual(object.deepExtend(
                 {
@@ -48,6 +53,53 @@ definer('objectTest', function(assert, object) {
                                 j: 6
                             }
                         }
+                    }
+                }
+            );
+        });
+
+        it('Расширить несколько объектов рекурсивно', function() {
+            assert.deepEqual(object.deepExtend(
+                {
+                    a: 1,
+                    b: {
+                        c: 3,
+                        d: {
+                            e: 4
+                        }
+                    },
+                    f: {
+                        g: 5
+                    }
+                },
+                {
+                    b: {
+                        c: 4
+                    }
+                },
+                {
+                    b: {
+                        d: {
+                            e: 5
+                        }
+                    },
+                    f: {
+                        g: 6,
+                        h: 7
+                    }
+                }
+            ),
+                {
+                    a: 1,
+                    b: {
+                        c: 4,
+                        d: {
+                            e: 5
+                        }
+                    },
+                    f: {
+                        g: 6,
+                        h: 7
                     }
                 }
             );

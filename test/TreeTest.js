@@ -389,5 +389,74 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 '</div>');
         });
 
+        describe('Проверка правильных значений data.index и data.length.', function() {
+
+            it('Проверка сравнением', function() {
+                new Tree({
+                    block: 'a',
+                    content: [
+                        { block: 'b' },
+                        { block: 'c' },
+                        { block: 'd' },
+                        { block: 'e' }
+                    ]
+                }, new Pool()
+                    .add(new Template('d', {
+                        construct: function(bemjson, data) {
+                            assert.equal(data.index, 2);
+                            assert.equal(data.length, 4);
+                        }
+                    }))
+                ).toString();
+            });
+
+            it('Проверка помощником isFirst', function() {
+                new Tree({
+                    block: 'a',
+                    content: [
+                        { block: 'b' },
+                        { block: 'c' },
+                        { block: 'd' },
+                        { block: 'e' }
+                    ]
+                }, new Pool()
+                    .add(new Template('b', 'd', {
+                        construct: function(bemjson, data) {
+                            if(bemjson.block === 'b') {
+                                assert.isTrue(this.isFirst());
+                            }
+                            if(bemjson.block === 'd') {
+                                assert.isFalse(this.isFirst());
+                            }
+                        }
+                    }))
+                ).toString();
+            });
+
+            it('Проверка помощником isLast', function() {
+                new Tree({
+                        block: 'a',
+                        content: [
+                            { block: 'b' },
+                            { block: 'c' },
+                            { block: 'd' },
+                            { block: 'e' }
+                        ]
+                    }, new Pool()
+                    .add(new Template('e', 'c', {
+                        construct: function(bemjson, data) {
+                            if(bemjson.block === 'e') {
+                                assert.isTrue(this.isLast());
+                            }
+                            if(bemjson.block === 'c') {
+                                assert.isFalse(this.isLast());
+                            }
+                        }
+                    }))
+                ).toString();
+            });
+
+        });
+
     });
 });

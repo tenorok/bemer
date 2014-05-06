@@ -1,6 +1,20 @@
 definer('bemer', /** @exports bemer */ function(Tree, Template, Pool, functions, Name, Node, object) {
 
-    var pool = new Pool();
+    /**
+     * Экземпляр для хранения списка шаблонов.
+     *
+     * @private
+     * @type {Pool}
+     */
+    var pool = new Pool(),
+
+        /**
+         * Функции-помощники.
+         *
+         * @private
+         * @type {object}
+         */
+        helpers = {};
 
     /**
      * Модуль обвязки для удобной работы с шаблонизатором.
@@ -24,7 +38,7 @@ definer('bemer', /** @exports bemer */ function(Tree, Template, Pool, functions,
      * @returns {bemer}
      */
     bemer.match = function(pattern, modes) {
-        pool.add(functions.apply(Template, arguments));
+        pool.add(functions.apply(Template, arguments).helper(helpers));
         return this;
     };
 
@@ -39,8 +53,21 @@ definer('bemer', /** @exports bemer */ function(Tree, Template, Pool, functions,
     };
 
     /**
+     * Добавить пользовательскую функцию-помощник.
+     *
+     * @param {string} name Имя функции
+     * @param {Function} callback Тело функции
+     * @returns {bemer}
+     */
+    bemer.helper = function(name, callback) {
+        helpers[name] = callback;
+        return this;
+    };
+
+    /**
      * Стандартные настройки шаблонизации.
      *
+     * @private
      * @type {object}
      */
     var defaultConfig = {
