@@ -63,7 +63,7 @@ definer('Helpers', /** @exports Helpers */ function(object, string) {
                         index: 0,
                         length: 1
                     }, data || {});
-                    this.construct.apply(this, arguments);
+                    this.construct.call(this, bemjson, this.data);
                 },
 
                 /**
@@ -113,6 +113,10 @@ definer('Helpers', /** @exports Helpers */ function(object, string) {
          * @returns {object}
          */
         _getStringHelpers: function() {
+
+            /**
+             * Методы описаны в модуле `string`.
+             */
             return [
                 'escape', 'htmlEscape', 'unHtmlEscape',
                 'trim', 'ltrim', 'rtrim',
@@ -124,7 +128,7 @@ definer('Helpers', /** @exports Helpers */ function(object, string) {
                     }.bind(string);
                     return helpers;
                 }, {});
-        },
+        }
 
     };
 

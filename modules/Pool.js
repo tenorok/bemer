@@ -70,11 +70,12 @@ definer('Pool', /** @exports Pool */ function() {
          * Найти шаблон для BEMJSON.
          *
          * @param {object} bemjson BEMJSON
+         * @param {object} [data] Данные по сущности в дереве
          * @returns {Node|null} Экземпляр БЭМ-узла или null при отсутствии подходящего шаблона
          */
-        find: function(bemjson) {
+        find: function(bemjson, data) {
             for(var index = this.pool.length - 1; index >= 0; index--) {
-                var node = this.pool[index].match(bemjson);
+                var node = this.pool[index].match(bemjson, data);
                 if(node) {
                     return node;
                 }

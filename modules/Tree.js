@@ -66,8 +66,11 @@ definer('Tree', /** @exports Tree */ function(Template, is) {
         _getContent: function(bemjson, ctxBlock) {
 
             if(is.array(bemjson)) {
-                return bemjson.reduce(function(list, elem) {
-                    list.push(this._getNode(elem, ctxBlock));
+                return bemjson.reduce(function(list, elem, index) {
+                    list.push(this._getNode(elem, ctxBlock, {
+                        index: index,
+                        length: bemjson.length
+                    }));
                     return list;
                 }.bind(this), []);
             }
@@ -82,9 +85,10 @@ definer('Tree', /** @exports Tree */ function(Template, is) {
          * @private
          * @param {*} bemjson BEMJSON или примитив
          * @param {string} [ctxBlock] Контекст блока
+         * @param {object} [data] Данные по сущности в дереве
          * @returns {Node|*}
          */
-        _getNode: function(bemjson, ctxBlock) {
+        _getNode: function(bemjson, ctxBlock, data) {
 
             if(is.map(bemjson)) {
 
@@ -92,7 +96,7 @@ definer('Tree', /** @exports Tree */ function(Template, is) {
                     bemjson.block = ctxBlock;
                 }
 
-                var node = this._pool.find(bemjson) || Template.base(bemjson);
+                var node = this._pool.find(bemjson, data) || Template.base(bemjson, data);
                 node.content(this._getContent(bemjson.content, bemjson.block));
                 return node;
             }
