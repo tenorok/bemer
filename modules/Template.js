@@ -128,7 +128,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
          */
         split: function() {
             return Object.keys(this._patterns).reduce(function(templates, key) {
-                templates.push(new Template(this._patterns[key], this._modes));
+                templates.push(new Template(this._patterns[key], this._modes).helper(this._helpers.get()));
                 return templates;
             }.bind(this), []);
         },

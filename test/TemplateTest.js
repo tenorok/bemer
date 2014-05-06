@@ -618,6 +618,24 @@ definer('TemplateTest', function(assert, Template) {
                     );
                 });
 
+                it('Сохранение функций-помощников при разбивке шаблонов', function() {
+                    assert.equal(new Template('a', 'b', {
+                        content: function() {
+                            return this.sum(this.bemjson.content, 200);
+                        }
+                    })
+                        .split()[0]
+                        .helper('sum', function(a, b) {
+                            return a + b;
+                        })
+                        .match({
+                            block: 'a',
+                            content: 100
+                        }).toString(),
+                        '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">300</div>'
+                    );
+                });
+
             });
 
         });
