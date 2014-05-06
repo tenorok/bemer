@@ -39,7 +39,7 @@ definer('bemerTest', function(assert, bemer) {
             );
         });
 
-        describe('Изменить стандартные настройки шаблонизатора', function() {
+        describe('Изменить стандартные настройки шаблонизатора.', function() {
 
             it('Изменение разделителя блока и элемента', function() {
                 bemer.config({
@@ -74,6 +74,41 @@ definer('bemerTest', function(assert, bemer) {
                     bemAttr: 'onclick'
                 });
                 assert.equal(bemer({ block: 'a' }), '<div class="a bem" onclick="{&quot;a&quot;:{}}"></div>');
+            });
+
+        });
+
+        describe('Добавление пользовательских функций-помощников.', function() {
+
+            it('Добавление одной функции', function() {
+                bemer
+                    .helper('foo', function() {
+                        return 'foo';
+                    })
+                    .match('a', {
+                        tag: function() {
+                            return this.foo();
+                        }
+                    });
+
+                assert.equal(bemer({ block: 'a' }), '<foo class="a i-bem" data-bem="{&quot;a&quot;:{}}"></foo>');
+            });
+
+            it('Добавление нескольких функций', function() {
+                bemer
+                    .helper('foo', function() {
+                        return 'foo';
+                    })
+                    .helper('bang', function(str) {
+                        return str + '!';
+                    })
+                    .match('a', {
+                        content: function() {
+                            return this.bang(this.foo());
+                        }
+                    });
+
+                assert.equal(bemer({ block: 'a' }), '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">foo!</div>');
             });
 
         });
