@@ -78,37 +78,68 @@ definer('bemerTest', function(assert, bemer) {
 
         });
 
-        describe('Добавление пользовательских функций-помощников.', function() {
+        describe('Использование функций-помощников.', function() {
 
-            it('Добавление одной функции', function() {
-                bemer
-                    .helper('foo', function() {
-                        return 'foo';
-                    })
-                    .match('a', {
-                        tag: function() {
-                            return this.foo();
-                        }
-                    });
-
-                assert.equal(bemer({ block: 'a' }), '<foo class="a i-bem" data-bem="{&quot;a&quot;:{}}"></foo>');
+            it('Работа со строками', function() {
+                bemer.match('header', 'footer', { tag: function() { return this.upper('span'); }});
+                assert.equal(bemer({ block: 'header' }),
+                    '<SPAN class="header i-bem" data-bem="{&quot;header&quot;:{}}"></SPAN>'
+                );
             });
 
-            it('Добавление нескольких функций', function() {
+            it('Определение первого и последнего элемента', function() {
                 bemer
-                    .helper('foo', function() {
-                        return 'foo';
-                    })
-                    .helper('bang', function(str) {
-                        return str + '!';
-                    })
-                    .match('a', {
-                        content: function() {
-                            return this.bang(this.foo());
-                        }
-                    });
+                    .match('*', { js: false })
+                    .match('header', { content: function() { return this.isFirst(); }})
+                    .match('footer', { content: function() { return this.isLast(); }});
+                assert.equal(bemer({
+                    block: 'page',
+                    content: [
+                        { block: 'header' },
+                        { block: 'footer' }
+                    ]
+                }),
+                    '<div class="page">' +
+                        '<div class="header">true</div>' +
+                        '<div class="footer">true</div>' +
+                    '</div>'
+                );
+            });
 
-                assert.equal(bemer({ block: 'a' }), '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">foo!</div>');
+            describe('Добавление пользовательских функций-помощников.', function() {
+
+                it('Добавление одной функции', function() {
+                    bemer
+                        .helper('foo', function() {
+                            return 'foo';
+                        })
+                        .match('a', {
+                            tag: function() {
+                                return this.foo();
+                            }
+                        });
+
+                    assert.equal(bemer({ block: 'a' }), '<foo class="a i-bem" data-bem="{&quot;a&quot;:{}}"></foo>');
+                });
+
+                it('Добавление нескольких функций', function() {
+                    bemer
+                        .helper('foo', function() {
+                            return 'foo';
+                        })
+                        .helper('bang', function(str) {
+                            return str + '!';
+                        })
+                        .match('a', {
+                            js: false,
+                            content: function() {
+                                return this.bang(this.foo());
+                            }
+                        });
+
+                    assert.equal(bemer({ block: 'a' }), '<div class="a">foo!</div>');
+                });
+
             });
 
         });
