@@ -39,6 +39,31 @@ definer('bemerTest', function(assert, bemer) {
             );
         });
 
+        it('Наследование шаблонов', function() {
+            bemer
+                .match('header', 'header__*', {
+                    tag: function() {
+                       return this.isElem() ? 'head' : 'foot';
+                    },
+                    js: function() {
+                        return this.isBlock();
+                    }
+                })
+                .match('header_color_red', { tag: function() {
+                    return this.__base() + 'er';
+                }});
+
+            assert.equal(bemer({
+                block: 'header',
+                mods: { color: 'red' },
+                content: { elem: 'logo' }
+            }),
+                '<footer class="header i-bem header_color_red" data-bem="{&quot;header&quot;:{}}">' +
+                    '<head class="header__logo"></head>' +
+                '</footer>'
+            );
+        });
+
         describe('Изменить стандартные настройки шаблонизатора.', function() {
 
             it('Изменение разделителя блока и элемента', function() {
