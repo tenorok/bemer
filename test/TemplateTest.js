@@ -424,6 +424,44 @@ definer('TemplateTest', function(assert, Template) {
                     );
                 });
 
+                it('Проверить на элемент', function() {
+                    var template = new Template('name', 'name__elem', {
+                        content: function() {
+                            return this.isElem() + '!';
+                        }
+                    });
+                    assert.equal(template.match({
+                        block: 'name'
+                    }).toString(),
+                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">false!</div>'
+                    );
+                    assert.equal(template.match({
+                        block: 'name',
+                        elem: 'elem'
+                    }).toString(),
+                        '<div class="name__elem i-bem" data-bem="{&quot;name__elem&quot;:{}}">true!</div>'
+                    );
+                });
+
+                it('Проверить на блок', function() {
+                    var template = new Template('name', 'name__elem', {
+                        content: function() {
+                            return this.isBlock() + '!';
+                        }
+                    });
+                    assert.equal(template.match({
+                        block: 'name'
+                    }).toString(),
+                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">true!</div>'
+                    );
+                    assert.equal(template.match({
+                        block: 'name',
+                        elem: 'elem'
+                    }).toString(),
+                        '<div class="name__elem i-bem" data-bem="{&quot;name__elem&quot;:{}}">false!</div>'
+                    );
+                });
+
                 it('Экранировать строку текста', function() {
                     assert.equal(new Template('name', {
                         attrs: function() {

@@ -5,6 +5,7 @@ definer('HelpersTest', function(assert, Helpers) {
             assert.deepEqual(Object.keys(new Helpers().get()).sort(), [
                 '__constructor', 'construct',
                 'isFirst', 'isLast',
+                'isElem', 'isBlock',
                 'escape', 'htmlEscape', 'unHtmlEscape',
                 'trim', 'ltrim', 'rtrim',
                 'collapse', 'stripTags',

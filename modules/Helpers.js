@@ -101,6 +101,24 @@ definer('Helpers', /** @exports Helpers */ function(object, string) {
                  */
                 isLast: function() {
                     return this.data.index + 1 === this.data.length;
+                },
+
+                /**
+                 * Проверить узел на элемент.
+                 *
+                 * @returns {boolean}
+                 */
+                isElem: function() {
+                    return !!this.bemjson.elem;
+                },
+
+                /**
+                 * Проверить узел на блок.
+                 *
+                 * @returns {boolean}
+                 */
+                isBlock: function() {
+                    return !this.isElem();
                 }
 
             }, this._getStringHelpers());
