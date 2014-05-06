@@ -153,12 +153,20 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
         /**
          * Добавить пользовательскую функцию-помощник.
          *
-         * @param {string} name Имя функции
-         * @param {Function} callback Тело функции
+         * @param {string|object} nameOrList Имя функции или карта помощников
+         * @param {Function} [callback] Тело функции
          * @returns {Template}
          */
-        helper: function(name, callback) {
-            this._helpers.add(name, callback);
+        helper: function(nameOrList, callback) {
+
+            if(is.string(nameOrList)) {
+                this._helpers.add(nameOrList, callback);
+            } else {
+                Object.keys(nameOrList).forEach(function(name) {
+                    this._helpers.add(name, nameOrList[name]);
+                }, this);
+            }
+
             this.Modes = this._classifyModes();
             return this;
         },
