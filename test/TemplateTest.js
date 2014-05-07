@@ -344,7 +344,7 @@ definer('TemplateTest', function(assert, Template) {
 
             });
 
-            describe('Тестирование внутреннего конструктора.', function() {
+            describe('Внутренний конструктор.', function() {
 
                 it('Переопределение внутреннего конструктора и кастомная мода', function() {
                     assert.equal(new Template('name', {
@@ -381,7 +381,7 @@ definer('TemplateTest', function(assert, Template) {
 
             });
 
-            describe('Тестирование внешнего конструктора.', function() {
+            describe('Внешний конструктор.', function() {
 
                 it('Добавить внешний конструктор', function() {
                     assert.equal(new Template('name', {
@@ -398,7 +398,7 @@ definer('TemplateTest', function(assert, Template) {
 
             });
 
-            describe('Тестирование функций-помощников.', function() {
+            describe('Функции-помощники.', function() {
 
                 it('Проверить на первый элемент среди сестринских', function() {
                     assert.equal(new Template('name', {
@@ -671,6 +671,30 @@ definer('TemplateTest', function(assert, Template) {
                             content: 100
                         }).toString(),
                         '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">300</div>'
+                    );
+                });
+
+            });
+
+            describe('Входящий параметр в модах.', function() {
+
+                it('Получение заданного содержимого', function() {
+                    assert.equal(new Template('name', {
+                        content: function(content) {
+                            return content + '!';
+                        }
+                    }).match({ block: 'name', content: 'text' }).toString(),
+                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">text!</div>'
+                    );
+                });
+
+                it('Не указанное в bemjson поле', function() {
+                    assert.equal(new Template('name', {
+                        tag: function(tag) {
+                            return tag + '';
+                        }
+                    }).match({ block: 'name' }).toString(),
+                        '<undefined class="name i-bem" data-bem="{&quot;name&quot;:{}}"></undefined>'
                     );
                 });
 
