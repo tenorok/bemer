@@ -127,6 +127,12 @@ definer('objectTest', function(assert, object) {
             assert.isTrue(object.isEmpty(Foo));
         });
 
+        it('Проверка на наличие полей должна уметь обрабатывать отсутствие объекта', function() {
+            assert.isTrue(object.isEmpty());
+            assert.isTrue(object.isEmpty(null));
+            assert.isTrue(object.isEmpty(undefined));
+        });
+
         it('Клонировать объект', function() {
             var a = {},
                 b = object.clone(a);
