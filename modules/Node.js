@@ -151,7 +151,7 @@ definer('Node', /** @exports Node */ function(Tag, Name, object) {
 
             if(node.bem === false) return this._tag.getClass();
 
-            if(this.isBlock() || this.isElem() && !node.mods || object.isEmpty(node.mods)) {
+            if(this.isBlock() || this.isElem() && object.isEmpty(node.mods)) {
                 this._tag.addClass(this._name.toString());
             }
 
@@ -159,12 +159,12 @@ definer('Node', /** @exports Node */ function(Tag, Name, object) {
                 this._tag.addClass(Node.bemClass);
             }
 
-            if(node.mods) {
+            if(!object.isEmpty(node.mods)) {
                 this._tag.addClass(this._getModsClasses('mod'));
             }
 
-            if(node.elemMods) {
-                this._tag.addClass(this._getModsClasses('elemMod'));
+            if(this.isElem() && !object.isEmpty(node.elemMods)) {
+                this._tag.addClass(this._getElemModsClasses());
             }
 
             this._tag.addClass(this._mix.reduce(function(mixClasses, mixNode) {
@@ -219,6 +219,23 @@ definer('Node', /** @exports Node */ function(Tag, Name, object) {
                 classes.push(this._name[method](key, mods[key]).toString());
                 return classes;
             }.bind(this), []);
+        },
+
+        /**
+         * Получить список классов модификаторов элемента.
+         *
+         * @private
+         * @returns {string[]}
+         */
+        _getElemModsClasses: function() {
+            if(!object.isEmpty(this._node.mods)) {
+                return Object.keys(this._node.mods).reduce(function(classes, key) {
+                    this._name.mod(key, this._node.mods[key]);
+                    return classes.concat(this._getModsClasses('elemMod'));
+                }.bind(this), []);
+            }
+
+            return this._getModsClasses('elemMod');
         }
 
     };
