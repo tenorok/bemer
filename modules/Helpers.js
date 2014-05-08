@@ -1,4 +1,4 @@
-definer('Helpers', /** @exports Helpers */ function(object, string) {
+definer('Helpers', /** @exports Helpers */ function(object, string, object) {
 
     /**
      * Модуль функций-помощников.
@@ -85,43 +85,46 @@ definer('Helpers', /** @exports Helpers */ function(object, string) {
         _getHelpers: function() {
             return object.extend({
 
-                /**
-                 * Проверить на первый элемент среди сестринских.
-                 *
-                 * @returns {boolean}
-                 */
-                isFirst: function() {
-                    return this.data.index === 0;
+                    /**
+                     * Проверить на первый элемент среди сестринских.
+                     *
+                     * @returns {boolean}
+                     */
+                    isFirst: function() {
+                        return this.data.index === 0;
+                    },
+
+                    /**
+                     * Проверить на последний элемент среди сестринских.
+                     *
+                     * @returns {boolean}
+                     */
+                    isLast: function() {
+                        return this.data.index + 1 === this.data.length;
+                    },
+
+                    /**
+                     * Проверить узел на элемент.
+                     *
+                     * @returns {boolean}
+                     */
+                    isElem: function() {
+                        return !!this.bemjson.elem;
+                    },
+
+                    /**
+                     * Проверить узел на блок.
+                     *
+                     * @returns {boolean}
+                     */
+                    isBlock: function() {
+                        return !this.isElem();
+                    }
+
                 },
-
-                /**
-                 * Проверить на последний элемент среди сестринских.
-                 *
-                 * @returns {boolean}
-                 */
-                isLast: function() {
-                    return this.data.index + 1 === this.data.length;
-                },
-
-                /**
-                 * Проверить узел на элемент.
-                 *
-                 * @returns {boolean}
-                 */
-                isElem: function() {
-                    return !!this.bemjson.elem;
-                },
-
-                /**
-                 * Проверить узел на блок.
-                 *
-                 * @returns {boolean}
-                 */
-                isBlock: function() {
-                    return !this.isElem();
-                }
-
-            }, this._getStringHelpers());
+                this._getStringHelpers(),
+                this._getObjectHelpers()
+            );
         },
 
         /**
@@ -144,6 +147,28 @@ definer('Helpers', /** @exports Helpers */ function(object, string) {
                     helpers[method] = function() {
                         return string[method].apply(this, arguments);
                     }.bind(string);
+                    return helpers;
+                }, {});
+        },
+
+        /**
+         * Получить функции-помощники для работы с объектами.
+         *
+         * @private
+         * @returns {object}
+         */
+        _getObjectHelpers: function() {
+
+            /**
+             * Методы описаны в модуле `object`.
+             */
+            return [
+                'extend', 'deepExtend',
+                'clone', 'deepClone'
+            ].reduce(function(helpers, method) {
+                    helpers[method] = function() {
+                        return object[method].apply(this, arguments);
+                    }.bind(object);
                     return helpers;
                 }, {});
         }

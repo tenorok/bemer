@@ -614,6 +614,22 @@ definer('TemplateTest', function(assert, Template) {
                     );
                 });
 
+                it('Расширить объект', function() {
+                    assert.equal(new Template('name', {
+                        attrs: function(attrs) {
+                            return this.extend(attrs, {
+                                a: 2,
+                                b: 3
+                            });
+                        }
+                    }).match({
+                            block: 'name',
+                            attrs: { a: 1 }
+                        }).toString(),
+                        '<div class="name i-bem" a="2" b="3" data-bem="{&quot;name&quot;:{}}"></div>'
+                    );
+                });
+
                 it('Добавление пользовательских функций-помощников', function() {
                     assert.equal(new Template('name', {
                         content: function() {

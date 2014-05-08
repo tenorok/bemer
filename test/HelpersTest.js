@@ -9,7 +9,9 @@ definer('HelpersTest', function(assert, Helpers) {
                 'escape', 'htmlEscape', 'unHtmlEscape',
                 'trim', 'ltrim', 'rtrim',
                 'collapse', 'stripTags',
-                'upper', 'lower', 'repeat'
+                'upper', 'lower', 'repeat',
+                'extend', 'deepExtend',
+                'clone', 'deepClone'
             ].sort());
         });
 
