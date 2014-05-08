@@ -64,6 +64,19 @@ definer('bemerTest', function(assert, bemer) {
             );
         });
 
+        it('Получение значения bemjson в параметре и добавление контента', function() {
+            bemer.match('name', {
+                content: function(content) {
+                    return { elem: 'foo', content: content };
+                }
+            });
+            assert.equal(bemer({ block: 'name', content: 'Hello world!' }),
+                '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">' +
+                    '<div class="name__foo">Hello world!</div>' +
+                '</div>'
+            );
+        });
+
         describe('Изменить стандартные настройки шаблонизатора.', function() {
 
             it('Изменение разделителя блока и элемента', function() {
