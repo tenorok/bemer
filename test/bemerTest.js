@@ -41,7 +41,7 @@ definer('bemerTest', function(assert, bemer) {
 
         it('Наследование шаблонов', function() {
             bemer
-                .match('header', 'header__*', {
+                .match('header', 'header_*_*__*', {
                     tag: function() {
                        return this.isElem() ? 'head' : 'foot';
                     },
@@ -59,7 +59,7 @@ definer('bemerTest', function(assert, bemer) {
                 content: { elem: 'logo' }
             }),
                 '<footer class="header i-bem header_color_red" data-bem="{&quot;header&quot;:{}}">' +
-                    '<head class="header__logo"></head>' +
+                    '<head class="header_color_red__logo"></head>' +
                 '</footer>'
             );
         });

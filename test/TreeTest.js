@@ -209,7 +209,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
 
         describe('Модификаторы.', function() {
 
-            it('На блок с вложенным элементом', function() {
+            it('На блок с модификатором и вложенным элементом', function() {
                 var tree = new Tree({
                     block: 'a',
                     mods: { c: 'd' },
@@ -219,11 +219,11 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 }, new Pool());
                 assert.equal(tree.toString(), '' +
                     '<div class="a i-bem a_c_d" data-bem="{&quot;a&quot;:{}}">' +
-                        '<div class="a__b"></div>' +
+                        '<div class="a_c_d__b"></div>' +
                     '</div>');
             });
 
-            it('На блок и его вложенный элемент', function() {
+            it('На блок с модификатором и его вложенный элемент', function() {
                 var tree = new Tree({
                     block: 'a',
                     mods: { c: 'd' },
@@ -234,11 +234,11 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 }, new Pool());
                 assert.equal(tree.toString(), '' +
                     '<div class="a i-bem a_c_d" data-bem="{&quot;a&quot;:{}}">' +
-                        '<div class="a__b a__b_e_f"></div>' +
+                        '<div class="a_c_d__b a_c_d__b_e_f"></div>' +
                     '</div>');
             });
 
-            it('Добавление модификаторов блоку во вложенном элементе', function() {
+            it('Добавление модификаторов блоку с модификатором во вложенном элементе', function() {
                 var tree = new Tree({
                     block: 'a',
                     mods: { c: 'd' },
@@ -250,7 +250,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 }, new Pool());
                 assert.equal(tree.toString(), '' +
                     '<div class="a i-bem a_c_d" data-bem="{&quot;a&quot;:{}}">' +
-                        '<div class="a_g_h__b a_g_h__b_e_f"></div>' +
+                        '<div class="a_g_h__b a_c_d__b a_g_h__b_e_f a_c_d__b_e_f"></div>' +
                     '</div>');
             });
 
@@ -389,9 +389,9 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 '</div>');
         });
 
-        describe('Проверка правильных значений data.index и data.length.', function() {
+        describe('Проверка правильных значений в this.data.', function() {
 
-            it('Проверка сравнением', function() {
+            it('Проверка index и length сравнением', function() {
                 new Tree({
                     block: 'a',
                     content: [
@@ -451,6 +451,38 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                             if(bemjson.block === 'c') {
                                 assert.isFalse(this.isLast());
                             }
+                        }
+                    }))
+                ).toString();
+            });
+
+            it('У блока поле context должно отсутствовать', function() {
+                new Tree({
+                        block: 'a',
+                        content: [
+                            { block: 'b' }
+                        ]
+                    }, new Pool()
+                    .add(new Template('b', {
+                        construct: function(bemjson, data) {
+                            assert.isUndefined(data.context);
+                        }
+                    }))
+                ).toString();
+            });
+
+            it('У элемента должно быть поле context', function() {
+                new Tree({
+                        block: 'a',
+                        mods: { c: 'd' },
+                        content: [
+                            { elem: 'b' }
+                        ]
+                    }, new Pool()
+                    .add(new Template('a__b', {
+                        construct: function(bemjson, data) {
+                            assert.equal(data.context.block, 'a');
+                            assert.deepEqual(data.context.mods, { c: 'd' });
                         }
                     }))
                 ).toString();
