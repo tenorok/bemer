@@ -1,4 +1,4 @@
-definer('Helpers', /** @exports Helpers */ function(object, string, object) {
+definer('Helpers', /** @exports Helpers */ function(object, string, object, is) {
 
     /**
      * Модуль функций-помощников.
@@ -123,7 +123,10 @@ definer('Helpers', /** @exports Helpers */ function(object, string, object) {
 
                 },
                 this._getStringHelpers(),
-                this._getObjectHelpers()
+                this._getObjectHelpers(),
+                {
+                    is: this._getIsHelpers()
+                }
             );
         },
 
@@ -169,6 +172,31 @@ definer('Helpers', /** @exports Helpers */ function(object, string, object) {
                     helpers[method] = function() {
                         return object[method].apply(this, arguments);
                     }.bind(object);
+                    return helpers;
+                }, {});
+        },
+
+        /**
+         * Получить функции-помощники для работы с типами данных.
+         *
+         * @private
+         * @returns {object}
+         */
+        _getIsHelpers: function() {
+
+            /**
+             * Методы описаны в модуле `is`.
+             */
+            return [
+                'string', 'number', 'nan', 'boolean',
+                'null', 'undefined', 'primitive',
+                'array', 'argument', 'function', 'native',
+                'map', 'date', 'regexp',
+                'type', 'every'
+            ].reduce(function(helpers, method) {
+                    helpers[method] = function() {
+                        return is[method].apply(this, arguments);
+                    }.bind(is);
                     return helpers;
                 }, {});
         }

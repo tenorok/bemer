@@ -630,6 +630,19 @@ definer('TemplateTest', function(assert, Template) {
                     );
                 });
 
+                it('Получить тип данных содержимого', function() {
+                    assert.equal(new Template('name', {
+                        content: function(content) {
+                            return this.is.type(content);
+                        }
+                    }).match({
+                            block: 'name',
+                            content: ['a', 'b']
+                        }).toString(),
+                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">array</div>'
+                    );
+                });
+
                 it('Добавление пользовательских функций-помощников', function() {
                     assert.equal(new Template('name', {
                         content: function() {

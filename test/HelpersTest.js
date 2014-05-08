@@ -6,12 +6,24 @@ definer('HelpersTest', function(assert, Helpers) {
                 '__constructor', 'construct',
                 'isFirst', 'isLast',
                 'isElem', 'isBlock',
+
                 'escape', 'htmlEscape', 'unHtmlEscape',
                 'trim', 'ltrim', 'rtrim',
                 'collapse', 'stripTags',
                 'upper', 'lower', 'repeat',
+
                 'extend', 'deepExtend',
-                'clone', 'deepClone'
+                'clone', 'deepClone',
+
+                'is'
+            ].sort());
+
+            assert.deepEqual(Object.keys(new Helpers().get().is).sort(), [
+                'string', 'number', 'nan', 'boolean',
+                'null', 'undefined', 'primitive',
+                'array', 'argument', 'function', 'native',
+                'map', 'date', 'regexp',
+                'type', 'every'
             ].sort());
         });
 
