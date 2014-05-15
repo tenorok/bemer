@@ -143,7 +143,6 @@ definer('Helpers', /** @exports Helpers */ function(object, string, object, is) 
              */
             return [
                 'escape', 'htmlEscape', 'unHtmlEscape',
-                'trim', 'ltrim', 'rtrim',
                 'collapse', 'stripTags',
                 'upper', 'lower', 'repeat'
             ].reduce(function(helpers, method) {

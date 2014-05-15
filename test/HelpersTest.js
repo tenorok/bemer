@@ -8,7 +8,6 @@ definer('HelpersTest', function(assert, Helpers) {
                 'isElem', 'isBlock',
 
                 'escape', 'htmlEscape', 'unHtmlEscape',
-                'trim', 'ltrim', 'rtrim',
                 'collapse', 'stripTags',
                 'upper', 'lower', 'repeat',
 

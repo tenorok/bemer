@@ -510,45 +510,6 @@ definer('TemplateTest', function(assert, Template) {
                     );
                 });
 
-                it('Обрезать пробелы с начала и конца строки', function() {
-                    assert.equal(new Template('name', {
-                        content: function() {
-                            return this.trim(this.bemjson.content);
-                        }
-                    }).match({
-                        block: 'name',
-                        content: '   text   '
-                    }).toString(),
-                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">text</div>'
-                    );
-                });
-
-                it('Обрезать пробелы с начала строки', function() {
-                    assert.equal(new Template('name', {
-                        content: function() {
-                            return this.ltrim(this.bemjson.content);
-                        }
-                    }).match({
-                            block: 'name',
-                            content: '   text   '
-                        }).toString(),
-                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">text   </div>'
-                    );
-                });
-
-                it('Обрезать пробелы с конца строки', function() {
-                    assert.equal(new Template('name', {
-                        content: function() {
-                            return this.rtrim(this.bemjson.content);
-                        }
-                    }).match({
-                            block: 'name',
-                            content: '   text   '
-                        }).toString(),
-                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">   text</div>'
-                    );
-                });
-
                 it('Удалить повторяющиеся пробелы', function() {
                     assert.equal(new Template('name', {
                         content: function() {
