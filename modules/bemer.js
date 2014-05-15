@@ -1,4 +1,4 @@
-definer('bemer', /** @exports bemer */ function(Tree, Template, Pool, functions, Name, Node, object) {
+definer.export('bemer', /** @exports bemer */ function(Tree, Template, Pool, functions, Name, Node, object) {
 
     /**
      * Экземпляр для хранения списка шаблонов.
@@ -120,6 +120,6 @@ definer('bemer', /** @exports bemer */ function(Tree, Template, Pool, functions,
         return this;
     };
 
-    return this.bemer = bemer;
+    return bemer;
 
 });
