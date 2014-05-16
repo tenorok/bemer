@@ -21,6 +21,7 @@ module.exports = function(grunt) {
         clean: {
             githooks: ['.git/hooks/*'],
             test: ['!test/tmp/.gitkeep', 'test/tmp/*'],
+            jsdoc: ['jsdoc'],
             release: ['release']
         },
         shell: {
@@ -41,8 +42,9 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('release', function() {
-        grunt.task.run('test');
-        grunt.task.run(['clean:release', 'mkdir:release', 'definer:release', 'uglify:release']);
+        grunt.task.run('test', 'clean:test');
+        grunt.task.run('clean:jsdoc', 'jsdoc');
+        grunt.task.run('clean:release', 'mkdir:release', 'definer:release', 'uglify:release');
     });
 
 };
