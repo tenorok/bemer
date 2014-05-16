@@ -1,3 +1,4 @@
 node_modules
 test/tmp/*.js
 jsdoc
+release
