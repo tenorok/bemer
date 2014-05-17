@@ -14,7 +14,7 @@ definer('HelpersTest', function(assert, Helpers) {
                 'extend', 'deepExtend',
                 'clone', 'deepClone',
 
-                'is'
+                'id', 'is'
             ].sort());
 
             assert.deepEqual(Object.keys(new Helpers().get().is).sort(), [

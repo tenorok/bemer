@@ -604,6 +604,28 @@ definer('TemplateTest', function(assert, Template) {
                     );
                 });
 
+                it('Получить сформированный идентификатор', function() {
+                    var template = new Template('name', {
+                        js: false,
+                        attrs: function() {
+                            return { id: this.id() };
+                        }
+                    });
+                    assert.equal(template.match({ block: 'name' }).toString(), '<div class="name" id="i0"></div>');
+                    assert.equal(template.match({ block: 'name' }).toString(), '<div class="name" id="i1"></div>');
+                });
+
+                it('Получить сформированный идентификатор с кастомизированным префиксом', function() {
+                    var template = new Template('name', {
+                        js: false,
+                        attrs: function() {
+                            return { id: this.id('aaa') };
+                        }
+                    });
+                    assert.equal(template.match({ block: 'name' }).toString(), '<div class="name" id="aaa2"></div>');
+                    assert.equal(template.match({ block: 'name' }).toString(), '<div class="name" id="aaa3"></div>');
+                });
+
                 it('Добавление пользовательских функций-помощников', function() {
                     assert.equal(new Template('name', {
                         content: function() {

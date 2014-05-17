@@ -16,6 +16,21 @@ definer('Helpers', /** @exports Helpers */ function(object, string, object, is) 
         this._custom = {};
     }
 
+    /**
+     * Префикс для формируемых идентификаторов.
+     *
+     * @type {string}
+     */
+    Helpers.idPrefix = 'i';
+
+    /**
+     * Порядковый номер для формирования идентификатора.
+     *
+     * @private
+     * @type {number}
+     */
+    Helpers._id = 0;
+
     Helpers.prototype = {
 
         /**
@@ -119,6 +134,16 @@ definer('Helpers', /** @exports Helpers */ function(object, string, object, is) 
                      */
                     isBlock: function() {
                         return !this.isElem();
+                    },
+
+                    /**
+                     * Сформировать идентификатор.
+                     *
+                     * @param {string} [prefix] Префикс для идентификатора
+                     * @returns {string}
+                     */
+                    id: function(prefix) {
+                        return (prefix || Helpers.idPrefix) + Helpers._id++;
                     }
 
                 },
