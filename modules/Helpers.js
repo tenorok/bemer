@@ -24,12 +24,22 @@ definer('Helpers', /** @exports Helpers */ function(object, string, object, is) 
     Helpers.idPrefix = 'i';
 
     /**
-     * Порядковый номер для формирования идентификатора.
+     * Порядковый номер для формирования идентификаторов.
      *
      * @private
      * @type {number}
      */
     Helpers._id = 0;
+
+    /**
+     * Сбросить порядковый номер для формирования идентификаторов.
+     *
+     * @returns {Helpers}
+     */
+    Helpers.resetId = function() {
+        Helpers._id = 0;
+        return Helpers;
+    };
 
     Helpers.prototype = {
 

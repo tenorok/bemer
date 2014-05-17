@@ -145,6 +145,19 @@ definer('bemerTest', function(assert, bemer) {
                 assert.equal(bemer({ block: 'a' }), '<div class="a bem" onclick="{&quot;a&quot;:{}}"></div>');
             });
 
+            it('Изменение префикса для идентификаторов', function() {
+                bemer.config({
+                    idPrefix: 'www'
+                });
+                bemer.match('a', {
+                    js: false,
+                    attrs: function() {
+                        return { id: this.id() };
+                    }
+                });
+                assert.equal(bemer({ block: 'a' }), '<div class="a" id="www0"></div>');
+            });
+
         });
 
         describe('Использование функций-помощников.', function() {
