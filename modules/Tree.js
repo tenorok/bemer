@@ -75,7 +75,7 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
                         length: bemjson.length
                     };
 
-                    if(elem.elem) {
+                    if(elem && elem.elem) {
                         elemData.context = data.context;
                     }
 

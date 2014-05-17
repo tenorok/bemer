@@ -127,6 +127,8 @@ definer('Node', /** @exports Node */ function(Tag, Name, object) {
             if(!this._node.mix) return [];
 
             return this._node.mix.reduce(function(mix, mixNode) {
+                if(!mixNode) return mix;
+
                 var node = new Node(mixNode);
                 mix.push({
                     name: node.getName().toString(),

@@ -490,5 +490,29 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
 
         });
 
+        describe('Использование входящих параметров в модах при отсутствии одноимённых полей в bemjson', function() {
+
+            it('content', function() {
+                var tree = new Tree({ block: 'a' }, new Pool().add(new Template('a', {
+                    content: function(content) {
+                        return [content, '!'];
+                    }
+                })));
+                assert.equal(tree.toString(),
+                    '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">!</div>');
+            });
+
+            it('mix', function() {
+                var tree = new Tree({ block: 'a' }, new Pool().add(new Template('a', {
+                    mix: function(mix) {
+                        return [mix, { block: 'b' }];
+                    }
+                })));
+                assert.equal(tree.toString(),
+                    '<div class="a i-bem b" data-bem="{&quot;a&quot;:{}}"></div>');
+            });
+
+        });
+
     });
 });
