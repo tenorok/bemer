@@ -120,17 +120,19 @@ definer('bemerTest', function(assert, bemer) {
             });
 
             it('Изменение обоих разделителей', function() {
-                bemer.config({
-                    delimiters: {
-                        mod: '=',
-                        elem: '--'
-                    }
-                });
-                assert.equal(bemer({ block: 'a', elem: 'b', elemMods: { c: 'd' }}),
-                    '<div class="a--b a--b=c=d"></div>');
+                bemer
+                    .config({
+                        delimiters: {
+                            mod: '=',
+                            elem: '--'
+                        }
+                    })
+                    .match('a--b=c=d', { tag: 'img' });
+
+                assert.equal(bemer({ block: 'a', elem: 'b', elemMods: { c: 'd' }}), '<img class="a--b a--b=c=d"/>');
             });
 
-            it('Изменение обоих разделителей', function() {
+            it('Изменение стандартного имени тега', function() {
                 bemer.config({
                     tag: 'span'
                 });
