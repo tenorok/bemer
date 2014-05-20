@@ -57,9 +57,11 @@ bemer({ block: 'page' });
 
 ### Метод `match`
 
-Добавляет шаблон.
+Предназначен для добавления шаблона на одну или несколько БЭМ-сущностей.
 
 В качестве параметров принимает неограниченное количество селекторов на БЭМ-сущности и последним параметром простой объект с полями шаблона.
+
+Возвращает `bemer`, что позволяет записывать цепочки вызовов.
 
 ```js
 bemer.match('block1', 'block2', 'blockN', {});
@@ -147,6 +149,36 @@ bemer({ block: 'text' });
 <span class="text i-bem" data-bem="{&quot;text&quot;:{}}"></span>
 ```
 
+###### Поле `attrs`
+
+Тип: `object`
+
+По умолчанию: `{}`
+
+Поле `attrs` задаёт атрибуты тега.
+
+Блок текстового поля:
+
+```js
+bemer.match('input', { tag: 'input', attrs: { type: 'text' }});
+bemer({ block: 'input' });
+```
+
+```html
+<input class="input i-bem" type="text" data-bem="{&quot;input&quot;:{}}"/>
+```
+
+Атрибуты в шаблоне и входящем BEMJSON складываются:
+
+```js
+bemer.match('input', { tag: 'input', attrs: { type: 'text' }});
+bemer({ block: 'input', attrs: { placeholder: 'login' }});
+```
+
+```html
+<input class="input i-bem" type="text" placeholder="login" data-bem="{&quot;input&quot;:{}}"/>
+```
+
 ###### Поле `js`
 
 Тип: `boolean` `object`
@@ -229,4 +261,65 @@ bemer({ block: 'untypical' });
 
 ```html
 <div class="custom1 custom2 untypical i-bem" data-bem="{&quot;untypical&quot;:{}}"></div>
+```
+
+###### Поле `mods`
+
+Тип: `object`
+
+По умолчанию: `{}`
+
+Поле `mods` задаёт модификаторы блока.
+
+Блок `header` с модификатором `theme` в значении `red`:
+
+```js
+bemer.match('header', { mods: { theme: 'red' }});
+bemer({ block: 'header' });
+```
+
+```html
+<div class="header i-bem header_theme_red" data-bem="{&quot;header&quot;:{}}"></div>
+```
+
+Модификаторы в шаблоне и входящем BEMJSON складываются:
+
+```js
+bemer.match('header', { mods: { theme: 'red' }});
+bemer({ block: 'header', mods: { adaptive: true }});
+```
+
+```html
+<div class="header i-bem header_theme_red header_adaptive" data-bem="{&quot;header&quot;:{}}"></div>
+```
+
+Элемент `logo` блока `header` с модификатором `theme` в значении `blue`:
+
+```js
+bemer.match('header__logo', { mods: { theme: 'blue' }});
+bemer({ block: 'header', elem: 'logo' });
+```
+
+```html
+<div class="header_theme_blue__logo"></div>
+```
+
+###### Поле `elemMods`
+
+Тип: `object`
+
+По умолчанию: `{}`
+
+Поле `elemMods` задаёт модификаторы элемента.
+Модификаторы в шаблоне и входящем BEMJSON складываются.
+
+Элемент `logo` с модификатором `size` в значении `s`:
+
+```js
+bemer.match('header__logo', { elemMods: { size: 's' }});
+bemer({ block: 'header', elem: 'logo' });
+```
+
+```html
+<div class="header__logo header__logo_size_s"></div>
 ```
