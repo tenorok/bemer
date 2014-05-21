@@ -323,3 +323,45 @@ bemer({ block: 'header', elem: 'logo' });
 ```html
 <div class="header__logo header__logo_size_s"></div>
 ```
+
+###### Поле `mix`
+
+Тип: `array`
+
+По умолчанию: `[]`
+
+Поле `mix` задаёт список БЭМ-сущностей, которые необходимо примешать к текущей сущности.
+В результате примешивания добавляются CSS-классы и JS-параметры.
+
+Примешивание блока `clearfix` к блоку `header`:
+
+```js
+bemer.match('header', { mix: [{ block: 'clearfix' }] });
+bemer({ block: 'header' });
+```
+
+```html
+<div class="header i-bem clearfix" data-bem="{&quot;header&quot;:{}}"></div>
+```
+
+Примешивание блока `menu` с JS-параметрами:
+
+```js
+bemer.match('header', { mix: [{ block: 'menu', js: { length: 10 }}] });
+bemer({ block: 'header' });
+```
+
+```html
+<div class="header i-bem menu" data-bem="{&quot;header&quot;:{},&quot;menu&quot;:{&quot;length&quot;:10}}"></div>
+```
+
+Примешиваемые сущности в шаблоне и входящем BEMJSON складываются:
+
+```js
+bemer.match('header', { mix: [{ block: 'clearfix' }] });
+bemer({ block: 'header', mix: [{ block: 'menu', elem: 'wrap' }] });
+```
+
+```html
+<div class="header i-bem menu__wrap clearfix" data-bem="{&quot;header&quot;:{}}"></div>
+```
