@@ -145,7 +145,7 @@ bemer.match('block1', 'block2', 'blockN', {});
         * `{string}` `data.context.block` — имя блока, которому принадлежит элемент
         * `{object}` `data.context.mods` — модификаторы блока, которому принадлежит элемент
 
-Получение данных о блоке `menu`:
+Получение данных о блоке `menu` из параметров конструктора:
 
 ```js
 bemer.match('menu', { construct: function(bemjson, data) {
@@ -162,12 +162,14 @@ bemjson: { block: 'menu' }
 data: { index: 0, length: 1 }
 ```
 
-Получение данных об элементе `item` с булевым модификатором `active`:
+Кроме того, в `this` существуют поля `bemjson` и `data`, аналогичные параметрам конструктора.
+
+Получение данных об элементе `item` с булевым модификатором `active` из полей контекста:
 
 ```js
 bemer.match('menu__item_active', { construct: function(bemjson, data) {
-    console.log('bemjson:', bemjson);
-    console.log('data:', data);
+    console.log('bemjson:', this.bemjson);
+    console.log('data:', this.data);
 }});
 
 bemer({ block: 'menu', content: [
