@@ -570,3 +570,93 @@ bemer({ block: 'text', tag: 'b' });
 ```html
 <span class="text i-bem" data-bem="{&quot;text&quot;:{}}"></span>
 ```
+
+##### Произвольные поля шаблона
+
+Кроме стандартных полей можно задавать произволные поля шаблона.
+Они будут доступны в `this`.
+
+Произвольное поле `sum` складывает два числа:
+
+```js
+bemer.match('sum', {
+    content: function() {
+        return this.sum(this.bemjson.a, this.bemjson.b);
+    },
+    sum: function(a, b) {
+        return a + b;
+    }
+});
+bemer({ block: 'sum', a: 3, b: 7 });
+```
+
+Сумма устанавливается в содержимое:
+
+```html
+<div class="sum i-bem" data-bem="{&quot;sum&quot;:{}}">10</div>
+```
+
+##### Наследование шаблонов
+
+По мере декларации поступающие шаблоны могут быть унаследованы от добавленных ранее.
+Шаблонизатор делает это самостоятельно.
+
+Декларация нескольких шаблонов на блок `input`:
+
+```js
+bemer
+    .match('input', { tag: 'input' })
+    .match('input', { attrs: { type: 'text' }})
+    .match('input_inactive', { js: false });
+
+bemer({ block: 'input', mods: { inactive: true }});
+```
+
+Результат совмещает в себе все указанные правила:
+
+```html
+<input class="input input_inactive" type="text"/>
+```
+
+Наследование производится только от шаблонов с более общими селекторами.
+Например, шаблон на блок с модификатором будет унаследован от шаблона на одноимённый блок, но не наоборот.
+Аналогичные правила от общего к частному действуют для шаблонов со звёздочками в селекторах.
+
+Декларация элементов блока `header`:
+
+```js
+bemer
+    .match('header__*', { tag: 'span' })
+    .match('header__logo', { attrs: { title: 'logo' }})
+    .match('header__logo_theme_*', { mix: [{ block: 'coloring' }] })
+    .match('header__logo_theme_red', { content: '#fff' });
+
+bemer({ block: 'header', elem: 'logo', elemMods: { theme: 'red' }});
+```
+
+Все шаблоны задекларированы в порядке от общего к частному, поэтому результат совмещает в себе все указанные правила:
+
+```html
+<span class="header__logo header__logo_theme_red coloring" title="logo">#fff</span>
+```
+
+###### Обращение к родительскому методу через `this.__base`
+
+При декларации функций на одно поле в нескольких шаблонах становится доступен вызов базовой реализации метода.
+
+Блок `text` формирует своё содержимое по цепочке шаблонов:
+
+```js
+bemer
+    .match('text', { content: function() { return 'Hello'; }})
+    .match('text', { content: function() { return this.__base() + ' world'; }})
+    .match('text', { content: function() { return this.__base() + '!'; }});
+
+bemer({ block: 'text' });
+```
+
+В результате выполнения цепочки вызовов в содержимое устанавливается строка «Hello world!»:
+
+```html
+<div class="text i-bem" data-bem="{&quot;text&quot;:{}}">Hello world!</div>
+```
