@@ -721,3 +721,27 @@ bemer({ block: 'header', elem: 'logo', elemMods: { size: 's' }});
 ```html
 <span class="header__logo header__logo_size_s" title="logo">logo</span>
 ```
+
+### Метод `clean`
+
+Удаляет все задекларированные шаблоны и сбрасывает порядковый номер для формирования идентификаторов помощником [id]().
+
+**TODO: ссылка на хелпер id**
+
+Возвращает `bemer`, что позволяет записывать цепочки вызовов.
+
+Удаление шаблона на блок `name`:
+
+```js
+bemer
+    .match('name', { tag: 'span' })
+    .clean();
+
+bemer({ block: 'name' })
+```
+
+Блоку `name` будет установлен тег `div`, потому что шаблон был удалён:
+
+```html
+<div class="name i-bem" data-bem="{&quot;name&quot;:{}}"></div>
+```
