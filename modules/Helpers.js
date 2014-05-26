@@ -149,7 +149,7 @@ definer('Helpers', /** @exports Helpers */ function(object, string, object, is) 
                     /**
                      * Сформировать идентификатор.
                      *
-                     * @param {string} [prefix] Префикс для идентификатора
+                     * @param {string} [prefix=i] Префикс для идентификатора
                      * @returns {string}
                      */
                     id: function(prefix) {
