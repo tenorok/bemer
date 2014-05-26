@@ -745,3 +745,42 @@ bemer({ block: 'name' })
 ```html
 <div class="name i-bem" data-bem="{&quot;name&quot;:{}}"></div>
 ```
+
+### Метод `helper`
+
+В bemer существуют функции-помощники.
+Это такие функции, которые доступны в `this` из всех шаблонов.
+Помимо [стандартных помощников]() можно добавлять свои собственные с помощью метода `helper`.
+
+**TODO: добавить ссылку на помощников**
+
+Возвращает `bemer`, что позволяет записывать цепочки вызовов.
+
+Метод принимает два обязательных параметра:
+
+* `{string}` `name` — имя помощника
+* `{Function}` `callback` — тело функции помощника
+
+#### Добавление помощника
+
+Добавление и использование помощника `multi`, который умножает два числа:
+
+```js
+bemer
+    .helper('multi', function(a, b) {
+        return a * b;
+    })
+    .match('header', {
+        content: function(content) {
+            return this.multi(content[0], content[1]);
+        }
+    });
+
+bemer({ block: 'header', content: [4, 9] })
+```
+
+Произведение устанавливается в содержимое:
+
+```html
+<div class="header i-bem" data-bem="{&quot;header&quot;:{}}">36</div>
+```

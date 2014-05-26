@@ -151,7 +151,8 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
         },
 
         /**
-         * Добавить пользовательскую функцию-помощник.
+         * Добавить одну или несколько
+         * пользовательских функций-помощников.
          *
          * @param {string|object} nameOrList Имя функции или карта помощников
          * @param {Function} [callback] Тело функции
