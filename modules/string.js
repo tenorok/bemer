@@ -51,7 +51,7 @@ definer('string', /** @exports string */ function(is) {
     };
 
     /**
-     * Разэкранировать html-строку.
+     * Деэкранировать html-строку.
      *
      * @param {string} string Строка
      * @returns {string}
