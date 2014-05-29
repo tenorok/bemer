@@ -41,16 +41,39 @@ var bemer = require('bemer');
 
 ## Получение результата
 
-Единственная переменная, которую предоставляет шаблонизатор — `bemer` и она является функцией, которая принимает на вход один параметр — объект в формате [BEMJSON](http://ru.bem.info/libs/bem-core/2.2.0/templating/bemjson/#синтаксис-bemjson).
+Единственная переменная, предоставляемая шаблонизатором — `bemer` и она является функцией, которая принимает на вход один параметр — объект в формате [BEMJSON](http://ru.bem.info/libs/bem-core/2.2.0/templating/bemjson/#синтаксис-bemjson).
+
+### Один блок
 
 ```js
 bemer({ block: 'page' });
 ```
 
-В результате выполнения будет получена HTML-строка.
+Результат:
 
 ```html
 <div class="page i-bem" data-bem="{&quot;page&quot;:{}}"></div>
+```
+
+### Блок с элементами
+
+```js
+bemer({
+    block: 'item',
+    content: [
+        { elem: 'title', content: 'Фотоаппарат' },
+        { elem: 'price', content: '14999' }
+    ]
+});
+```
+
+Результат:
+
+```html
+<div class="item i-bem" data-bem="{&quot;item&quot;:{}}">
+    <div class="item__title">Фотоаппарат</div>
+    <div class="item__price">14999</div>
+</div>
 ```
 
 ## Методы
