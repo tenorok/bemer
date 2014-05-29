@@ -236,7 +236,7 @@ definer('is', /** @exports is */ function() {
             firstType;
 
         ['string', 'number', 'nan', 'boolean', 'null', 'undefined', 'array',
-         'argument', 'function', 'map', 'date', 'regexp'].some(function(type) {
+         'argument', 'native', 'function', 'map', 'date', 'regexp'].some(function(type) {
             if(is[type](args[0])) {
                 firstType = type;
                 return true;
