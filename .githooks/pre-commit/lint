@@ -1,0 +1,8 @@
+#!/bin/sh
+
+NPM_BIN="./node_modules/.bin"
+
+git_cached_files=$(git diff --cached --name-only --diff-filter=ACMR | xargs echo)
+if [ "$git_cached_files" ]; then
+    $NPM_BIN/jscs $git_cached_files || exit 1
+fi

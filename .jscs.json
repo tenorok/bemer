@@ -1,0 +1,104 @@
+{
+    "excludeFiles": [
+        "node_modules/**"
+    ],
+    "requireCurlyBraces": [
+        "else",
+        "for",
+        "while",
+        "do",
+        "try",
+        "catch",
+        "case",
+        "default"
+    ],
+    "disallowSpaceAfterKeywords": [
+        "if",
+        "for",
+        "while",
+        "do",
+        "switch",
+        "try",
+        "catch"
+    ],
+    "requireSpaceAfterKeywords": ["else"],
+    "requireSpacesInFunctionExpression": {
+        "beforeOpeningCurlyBrace": true
+    },
+    "disallowSpacesInFunctionExpression": {
+        "beforeOpeningRoundBrace": true
+    },
+    "requireMultipleVarDecl": true,
+    "disallowEmptyBlocks": true,
+    "disallowSpacesInsideArrayBrackets": true,
+    "disallowSpacesInsideParentheses": true,
+    "requireSpacesInsideObjectBrackets": "allButNested",
+    "disallowQuotedKeysInObjects": "allButReserved",
+    "disallowSpaceAfterObjectKeys": true,
+    "requireCommaBeforeLineBreak": true,
+    "requireOperatorBeforeLineBreak": [
+        "+",
+        "-",
+        "/",
+        "*",
+        "=",
+        "==",
+        "===",
+        "!=",
+        "!==",
+        ">",
+        ">=",
+        "<",
+        "<="
+    ],
+    "disallowLeftStickedOperators": [
+        "?",
+        "+",
+        "-",
+        "/",
+        "*",
+        "=",
+        "==",
+        "===",
+        "!=",
+        "!==",
+        ">",
+        ">=",
+        "<",
+        "<="
+    ],
+    "requireLeftStickedOperators": [","],
+    "disallowRightStickedOperators": [
+        "?",
+        "/",
+        "*",
+        ":",
+        "=",
+        "==",
+        "===",
+        "!=",
+        "!==",
+        ">",
+        ">=",
+        "<",
+        "<="
+    ],
+    "requireRightStickedOperators": ["!"],
+    "disallowSpaceAfterPrefixUnaryOperators": ["++", "--", "+", "-", "~", "!"],
+    "disallowSpaceBeforePostfixUnaryOperators": ["++", "--"],
+    "disallowKeywords": ["with"],
+    "disallowMultipleLineBreaks": true,
+    "validateQuoteMarks": "'",
+    "disallowTrailingWhitespace": true,
+    "disallowKeywordsOnNewLine": ["else"],
+    "requireLineFeedAtFileEnd": true,
+    "maximumLineLength": 120,
+    "requireCapitalizedConstructors": true,
+    "safeContextKeyword": "that",
+    "requireDotNotation": true,
+    "validateJSDoc": {
+        "checkParamNames": true,
+        "checkRedundantParams": true,
+        "requireParamTypes": true
+    }
+}
