@@ -30,10 +30,31 @@ module.exports = function(grunt) {
         shell: {
             githooks: { command: 'cp .githooks/* .git/hooks/' },
             jsdoc: { command: './node_modules/.bin/jsdoc -d jsdoc modules/' },
-            release: release.getShell()
+            prerelease: release.getShellPreRelease(),
+            release:  {
+                command: function() {
+                    return grunt.config('isReleaseOk')
+                        ? release.getShellRelease()
+                        : '';
+                }
+            }
         },
         definer: Target.definer(),
-        mochaTest: Target.mocha(module)
+        mochaTest: Target.mocha(module),
+        prompt: {
+            release: {
+                options: {
+                    questions: [
+                        {
+                            config: 'isReleaseOk',
+                            type: 'confirm',
+                            default: false,
+                            message: 'Please check is everything alright'
+                        }
+                    ]
+                }
+            }
+        }
     });
 
     grunt.registerTask('githooks', ['clean:githooks', 'shell:githooks']);
@@ -51,6 +72,9 @@ module.exports = function(grunt) {
         grunt.task.run('clean:release', 'mkdir:release', 'definer:release', 'uglify:release');
 
         release.changeJsonFilesVersion();
+        grunt.task.run('shell:prerelease');
+
+        grunt.task.run('prompt:release');
         grunt.task.run('shell:release');
     });
 
