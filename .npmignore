@@ -1,0 +1,6 @@
+.*
+test
+Gruntfile.js
+grunt
+release/*
+!release/bemer.js
