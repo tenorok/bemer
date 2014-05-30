@@ -2,7 +2,10 @@ module.exports = function(grunt) {
     require('load-grunt-tasks')(grunt);
 
     var Target = require('./grunt/Target'),
-        module = grunt.option('module') || 'main';
+        module = grunt.option('module') || 'main',
+
+        Release = require('./grunt/Release'),
+        release = new Release(grunt.option('ver'));
 
     grunt.initConfig({
         mkdir: {
@@ -26,7 +29,8 @@ module.exports = function(grunt) {
         },
         shell: {
             githooks: { command: 'cp .githooks/* .git/hooks/' },
-            jsdoc: { command: './node_modules/.bin/jsdoc -d jsdoc modules/' }
+            jsdoc: { command: './node_modules/.bin/jsdoc -d jsdoc modules/' },
+            release: release.getShell()
         },
         definer: Target.definer(),
         mochaTest: Target.mocha(module)
@@ -45,6 +49,9 @@ module.exports = function(grunt) {
         grunt.task.run('test', 'clean:test');
         grunt.task.run('clean:jsdoc', 'jsdoc');
         grunt.task.run('clean:release', 'mkdir:release', 'definer:release', 'uglify:release');
+
+        release.changeJsonFilesVersion();
+        grunt.task.run('shell:release');
     });
 
 };
