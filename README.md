@@ -11,13 +11,13 @@ Bemer — шаблонизатор, стремящийся идти по пут�
 
 ## Установка
 
-Bemer доступен в [NPM](https://www.npmjs.org).
-
-    npm install bemer
-
 Bemer доступен в [Bower](http://bower.io).
 
     bower install bemer
+
+Bemer доступен в [NPM](https://www.npmjs.org).
+
+    npm install bemer
 
 ## Подключение
 
