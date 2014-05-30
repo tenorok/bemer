@@ -22,13 +22,11 @@ module.exports = function(grunt) {
             }
         },
         clean: {
-            githooks: ['.git/hooks/*'],
             test: ['!test/tmp/.gitkeep', 'test/tmp/*'],
             jsdoc: ['jsdoc'],
             release: ['release']
         },
         shell: {
-            githooks: { command: 'cp .githooks/* .git/hooks/' },
             jsdoc: { command: './node_modules/.bin/jsdoc -d jsdoc modules/' },
             prerelease: release.getShellPreRelease(),
             release:  {
@@ -57,7 +55,6 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('githooks', ['clean:githooks', 'shell:githooks']);
     grunt.registerTask('jsdoc', ['shell:jsdoc']);
 
     grunt.registerTask('test', [
