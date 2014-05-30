@@ -26,6 +26,19 @@ Target.definer = function() {
         },
 
         target = {
+            release: {
+                target: 'release/bemer.js',
+                directory: 'modules/',
+                verbose: verbose,
+                clean: clean,
+                jsdoc: {
+                    file: 'Template engine. BEMJSON to HTML processor.',
+                    copyright: '2014 Artem Kurbatov, tenorok.ru',
+                    license: 'MIT license',
+                    version: 'package.json',
+                    date: true
+                }
+            },
             main: {
                 target: 'test/tmp/main.js',
                 directory: directories,

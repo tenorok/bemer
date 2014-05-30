@@ -5,10 +5,24 @@ definer('HelpersTest', function(assert, Helpers) {
             assert.deepEqual(Object.keys(new Helpers().get()).sort(), [
                 '__constructor', 'construct',
                 'isFirst', 'isLast',
+                'isElem', 'isBlock',
+
                 'escape', 'htmlEscape', 'unHtmlEscape',
-                'trim', 'ltrim', 'rtrim',
                 'collapse', 'stripTags',
-                'upper', 'lower', 'repeat'
+                'upper', 'lower', 'repeat',
+
+                'extend', 'deepExtend',
+                'clone', 'deepClone',
+
+                'id', 'is'
+            ].sort());
+
+            assert.deepEqual(Object.keys(new Helpers().get().is).sort(), [
+                'string', 'number', 'nan', 'boolean',
+                'null', 'undefined', 'primitive',
+                'array', 'argument', 'function', 'native',
+                'map', 'date', 'regexp',
+                'type', 'every'
             ].sort());
         });
 

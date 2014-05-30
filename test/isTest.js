@@ -214,6 +214,8 @@ definer('isTest', function(assert, is) {
 
             assert.equal(is.type(function() {}), 'function');
 
+            assert.equal(is.type(Number.valueOf, Date.prototype.getTime), 'native');
+
             assert.equal(is.type({ a: 1 }, { b: 2 }), 'map');
 
             assert.equal(is.type(new Date), 'date');

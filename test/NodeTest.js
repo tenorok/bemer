@@ -239,6 +239,16 @@ definer('NodeTest', function(assert, Node) {
                 );
             });
 
+            it('Элемент с несколькими модификаторами у блока', function() {
+                assert.equal(new Node({
+                    block: 'name',
+                    mods: { size: 's', theme: 'dark' },
+                    elem: 'element'
+                }).toString(),
+                    '<div class="name_size_s__element name_theme_dark__element"></div>'
+                );
+            });
+
             it('Элемент и блок с модификатором', function() {
                 assert.equal(new Node({
                     block: 'name',
@@ -247,6 +257,31 @@ definer('NodeTest', function(assert, Node) {
                     elemMods: { theme: 'normal' }
                 }).toString(),
                     '<div class="name_size_s__element name_size_s__element_theme_normal"></div>'
+                );
+            });
+
+            it('Элемент с модификатором и с несколькими модификаторами у блока', function() {
+                assert.equal(new Node({
+                    block: 'name',
+                    mods: { size: 's', theme: 'dark' },
+                    elem: 'element',
+                    elemMods: { state: true }
+                }).toString(),
+                    '<div class="name_size_s__element name_theme_dark__element ' +
+                        'name_size_s__element_state name_theme_dark__element_state"></div>'
+                );
+            });
+
+            it('Элемент с несколькими модификаторами и с несколькими модификаторами у блока', function() {
+                assert.equal(new Node({
+                    block: 'name',
+                    mods: { size: 's', theme: 'dark' },
+                    elem: 'element',
+                    elemMods: { state: true, side: 'left' }
+                }).toString(),
+                    '<div class="name_size_s__element name_theme_dark__element ' +
+                        'name_size_s__element_state name_size_s__element_side_left ' +
+                        'name_theme_dark__element_state name_theme_dark__element_side_left"></div>'
                 );
             });
 

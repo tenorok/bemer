@@ -57,7 +57,7 @@ definer('object', /** @exports object */ function(is) {
      * @returns {boolean}
      */
     object.isEmpty = function(object) {
-        return !Object.keys(object).length;
+        return !Object.keys(object || {}).length;
     };
 
     /**

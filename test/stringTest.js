@@ -13,18 +13,6 @@ definer('stringTest', function(assert, string) {
             assert.equal(string.unHtmlEscape('&amp;&lt;&gt;&quot;&#39;\/'), '&<>"\'\/');
         });
 
-        it('Обрезать пробелы с начала и конца строки', function() {
-            assert.equal(string.trim('   string   '), 'string');
-        });
-
-        it('Обрезать пробелы с начала строки', function() {
-            assert.equal(string.ltrim('   string '), 'string ');
-        });
-
-        it('Обрезать пробелы с конца строки', function() {
-            assert.equal(string.rtrim(' string   '), ' string');
-        });
-
         it('Удалить повторяющиеся пробелы', function() {
             assert.equal(string.collapse('Just   text  in    paragraph.'), 'Just text in paragraph.');
         });

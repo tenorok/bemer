@@ -151,7 +151,8 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
         },
 
         /**
-         * Добавить пользовательскую функцию-помощник.
+         * Добавить одну или несколько
+         * пользовательских функций-помощников.
          *
          * @param {string|object} nameOrList Имя функции или карта помощников
          * @param {Function} [callback] Тело функции
@@ -237,8 +238,8 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
          */
         _getMode: function(modes, bemjson, name) {
             var isValFunc = is.function(modes[name]),
-                val = isValFunc ? modes[name].call(modes) : modes[name],
                 bemjsonVal = bemjson[name],
+                val = isValFunc ? modes[name].call(modes, bemjsonVal) : modes[name],
                 priorityVal = this._getPriorityValue(isValFunc, val, bemjsonVal);
 
             if(is.array(val, bemjsonVal)) {

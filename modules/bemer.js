@@ -1,4 +1,4 @@
-definer('bemer', /** @exports bemer */ function(Tree, Template, Pool, functions, Name, Node, object) {
+definer.export('bemer', /** @exports bemer */ function(Tree, Template, Pool, functions, Name, Node, object, Helpers) {
 
     /**
      * Экземпляр для хранения списка шаблонов.
@@ -43,12 +43,14 @@ definer('bemer', /** @exports bemer */ function(Tree, Template, Pool, functions,
     };
 
     /**
-     * Удалить все шаблоны.
+     * Удалить все шаблоны и
+     * сбросить порядковый номер для формирования идентификаторов.
      *
      * @returns {bemer}
      */
     bemer.clean = function() {
         pool.clean();
+        Helpers.resetId();
         return this;
     };
 
@@ -77,7 +79,8 @@ definer('bemer', /** @exports bemer */ function(Tree, Template, Pool, functions,
         },
         tag: Template.tag,
         bemClass: Node.bemClass,
-        bemAttr: Node.bemAttr
+        bemAttr: Node.bemAttr,
+        idPrefix: Helpers.idPrefix
     };
 
     /**
@@ -94,6 +97,7 @@ definer('bemer', /** @exports bemer */ function(Tree, Template, Pool, functions,
      * @param {string} [config.tag=div] Стандартное имя тега
      * @param {string} [config.bemClass=i-bem] Имя класса для js-инициализации
      * @param {string} [config.bemAttr=data-bem] Имя атрибута для хранения параметров инициализации
+     * @param {string} [config.idPrefix=i] Префикс для формируемых идентификаторов
      *
      * @returns {bemer}
      */
@@ -117,9 +121,13 @@ definer('bemer', /** @exports bemer */ function(Tree, Template, Pool, functions,
             Node.bemAttr = config.bemAttr;
         }
 
+        if(config.idPrefix) {
+            Helpers.idPrefix = config.idPrefix;
+        }
+
         return this;
     };
 
-    return this.bemer = bemer;
+    return bemer;
 
 });

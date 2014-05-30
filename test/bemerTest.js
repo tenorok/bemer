@@ -39,6 +39,75 @@ definer('bemerTest', function(assert, bemer) {
             );
         });
 
+        it('Наследование шаблонов', function() {
+            bemer
+                .match('header', 'header_*_*__*', {
+                    tag: function() {
+                       return this.isElem() ? 'head' : 'foot';
+                    },
+                    js: function() {
+                        return this.isBlock();
+                    }
+                })
+                .match('header_color_red', { tag: function() {
+                    return this.__base() + 'er';
+                }});
+
+            assert.equal(bemer({
+                block: 'header',
+                mods: { color: 'red' },
+                content: { elem: 'logo' }
+            }),
+                '<footer class="header i-bem header_color_red" data-bem="{&quot;header&quot;:{}}">' +
+                    '<head class="header_color_red__logo"></head>' +
+                '</footer>'
+            );
+        });
+
+        it('Получение значения bemjson в параметре и добавление контента', function() {
+            bemer.match('name', {
+                content: function(content) {
+                    return { elem: 'foo', content: content };
+                }
+            });
+            assert.equal(bemer({ block: 'name', content: 'Hello world!' }),
+                '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">' +
+                    '<div class="name__foo">Hello world!</div>' +
+                '</div>'
+            );
+        });
+
+        it('Использование this.bemjson', function() {
+            bemer.match('name', {
+                attrs: function() {
+                    return { a: this.bemjson.flag };
+                }
+            });
+            assert.equal(bemer({ block: 'name', flag: true }),
+                '<div class="name i-bem" a="true" data-bem="{&quot;name&quot;:{}}"></div>'
+            );
+        });
+
+        it('Использование this.data', function() {
+            bemer.match('name_theme_red__b', {
+                content: function() {
+                    assert.equal(this.data.index, 1);
+                    assert.equal(this.data.length, 3);
+                    assert.equal(this.data.context.block, 'name');
+                    assert.deepEqual(this.data.context.mods, { theme: 'red' });
+                }
+            });
+            bemer({
+                block: 'name',
+                mods: { theme: 'red' },
+                content: [
+                    { elem: 'a' },
+                    { elem: 'b' },
+                    { elem: 'c' }
+                ]
+            });
+        });
+
         describe('Изменить стандартные настройки шаблонизатора.', function() {
 
             it('Изменение разделителя блока и элемента', function() {
@@ -51,17 +120,19 @@ definer('bemerTest', function(assert, bemer) {
             });
 
             it('Изменение обоих разделителей', function() {
-                bemer.config({
-                    delimiters: {
-                        mod: '=',
-                        elem: '--'
-                    }
-                });
-                assert.equal(bemer({ block: 'a', elem: 'b', elemMods: { c: 'd' }}),
-                    '<div class="a--b a--b=c=d"></div>');
+                bemer
+                    .config({
+                        delimiters: {
+                            mod: '=',
+                            elem: '--'
+                        }
+                    })
+                    .match('a--b=c=d', { tag: 'img' });
+
+                assert.equal(bemer({ block: 'a', elem: 'b', elemMods: { c: 'd' }}), '<img class="a--b a--b=c=d"/>');
             });
 
-            it('Изменение обоих разделителей', function() {
+            it('Изменение стандартного имени тега', function() {
                 bemer.config({
                     tag: 'span'
                 });
@@ -74,6 +145,19 @@ definer('bemerTest', function(assert, bemer) {
                     bemAttr: 'onclick'
                 });
                 assert.equal(bemer({ block: 'a' }), '<div class="a bem" onclick="{&quot;a&quot;:{}}"></div>');
+            });
+
+            it('Изменение префикса для идентификаторов', function() {
+                bemer.config({
+                    idPrefix: 'www'
+                });
+                bemer.match('a', {
+                    js: false,
+                    attrs: function() {
+                        return { id: this.id() };
+                    }
+                });
+                assert.equal(bemer({ block: 'a' }), '<div class="a" id="www0"></div>');
             });
 
         });

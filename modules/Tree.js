@@ -1,4 +1,4 @@
-definer('Tree', /** @exports Tree */ function(Template, is) {
+definer('Tree', /** @exports Tree */ function(Template, is, object) {
 
     /**
      * Модуль работы с BEMJSON-деревом.
@@ -60,22 +60,31 @@ definer('Tree', /** @exports Tree */ function(Template, is) {
          *
          * @private
          * @param {*} bemjson BEMJSON, массив или примитив
-         * @param {string} ctxBlock Контекст блока
+         * @param {object} data Данные по сущности в дереве
+         * @param {object} [data.context] Информация о родительском контексте (если родитель — блок)
+         * @param {object} [data.context.block] Имя родительского блока
+         * @param {object} [data.context.mods] Модификаторы родительского блока
          * @returns {*}
          */
-        _getContent: function(bemjson, ctxBlock) {
+        _getContent: function(bemjson, data) {
 
             if(is.array(bemjson)) {
                 return bemjson.reduce(function(list, elem, index) {
-                    list.push(this._getNode(elem, ctxBlock, {
+                    var elemData = {
                         index: index,
                         length: bemjson.length
-                    }));
+                    };
+
+                    if(elem && elem.elem) {
+                        elemData.context = data.context;
+                    }
+
+                    list.push(this._getNode(elem, elemData));
                     return list;
                 }.bind(this), []);
             }
 
-            return this._getNode(bemjson, ctxBlock);
+            return this._getNode(bemjson, data);
         },
 
         /**
@@ -84,20 +93,36 @@ definer('Tree', /** @exports Tree */ function(Template, is) {
          *
          * @private
          * @param {*} bemjson BEMJSON или примитив
-         * @param {string} [ctxBlock] Контекст блока
          * @param {object} [data] Данные по сущности в дереве
+         * @param {object} [data.index] Порядковый индекс сущности
+         * @param {object} [data.length] Количество сущностей у родителя
+         * @param {object} [data.context] Информация о родительском контексте (только для элементов)
+         * @param {object} [data.context.block] Имя родительского блока
+         * @param {object} [data.context.mods] Модификаторы родительского блока
          * @returns {Node|*}
          */
-        _getNode: function(bemjson, ctxBlock, data) {
+        _getNode: function(bemjson, data) {
 
             if(is.map(bemjson)) {
 
-                if(bemjson.elem && !bemjson.block && ctxBlock) {
-                    bemjson.block = ctxBlock;
+                if(bemjson.elem && !bemjson.block && data.context.block) {
+                    bemjson.block = data.context.block;
+                    if(data.context.mods) {
+                        bemjson.mods = object.extend(bemjson.mods || {}, data.context.mods);
+                    }
                 }
 
-                var node = this._pool.find(bemjson, data) || Template.base(bemjson, data);
-                node.content(this._getContent(bemjson.content, bemjson.block));
+                var node = this._pool.find(bemjson, data) || Template.base(bemjson, data),
+                    data = {};
+
+                if(bemjson.block) {
+                    data.context = { block: bemjson.block };
+                    if(bemjson.mods) {
+                        data.context.mods = bemjson.mods;
+                    }
+                }
+
+                node.content(this._getContent(bemjson.content, data));
                 return node;
             }
 
