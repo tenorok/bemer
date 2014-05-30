@@ -5,9 +5,7 @@
 
 Bemer — шаблонизатор, стремящийся идти по пути упрощения работы с БЭМ. Он должен быть очень удобным для разработки малых и средних проектов.
 
-Исходный код шаблонизатора разделён на [подробно задокументированные модули]() с помощью [definer](https://github.com/tenorok/definer).
-
-**TODO: ссылка на jsdoc**
+Исходный код шаблонизатора разделён на [подробно задокументированные модули](http://tenorok.github.io/bemer/jsdoc/module-bemer-bemer.html) с помощью [definer](https://github.com/tenorok/definer).
 
 Рекомендуется использовать bemer совместно с [i-bem](http://tenorok.github.io/get-i-bem/).
 
