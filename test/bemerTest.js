@@ -1,4 +1,4 @@
-definer('bemerTest', function(assert, bemer) {
+definer('bemerTest', function(assert, bemer, Helpers) {
     describe('Модуль bemer.', function() {
 
         afterEach(function() {
@@ -157,7 +157,7 @@ definer('bemerTest', function(assert, bemer) {
                         return { id: this.id() };
                     }
                 });
-                assert.equal(bemer({ block: 'a' }), '<div class="a" id="www0"></div>');
+                assert.equal(bemer({ block: 'a' }), '<div class="a" id="www' + Helpers.idSalt + '0"></div>');
             });
 
         });
