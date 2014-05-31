@@ -7,8 +7,8 @@ function Release(version) {
     this.jsonFiles = ['package.json', 'bower.json'];
 
     this.releaseDir = 'release/';
-    this.jsFile = 'bemer-' + version + '.js';
-    this.jsMinFile = 'bemer-' + version + '.min.js';
+    this.jsFile = 'bemer.js';
+    this.jsMinFile = 'bemer.min.js';
 
     this.releaseBranch = 'release-' + version;
     this.releaseTag = 'v' + version;

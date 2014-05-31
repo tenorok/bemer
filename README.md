@@ -24,7 +24,7 @@ Bemer доступен в [NPM](https://www.npmjs.org).
 ### В браузере
 
 ```html
-<script src="node_modules/bemer/release/bemer.min.js"></script>
+<script src="bower_components/bemer/bemer.min.js"></script>
 ```
 
 ### В Node.js
