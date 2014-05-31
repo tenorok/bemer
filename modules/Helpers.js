@@ -24,6 +24,16 @@ definer('Helpers', /** @exports Helpers */ function(object, string, object, is) 
     Helpers.idPrefix = 'i';
 
     /**
+     * Соль для формируемых идентификаторов.
+     *
+     * Формируется один раз для экземпляра `bemer`.
+     * Актуально при шаблонизации на клиенте и сервере одновременно.
+     *
+     * @type {number}
+     */
+    Helpers.idSalt = new Date().getTime();
+
+    /**
      * Порядковый номер для формирования идентификаторов.
      *
      * @private
@@ -153,7 +163,7 @@ definer('Helpers', /** @exports Helpers */ function(object, string, object, is) 
                      * @returns {string}
                      */
                     id: function(prefix) {
-                        return (prefix || Helpers.idPrefix) + Helpers._id++;
+                        return (prefix || Helpers.idPrefix) + Helpers.idSalt + Helpers._id++;
                     }
 
                 },
