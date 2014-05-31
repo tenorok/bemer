@@ -36,7 +36,8 @@ Release.prototype = {
 
     getShellRelease: function() {
         return [
-            'git push origin master dev ' + this.releaseTag
+            'git push origin master dev ' + this.releaseTag,
+            'npm publish'
         ].join(' && ');
     },
 
