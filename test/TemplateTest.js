@@ -1,4 +1,4 @@
-definer('TemplateTest', function(assert, Template) {
+definer('TemplateTest', function(assert, Template, Helpers) {
     describe('Модуль Template.', function() {
 
         it('Шаблонизировать простой блок', function() {
@@ -611,8 +611,10 @@ definer('TemplateTest', function(assert, Template) {
                             return { id: this.id() };
                         }
                     });
-                    assert.equal(template.match({ block: 'name' }).toString(), '<div class="name" id="i0"></div>');
-                    assert.equal(template.match({ block: 'name' }).toString(), '<div class="name" id="i1"></div>');
+                    assert.equal(template.match({ block: 'name' }).toString(),
+                        '<div class="name" id="i' + Helpers.idSalt + '0"></div>');
+                    assert.equal(template.match({ block: 'name' }).toString(),
+                        '<div class="name" id="i' + Helpers.idSalt + '1"></div>');
                 });
 
                 it('Получить сформированный идентификатор с кастомизированным префиксом', function() {
@@ -622,8 +624,10 @@ definer('TemplateTest', function(assert, Template) {
                             return { id: this.id('aaa') };
                         }
                     });
-                    assert.equal(template.match({ block: 'name' }).toString(), '<div class="name" id="aaa2"></div>');
-                    assert.equal(template.match({ block: 'name' }).toString(), '<div class="name" id="aaa3"></div>');
+                    assert.equal(template.match({ block: 'name' }).toString(),
+                        '<div class="name" id="aaa' + Helpers.idSalt + '2"></div>');
+                    assert.equal(template.match({ block: 'name' }).toString(),
+                        '<div class="name" id="aaa' + Helpers.idSalt + '3"></div>');
                 });
 
                 it('Добавление пользовательских функций-помощников', function() {

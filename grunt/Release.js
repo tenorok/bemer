@@ -7,8 +7,8 @@ function Release(version) {
     this.jsonFiles = ['package.json', 'bower.json'];
 
     this.releaseDir = 'release/';
-    this.jsFile = path.join(this.releaseDir, 'bemer-' + version + '.js');
-    this.jsMinFile = path.join(this.releaseDir, 'bemer-' + version + '.min.js');
+    this.jsFile = 'bemer.js';
+    this.jsMinFile = 'bemer.min.js';
 
     this.releaseBranch = 'release-' + version;
     this.releaseTag = 'v' + version;
@@ -36,7 +36,8 @@ Release.prototype = {
 
     getShellRelease: function() {
         return [
-            'git push origin master dev ' + this.releaseTag
+            'git push origin master dev ' + this.releaseTag,
+            'npm publish'
         ].join(' && ');
     },
 

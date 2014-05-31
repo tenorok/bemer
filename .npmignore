@@ -4,3 +4,4 @@ Gruntfile.js
 grunt
 release/*
 !release/bemer.js
+bemer-*.js
