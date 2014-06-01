@@ -31,7 +31,7 @@ definer('Helpers', /** @exports Helpers */ function(string, number, object, is) 
      *
      * @type {number}
      */
-    Helpers.idSalt = new Date().getTime();
+    Helpers.idSalt = number.random(1000, 9999, 1);
 
     /**
      * Порядковый номер для формирования идентификаторов.
