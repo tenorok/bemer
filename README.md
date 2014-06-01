@@ -1064,7 +1064,7 @@ bemer({ block: 'header', content: [4, 9] })
 
 Параметры:
 
-* `{...subject}` `subject` — параметры
+* `{...*}` `subject` — параметры
 
 Возвращают: `{boolean}`
 
@@ -1094,7 +1094,7 @@ bemer({ block: 'header', content: [4, 9] })
 
 Параметры:
 
-* `{...subject}` `subject` — параметры
+* `{...*}` `subject` — параметры
 
 Возвращает: `{string}`
 
@@ -1107,7 +1107,7 @@ bemer({ block: 'header', content: [4, 9] })
 
 Параметры:
 
-* `{...subject}` `subject` — параметры
+* `{...*}` `subject` — параметры
 
 Возвращает: `{boolean}`
 
@@ -1119,6 +1119,6 @@ bemer({ block: 'header', content: [4, 9] })
 
 Параметры:
 
-* `{...subject}` `subject` — параметры
+* `{...*}` `subject` — параметры
 
 Возвращает: `{boolean}`
