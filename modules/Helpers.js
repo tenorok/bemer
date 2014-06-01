@@ -1,4 +1,4 @@
-definer('Helpers', /** @exports Helpers */ function(object, string, number, object, is) {
+definer('Helpers', /** @exports Helpers */ function(string, number, object, is) {
 
     /**
      * Модуль функций-помощников.
@@ -167,105 +167,46 @@ definer('Helpers', /** @exports Helpers */ function(object, string, number, obje
                     }
 
                 },
-                this._getStringHelpers(),
-                this._getNumberHelpers(),
-                this._getObjectHelpers(),
+                this._getHelpersFromModule(string, [
+                    'escape', 'htmlEscape', 'unHtmlEscape',
+                    'collapse', 'stripTags',
+                    'upper', 'lower', 'repeat'
+                ]),
+                this._getHelpersFromModule(number, [
+                    'random'
+                ]),
+                this._getHelpersFromModule(object, [
+                    'extend', 'deepExtend',
+                    'clone', 'deepClone'
+                ]),
                 {
-                    is: this._getIsHelpers()
+                    is: this._getHelpersFromModule(is, [
+                        'string', 'boolean',
+                        'number', 'integer', 'float', 'nan',
+                        'null', 'undefined', 'primitive',
+                        'array', 'argument', 'function', 'native',
+                        'map', 'date', 'regexp',
+                        'type', 'every'
+                    ])
                 }
             );
         },
 
         /**
-         * Получить функции-помощники для работы со строками.
+         * Получить набор функций-помощников из модуля.
          *
          * @private
+         * @param {function} context Класс содержащий помощников
+         * @param {string[]} names Список имён помощников
          * @returns {object}
          */
-        _getStringHelpers: function() {
-
-            /**
-             * Методы описаны в модуле `string`.
-             */
-            return [
-                'escape', 'htmlEscape', 'unHtmlEscape',
-                'collapse', 'stripTags',
-                'upper', 'lower', 'repeat'
-            ].reduce(function(helpers, method) {
-                    helpers[method] = function() {
-                        return string[method].apply(this, arguments);
-                    }.bind(string);
-                    return helpers;
-                }, {});
-        },
-
-        /**
-         * Получить функции-помощники для работы с числами.
-         *
-         * @private
-         * @returns {object}
-         */
-        _getNumberHelpers: function() {
-
-            /**
-             * Методы описаны в модуле `number`.
-             */
-            return [
-                'random'
-            ].reduce(function(helpers, method) {
-                    helpers[method] = function() {
-                        return number[method].apply(this, arguments);
-                    }.bind(number);
-                    return helpers;
-                }, {});
-        },
-
-        /**
-         * Получить функции-помощники для работы с объектами.
-         *
-         * @private
-         * @returns {object}
-         */
-        _getObjectHelpers: function() {
-
-            /**
-             * Методы описаны в модуле `object`.
-             */
-            return [
-                'extend', 'deepExtend',
-                'clone', 'deepClone'
-            ].reduce(function(helpers, method) {
-                    helpers[method] = function() {
-                        return object[method].apply(this, arguments);
-                    }.bind(object);
-                    return helpers;
-                }, {});
-        },
-
-        /**
-         * Получить функции-помощники для работы с типами данных.
-         *
-         * @private
-         * @returns {object}
-         */
-        _getIsHelpers: function() {
-
-            /**
-             * Методы описаны в модуле `is`.
-             */
-            return [
-                'string', 'boolean',
-                'number', 'integer', 'float', 'nan',
-                'null', 'undefined', 'primitive',
-                'array', 'argument', 'function', 'native',
-                'map', 'date', 'regexp',
-                'type', 'every'
-            ].reduce(function(helpers, method) {
-                    helpers[method] = function() {
-                        return is[method].apply(this, arguments);
-                    }.bind(is);
-                    return helpers;
-                }, {});
+        _getHelpersFromModule: function(context, names) {
+            return names.reduce(function(helpers, method) {
+                helpers[method] = function() {
+                    return context[method].apply(this, arguments);
+                }.bind(context);
+                return helpers;
+            }, {});
         }
 
     };
