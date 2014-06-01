@@ -155,7 +155,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
          * пользовательских функций-помощников.
          *
          * @param {string|object} nameOrList Имя функции или карта помощников
-         * @param {Function} [callback] Тело функции
+         * @param {function} [callback] Тело функции
          * @returns {Template}
          */
         helper: function(nameOrList, callback) {

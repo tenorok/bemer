@@ -11,6 +11,8 @@ definer('HelpersTest', function(assert, Helpers) {
                 'collapse', 'stripTags',
                 'upper', 'lower', 'repeat',
 
+                'random',
+
                 'extend', 'deepExtend',
                 'clone', 'deepClone',
 
@@ -18,7 +20,8 @@ definer('HelpersTest', function(assert, Helpers) {
             ].sort());
 
             assert.deepEqual(Object.keys(new Helpers().get().is).sort(), [
-                'string', 'number', 'nan', 'boolean',
+                'string', 'boolean',
+                'number', 'integer', 'float', 'nan',
                 'null', 'undefined', 'primitive',
                 'array', 'argument', 'function', 'native',
                 'map', 'date', 'regexp',

@@ -64,11 +64,12 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('release', function() {
+        release.changeJsonFilesVersion();
+
         grunt.task.run('test', 'clean:test');
         grunt.task.run('clean:jsdoc', 'jsdoc');
         grunt.task.run('clean:release', 'mkdir:release', 'definer:release', 'uglify:release');
 
-        release.changeJsonFilesVersion();
         grunt.task.run('shell:prerelease');
 
         grunt.task.run('prompt:release');

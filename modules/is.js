@@ -46,7 +46,7 @@ definer('is', /** @exports is */ function() {
     /**
      * Проверить параметры на строку.
      *
-     * @param {...subject} subject Параметры
+     * @param {...*} subject Параметры
      * @returns {boolean}
      */
     is.string = function(subject) {
@@ -56,7 +56,7 @@ definer('is', /** @exports is */ function() {
     /**
      * Проверить параметры на число.
      *
-     * @param {...subject} subject Параметры
+     * @param {...*} subject Параметры
      * @returns {boolean}
      */
     is.number = function(subject) {
@@ -64,9 +64,33 @@ definer('is', /** @exports is */ function() {
     };
 
     /**
+     * Проверить параметры на целое число.
+     *
+     * @param {...*} subject Параметры
+     * @returns {boolean}
+     */
+    is.integer = function(subject) {
+        return is.number.apply(this, arguments) && is._every(arguments, function() {
+            return this % 1 === 0;
+        });
+    };
+
+    /**
+     * Проверить параметры на дробное число.
+     *
+     * @param {...*} subject Параметры
+     * @returns {boolean}
+     */
+    is.float = function(subject) {
+        return is.number.apply(this, arguments) && is._every(arguments, function() {
+            return this % 1 !== 0;
+        });
+    };
+
+    /**
      * Проверить параметры на NaN.
      *
-     * @param {...subject} subject Параметры
+     * @param {...*} subject Параметры
      * @returns {boolean}
      */
     is.nan = function(subject) {
@@ -78,7 +102,7 @@ definer('is', /** @exports is */ function() {
     /**
      * Проверить параметры на логический тип.
      *
-     * @param {...subject} subject Параметры
+     * @param {...*} subject Параметры
      * @returns {boolean}
      */
     is.boolean = function(subject) {
@@ -88,7 +112,7 @@ definer('is', /** @exports is */ function() {
     /**
      * Проверить параметры на null.
      *
-     * @param {...subject} subject Параметры
+     * @param {...*} subject Параметры
      * @returns {boolean}
      */
     is.null = function(subject) {
@@ -100,7 +124,7 @@ definer('is', /** @exports is */ function() {
     /**
      * Проверить параметры на undefined.
      *
-     * @param {...subject} subject Параметры
+     * @param {...*} subject Параметры
      * @returns {boolean}
      */
     is.undefined = function(subject) {
@@ -112,7 +136,7 @@ definer('is', /** @exports is */ function() {
     /**
      * Проверить параметры на примитив.
      *
-     * @param {...subject} subject Параметры
+     * @param {...*} subject Параметры
      * @returns {boolean}
      */
     is.primitive = function(subject) {
@@ -124,7 +148,7 @@ definer('is', /** @exports is */ function() {
     /**
      * Проверить параметры на массив.
      *
-     * @param {...subject} subject Параметры
+     * @param {...*} subject Параметры
      * @returns {boolean}
      */
     is.array = function(subject) {
@@ -136,7 +160,7 @@ definer('is', /** @exports is */ function() {
     /**
      * Проверить параметры на аргументы.
      *
-     * @param {...subject} subject Параметры
+     * @param {...*} subject Параметры
      * @returns {boolean}
      */
     is.argument = function(subject) {
@@ -149,7 +173,7 @@ definer('is', /** @exports is */ function() {
     /**
      * Проверить параметры на функцию.
      *
-     * @param {...subject} subject Параметры
+     * @param {...*} subject Параметры
      * @returns {boolean}
      */
     is.function = function(subject) {
@@ -161,7 +185,7 @@ definer('is', /** @exports is */ function() {
     /**
      * Проверить параметры на нативную функцию.
      *
-     * @param {...subject} subject Параметры
+     * @param {...*} subject Параметры
      * @returns {boolean}
      */
     is.native = function(subject) {
@@ -173,7 +197,7 @@ definer('is', /** @exports is */ function() {
     /**
      * Проверить параметры на простой объект (хэш/карту).
      *
-     * @param {...subject} subject Параметры
+     * @param {...*} subject Параметры
      * @returns {boolean}
      */
     is.map = function(subject) {
@@ -201,7 +225,7 @@ definer('is', /** @exports is */ function() {
     /**
      * Проверить параметры на дату.
      *
-     * @param {...subject} subject Параметры
+     * @param {...*} subject Параметры
      * @returns {boolean}
      */
     is.date = function(subject) {
@@ -213,7 +237,7 @@ definer('is', /** @exports is */ function() {
     /**
      * Проверить параметры на регулярное выражение.
      *
-     * @param {...subject} subject Параметры
+     * @param {...*} subject Параметры
      * @returns {boolean}
      */
     is.regexp = function(subject) {
@@ -228,7 +252,7 @@ definer('is', /** @exports is */ function() {
      * Для параметров различных типов данных
      * будет возвращён `mixed`.
      *
-     * @param {...subject} subject Параметры
+     * @param {...*} subject Параметры
      * @returns {string}
      */
     is.type = function(subject) {
@@ -253,7 +277,7 @@ definer('is', /** @exports is */ function() {
     /**
      * Проверить параметры на единый тип данных.
      *
-     * @param {...subject} subject Параметры
+     * @param {...*} subject Параметры
      * @returns {boolean}
      */
     is.every = function(subject) {
