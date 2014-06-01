@@ -30,6 +30,27 @@ definer('isTest', function(assert, is) {
             assert.isFalse(is.number(1, 2, 'c'));
         });
 
+        it('Проверка на целое число', function() {
+            assert.isTrue(is.integer(1));
+            assert.isTrue(is.integer(7));
+            assert.isTrue(is.integer(45));
+            assert.isTrue(is.integer(new Number(100), 200));
+            assert.isTrue(is.integer(200.0), 'фактически целое число');
+
+            assert.isFalse(is.integer(1.1));
+            assert.isFalse(is.integer(10, 200.01));
+        });
+
+        it('Проверка на дробное число', function() {
+            assert.isTrue(is.float(1.1));
+            assert.isTrue(is.float(7.2));
+            assert.isTrue(is.float(45.8));
+            assert.isTrue(is.float(new Number(100.2), 200.3));
+
+            assert.isFalse(is.float(1));
+            assert.isFalse(is.float(10, 200.01));
+        });
+
         it('Проверка на NaN', function() {
             assert.isTrue(is.nan(NaN));
             assert.isTrue(is.nan(NaN, NaN));

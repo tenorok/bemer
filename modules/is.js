@@ -64,6 +64,30 @@ definer('is', /** @exports is */ function() {
     };
 
     /**
+     * Проверить параметры на целое число.
+     *
+     * @param {...*} subject Параметры
+     * @returns {boolean}
+     */
+    is.integer = function(subject) {
+        return is.number.apply(this, arguments) && is._every(arguments, function() {
+            return this % 1 === 0;
+        });
+    };
+
+    /**
+     * Проверить параметры на дробное число.
+     *
+     * @param {...*} subject Параметры
+     * @returns {boolean}
+     */
+    is.float = function(subject) {
+        return is.number.apply(this, arguments) && is._every(arguments, function() {
+            return this % 1 !== 0;
+        });
+    };
+
+    /**
      * Проверить параметры на NaN.
      *
      * @param {...*} subject Параметры
