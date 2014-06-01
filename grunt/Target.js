@@ -16,6 +16,7 @@ Target.definer = function() {
             'object',
             'is',
             'functions',
+            'number',
             'bemer'
         ],
 
