@@ -58,7 +58,7 @@ definer.export('bemer', /** @exports bemer */ function(Tree, Template, Pool, fun
      * Добавить пользовательскую функцию-помощник.
      *
      * @param {string} name Имя функции
-     * @param {Function} callback Тело функции
+     * @param {function} callback Тело функции
      * @returns {bemer}
      */
     bemer.helper = function(name, callback) {

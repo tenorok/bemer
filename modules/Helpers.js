@@ -66,7 +66,7 @@ definer('Helpers', /** @exports Helpers */ function(string, number, object, is) 
          * Добавить пользовательскую функцию-помощник.
          *
          * @param {string} name Имя функции
-         * @param {Function} callback Тело функции
+         * @param {function} callback Тело функции
          * @returns {Helpers}
          */
         add: function(name, callback) {
