@@ -1,4 +1,4 @@
-definer('Helpers', /** @exports Helpers */ function(object, string, object, is) {
+definer('Helpers', /** @exports Helpers */ function(object, string, number, object, is) {
 
     /**
      * Модуль функций-помощников.
@@ -168,6 +168,7 @@ definer('Helpers', /** @exports Helpers */ function(object, string, object, is) 
 
                 },
                 this._getStringHelpers(),
+                this._getNumberHelpers(),
                 this._getObjectHelpers(),
                 {
                     is: this._getIsHelpers()
@@ -194,6 +195,27 @@ definer('Helpers', /** @exports Helpers */ function(object, string, object, is) 
                     helpers[method] = function() {
                         return string[method].apply(this, arguments);
                     }.bind(string);
+                    return helpers;
+                }, {});
+        },
+
+        /**
+         * Получить функции-помощники для работы с числами.
+         *
+         * @private
+         * @returns {object}
+         */
+        _getNumberHelpers: function() {
+
+            /**
+             * Методы описаны в модуле `number`.
+             */
+            return [
+                'random'
+            ].reduce(function(helpers, method) {
+                    helpers[method] = function() {
+                        return number[method].apply(this, arguments);
+                    }.bind(number);
                     return helpers;
                 }, {});
         },
@@ -232,7 +254,8 @@ definer('Helpers', /** @exports Helpers */ function(object, string, object, is) 
              * Методы описаны в модуле `is`.
              */
             return [
-                'string', 'number', 'nan', 'boolean',
+                'string', 'boolean',
+                'number', 'integer', 'float', 'nan',
                 'null', 'undefined', 'primitive',
                 'array', 'argument', 'function', 'native',
                 'map', 'date', 'regexp',

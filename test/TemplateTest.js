@@ -604,6 +604,15 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                     );
                 });
 
+                it('Получить случайное число от 100 до 999 с шагом 2', function() {
+                    new Template('name', {
+                        content: function() {
+                            var rand = this.random(100, 999, 2);
+                            assert.isTrue(rand >= 100 && rand < 999 && rand % 2 === 0);
+                        }
+                    }).match({ block: 'name' });
+                });
+
                 it('Получить сформированный идентификатор', function() {
                     var template = new Template('name', {
                         js: false,
