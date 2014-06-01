@@ -13,7 +13,7 @@ definer('numberTest', function(assert, number) {
 
         it('Получить случайное число от 10 до 100 с шагом 5', function() {
             var rand = number.random(10, 100, 5);
-            assert.isTrue(rand > 10 && rand < 100 && rand % 5 === 0);
+            assert.isTrue(rand >= 10 && rand < 100 && rand % 5 === 0);
         });
 
     });
