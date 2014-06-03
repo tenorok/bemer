@@ -79,7 +79,12 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
                         elemData.context = data.context;
                     }
 
-                    var node = this[is.array(elem) ? '_getContent' : '_getNode'](elem, elemData);
+                    var node;
+                    if(is.array(elem)) {
+                        node = this._getContent(elem, data);
+                    } else {
+                        node = this._getNode(elem, elemData)
+                    }
 
                     if(is.array(node)) {
                         list = list.concat(node);
