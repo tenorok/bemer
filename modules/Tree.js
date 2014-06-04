@@ -79,7 +79,19 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
                         elemData.context = data.context;
                     }
 
-                    list.push(this._getNode(elem, elemData));
+                    var node;
+                    if(is.array(elem)) {
+                        node = this._getContent(elem, data);
+                    } else {
+                        node = this._getNode(elem, elemData)
+                    }
+
+                    if(is.array(node)) {
+                        list = list.concat(node);
+                    } else {
+                        list.push(node);
+                    }
+
                     return list;
                 }.bind(this), []);
             }

@@ -114,9 +114,9 @@ definer('TemplateTest', function(assert, Template, Helpers) {
 
         it('Установить блоку содержимое', function() {
             assert.equal(new Template('name', {
-                content: '>>Заэкранированный текст<<'
+                content: 'просто текст'
             }).match({ block: 'name' }).toString(),
-                '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">&gt;&gt;Заэкранированный текст&lt;&lt;</div>'
+                '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">просто текст</div>'
             );
             assert.equal(new Template('name', {
                 content: ['первый', ' и ', 'второй']
@@ -128,6 +128,40 @@ definer('TemplateTest', function(assert, Template, Helpers) {
             }).match({ block: 'name', content: 'два' }).toString(),
                 '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">два</div>'
             );
+        });
+
+        describe('Экранирование содержимого.', function() {
+
+            it('Строка в содержимом', function() {
+                assert.equal(new Template('name', {
+                    content: '>>экранирование<<'
+                }).match({ block: 'name' }).toString(),
+                    '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">&gt;&gt;экранирование&lt;&lt;</div>'
+                );
+            });
+
+            it('Массив в содержимом', function() {
+                assert.equal(new Template('name', {
+                    content: [
+                        '>раз<',
+                        '&"два"'
+                    ]
+                }).match({ block: 'name' }).toString(),
+                    '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">&gt;раз&lt;&amp;&quot;два&quot;</div>'
+                );
+            });
+
+            it('Вложенный массив в содержимом', function() {
+                assert.equal(new Template('name', {
+                    content: [
+                        '>раз<',
+                        ['&"два"']
+                    ]
+                }).match({ block: 'name' }).toString(),
+                    '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">&gt;раз&lt;&amp;&quot;два&quot;</div>'
+                );
+            });
+
         });
 
         describe('Несколько селекторов.', function() {
