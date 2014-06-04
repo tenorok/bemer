@@ -93,6 +93,36 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     '</div>');
             });
 
+            it('Вложенные массивы', function() {
+                var tree = new Tree({ block: 'a', content: [
+                        [{ block: 'b' }],
+                        [
+                            { block: 'c' },
+                            [
+                                { block: 'd' },
+                                [
+                                    { block: 'e' },
+                                    { block: 'f' },
+                                    [{ block: 'g', content: [{ block: 'h' }] }]
+                                ]
+                            ]
+                        ]
+                    ] },
+                    new Pool().add(new Template('*', { js: false }))
+                );
+                assert.equal(tree.toString(),
+                    '<div class="a">' +
+                        '<div class="b"></div>' +
+                        '<div class="c"></div>' +
+                        '<div class="d"></div>' +
+                        '<div class="e"></div>' +
+                        '<div class="f"></div>' +
+                        '<div class="g">' +
+                            '<div class="h"></div>' +
+                        '</div>' +
+                    '</div>');
+            });
+
             it('Массив вложенных блоков и примитивов', function() {
                 var tree = new Tree({ block: 'a', content: [{ block: 'b' }, 'text', { block: 'c' }] },
                     new Pool().add(new Template('b', 'c', { js: false }))
@@ -490,7 +520,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
 
         });
 
-        describe('Использование входящих параметров в модах при отсутствии одноимённых полей в bemjson', function() {
+        describe('Использование входящих параметров в модах при отсутствии одноимённых полей в bemjson.', function() {
 
             it('content', function() {
                 var tree = new Tree({ block: 'a' }, new Pool().add(new Template('a', {

@@ -108,6 +108,26 @@ definer('bemerTest', function(assert, bemer, Helpers) {
             });
         });
 
+        it('Использование this.data для вложенных массивов', function() {
+            bemer.match('name_theme_red__a', 'name_theme_red__b', {
+                content: function() {
+                    assert.equal(this.data.index, 0);
+                    assert.equal(this.data.length, 2);
+                    assert.equal(this.data.context.block, 'name');
+                }
+            });
+            bemer({
+                block: 'name',
+                mods: { theme: 'red' },
+                content: [
+                    [
+                        { elem: 'a' },
+                        [{ elem: 'b' }, { elem: 'c' }]
+                    ]
+                ]
+            });
+        });
+
         describe('Изменить стандартные настройки шаблонизатора.', function() {
 
             it('Изменение разделителя блока и элемента', function() {
