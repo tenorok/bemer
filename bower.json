@@ -1,0 +1,7 @@
+{
+    "dependencies": {
+        "bemer": "~0.1.0",
+        "bemer-components": "~0.1.0",
+        "i-bem": "~0.1.0"
+    }
+}

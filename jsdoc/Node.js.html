@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Node.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Node.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>definer('Node', /** @exports Node */ function(Tag, Name, object) {
+
+    /**
+     * Модуль работы с БЭМ-узлом.
+     *
+     * @constructor
+     * @param {Object} node БЭМ-узел
+     */
+    function Node(node) {
+
+        /**
+         * БЭМ-узел.
+         *
+         * @private
+         * @type {object}
+         */
+        this._node = node;
+
+        /**
+         * Экземпляр тега.
+         *
+         * @private
+         * @type {Tag}
+         */
+        this._tag = new Tag(node.tag).attr(node.attrs || {});
+
+        /**
+         * Экземпляр имени БЭМ-сущности.
+         *
+         * @private
+         * @type {Name}
+         */
+        this._name = this.getName();
+
+        /**
+         * Список информационных объектов о примиксованных сущностях.
+         *
+         * @private
+         * @type {array}
+         */
+        this._mix = this.getMix();
+
+        /**
+         * Параметры узла.
+         *
+         * @private
+         * @type {object}
+         */
+        this._params = this.getParams();
+    }
+
+    /**
+     * Имя класса для js-инициализации.
+     *
+     * @type {string}
+     */
+    Node.bemClass = 'i-bem';
+
+    /**
+     * Имя атрибута для хранения параметров инициализации.
+     *
+     * @type {string}
+     */
+    Node.bemAttr = 'data-bem';
+
+    Node.prototype = {
+
+        /**
+         * Проверить узел на блок.
+         *
+         * @returns {boolean}
+         */
+        isBlock: function() {
+            return !this.isElem();
+        },
+
+        /**
+         * Проверить узел на элемент.
+         *
+         * @returns {boolean}
+         */
+        isElem: function() {
+            return !!this._node.elem;
+        },
+
+        /**
+         * Получить экземпляр имени базовой БЭМ-сущности.
+         *
+         * Это может быть блок или элемент блока.
+         *
+         * @returns {Name}
+         */
+        getName: function() {
+
+            var name = new Name(this._node.block);
+
+            if(this.isElem()) {
+                name.elem(this._node.elem);
+            }
+
+            return name;
+        },
+
+        /**
+         * Получить параметры узла.
+         *
+         * @returns {object}
+         */
+        getParams: function() {
+            var params = {};
+
+            if(this._node.js) {
+                params[this._name.toString()] = this._node.js === true ? {} : this._node.js;
+            }
+
+            return this._mix.reduce(function(params, mixNode) {
+                return object.extend(params, mixNode.params);
+            }, params);
+        },
+
+        /**
+         * Получить информацию о примиксованных сущностях.
+         *
+         * @returns {array}
+         */
+        getMix: function() {
+            if(!this._node.mix) return [];
+
+            return this._node.mix.reduce(function(mix, mixNode) {
+                if(!mixNode) return mix;
+
+                var node = new Node(mixNode);
+                mix.push({
+                    name: node.getName().toString(),
+                    params: node.getParams(),
+                    classes: node.getClass()
+                });
+                return mix;
+            }, []);
+        },
+
+        /**
+         * Получить список классов узла.
+         *
+         * @returns {string[]}
+         */
+        getClass: function() {
+            var node = this._node;
+
+            if(node.cls) {
+                this._tag.addClass(node.cls.split(' ').filter(function(cls) { return cls; }));
+            }
+
+            if(node.bem === false) return this._tag.getClass();
+
+            if(this.isBlock() || this.isElem() &amp;&amp; object.isEmpty(node.mods)) {
+                this._tag.addClass(this._name.toString());
+            }
+
+            if(!object.isEmpty(this._params)) {
+                this._tag.addClass(Node.bemClass);
+            }
+
+            if(!object.isEmpty(node.mods)) {
+                this._tag.addClass(this._getModsClasses('mod'));
+            }
+
+            if(this.isElem() &amp;&amp; !object.isEmpty(node.elemMods)) {
+                this._tag.addClass(this._getElemModsClasses());
+            }
+
+            this._tag.addClass(this._mix.reduce(function(mixClasses, mixNode) {
+                return mixClasses.concat(mixNode.classes);
+            }, []));
+
+            return this._tag.getClass();
+        },
+
+        /**
+         * Получить/установить содержимое узла.
+         *
+         * @param {*} [content] Содержимое
+         * @returns {*|Node}
+         */
+        content: function(content) {
+            if(content === undefined) return this._node.content || '';
+
+            this._node.content = content;
+            return this;
+        },
+
+        /**
+         * Получить строковое представление узла.
+         *
+         * @returns {string}
+         */
+        toString: function() {
+            this.getClass();
+
+            if(!object.isEmpty(this._params)) {
+                this._tag.attr(Node.bemAttr, this._params);
+            }
+
+            if(this._node.content) {
+                this._tag.addContent(this._node.content);
+            }
+
+            return this._tag.toString();
+        },
+
+        /**
+         * Получить список классов модификаторов узла.
+         *
+         * @private
+         * @param {string} method Имя метода для установки модификаторов
+         * @returns {string[]}
+         */
+        _getModsClasses: function(method) {
+            var mods = this._node[method + 's'];
+            return Object.keys(mods).reduce(function(classes, key) {
+                classes.push(this._name[method](key, mods[key]).toString());
+                return classes;
+            }.bind(this), []);
+        },
+
+        /**
+         * Получить список классов модификаторов элемента.
+         *
+         * @private
+         * @returns {string[]}
+         */
+        _getElemModsClasses: function() {
+            if(!object.isEmpty(this._node.mods)) {
+                return Object.keys(this._node.mods).reduce(function(classes, key) {
+                    this._name.mod(key, this._node.mods[key]);
+                    return classes.concat(this._getModsClasses('elemMod'));
+                }.bind(this), []);
+            }
+
+            return this._getModsClasses('elemMod');
+        }
+
+    };
+
+    return Node;
+
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-bemer.html">bemer</a></li><li><a href="module-functions.html">functions</a></li><li><a href="module-Helpers.html">Helpers</a></li><li><a href="module-is.html">is</a></li><li><a href="module-Match.html">Match</a></li><li><a href="module-Name.html">Name</a></li><li><a href="module-Node.html">Node</a></li><li><a href="module-number.html">number</a></li><li><a href="module-object.html">object</a></li><li><a href="module-Pool.html">Pool</a></li><li><a href="module-string.html">string</a></li><li><a href="module-Tag.html">Tag</a></li><li><a href="module-Template.html">Template</a></li><li><a href="module-Tree.html">Tree</a></li></ul><h3>Classes</h3><ul><li><a href="module-bemer-bemer.html">bemer</a></li><li><a href="module-functions-functions.html">functions</a></li><li><a href="module-Helpers-Helpers.html">Helpers</a></li><li><a href="module-is-is.html">is</a></li><li><a href="module-Match-Match.html">Match</a></li><li><a href="module-Name-Name.html">Name</a></li><li><a href="module-Node-Node.html">Node</a></li><li><a href="module-number-number.html">number</a></li><li><a href="module-object-object.html">object</a></li><li><a href="module-Pool-Pool.html">Pool</a></li><li><a href="module-string-string.html">string</a></li><li><a href="module-Tag-Tag.html">Tag</a></li><li><a href="module-Template-Template.html">Template</a></li><li><a href="module-Tree-Tree.html">Tree</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sun Jun 01 2014 22:39:23 GMT+0400 (MSK)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
