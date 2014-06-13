@@ -3,7 +3,8 @@
     "dependencies": {
         "bemer": "~0.1.0",
         "bemer-components": "~0.1.0",
-        "i-bem": "~0.1.0"
+        "i-bem": "~0.1.0",
+        "normalize.css": "~3.0.1"
     },
     "private": true
 }
