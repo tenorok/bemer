@@ -1,0 +1,16 @@
+.ace {
+    position: relative;
+    overflow: auto;
+
+    width: 500px;
+    height: 260px;
+
+    border: 1px dashed #aaa;
+    background: #2D2D2D;
+    color: #99CC99;
+
+    font: 14px Courier, monospace;
+}
+.ace::selection {
+    background: #aaa;
+}

@@ -4,7 +4,8 @@
         "bemer": "~0.1.0",
         "bemer-components": "~0.1.0",
         "i-bem": "~0.1.0",
-        "normalize.css": "~3.0.1"
+        "normalize.css": "~3.0.1",
+        "ace-builds": "~1.1.3"
     },
     "private": true
 }
