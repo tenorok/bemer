@@ -1,0 +1,22 @@
+{
+    "name": "i-bem",
+    "version": "0.1.4",
+    "main": "i-bem/i-bem.js",
+    "license": "MIT",
+    "ignore": [
+        ".bem",
+        "**/.*",
+        "blocks",
+        "i-bem",
+        "tasks",
+        "techs",
+        "*.md",
+        "Gruntfile.js",
+        "package.json"
+    ],
+    "keywords": [
+        "bem",
+        "i-bem",
+        "library"
+    ]
+}

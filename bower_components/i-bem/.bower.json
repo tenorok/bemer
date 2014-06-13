@@ -1,0 +1,32 @@
+{
+  "name": "i-bem",
+  "version": "0.1.4",
+  "main": "i-bem/i-bem.js",
+  "license": "MIT",
+  "ignore": [
+    ".bem",
+    "**/.*",
+    "blocks",
+    "i-bem",
+    "tasks",
+    "techs",
+    "*.md",
+    "Gruntfile.js",
+    "package.json"
+  ],
+  "keywords": [
+    "bem",
+    "i-bem",
+    "library"
+  ],
+  "homepage": "https://github.com/tenorok/get-i-bem",
+  "_release": "0.1.4",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.1.4",
+    "commit": "adc651d36d38359ef06aaa65c2a7bfcd82db6a3f"
+  },
+  "_source": "git://github.com/tenorok/get-i-bem.git",
+  "_target": "~0.1.0",
+  "_originalSource": "i-bem"
+}
