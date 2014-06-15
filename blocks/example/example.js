@@ -23,21 +23,40 @@ BEM.DOM.decl('example', {
 
     setDefaultTemplates: function() {
         this.editors.templates.val(
-            "bemer.match('header', {\n" +
-            "   tag: 'header'\n" +
-            "});"
+            "bemer\n" +
+            "   .match('header', {\n" +
+            "       js: false,\n" +
+            "       tag: 'header',\n" +
+            "       content: function() {\n" +
+            "           return {\n" +
+            "               elem: 'title',\n" +
+            "               content: this.bemjson.title\n" +
+            "           };\n" +
+            "       }\n" +
+            "   })\n" +
+            "   .match('header__title', {\n" +
+            "       tag: 'h1',\n" +
+            "       content: function(content) {\n" +
+            "           return content + '!';\n" +
+            "       }\n" +
+            "   });"
         );
         return this;
     },
 
     setDefaultBEMJSON: function() {
         this.editors.bemjson.val(
-            "({ block: 'header' });"
+            "({\n" +
+            "   block: 'header',\n" +
+            "   title: 'Hello World'\n" +
+            "});"
         );
         return this;
     },
 
     setResult: function() {
+        bemer.clean();
+
         try { eval(this.editors.templates.val()); } catch(e) {
             console.log(e);
         }
