@@ -1,5 +1,12 @@
 .description {
     width: 500px;
+    margin-left: -20px;
+    padding: 1px 20px;
+
+    border-radius: 10px;
+
+    background: rgba(0, 0, 0, 0.1);
+    color: #382516;
 }
 
 .description__paragraph {
