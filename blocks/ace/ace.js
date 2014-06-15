@@ -8,6 +8,15 @@ BEM.DOM.decl('ace', {
                 this.editor.getSession().setMode('ace/mode/' + this.params.mode);
             }
         }
+    },
+
+    val: function(value) {
+        if(value) {
+            this.editor.setValue(value, 1);
+            return this;
+        }
+
+        return this.editor.getValue();
     }
 
 });
