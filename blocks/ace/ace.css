@@ -2,8 +2,7 @@
     position: relative;
     overflow: auto;
 
-    width: 500px;
-    height: 260px;
+    display: inline-block;
 
     border: 1px dashed #aaa;
     background: #2D2D2D;

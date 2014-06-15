@@ -1,0 +1,32 @@
+.example {
+    width: 904px;
+    margin: 0 auto;
+}
+
+.example__templates,
+.example__bemjson,
+.example__result {
+    vertical-align: top;
+}
+
+
+.example__templates,
+.example__bemjson {
+    width: 440px;
+    height: 300px;
+
+    margin-bottom: 20px;
+}
+
+.example__templates {
+    margin-right: 10px;
+}
+
+.example__bemjson {
+    margin-left: 10px;
+}
+
+.example__result {
+    width: 902px;
+    height: 150px;
+}
