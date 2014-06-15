@@ -1,0 +1,7 @@
+.description {
+    width: 500px;
+}
+
+.description__paragraph {
+    line-height: 20px;
+}
