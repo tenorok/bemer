@@ -1,0 +1,13 @@
+.header {
+    margin-bottom: 25px;
+
+    text-align: center;
+}
+
+.header__title {
+    color: #E8710C;
+    text-shadow: 1px 1px #6F5037;
+    font-size: 54px;
+}
+
+.header__description {}
