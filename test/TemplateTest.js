@@ -162,6 +162,18 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                 );
             });
 
+            it('Массив в содержимом шаблона и BEMJSON', function() {
+                assert.equal(new Template('name', {
+                    content: [
+                        '>два<',
+                        '&"три"'
+                    ]
+                }).match({ block: 'name', content: ['<раз>'] }).toString(),
+                    '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">' +
+                        '&lt;раз&gt;&gt;два&lt;&amp;&quot;три&quot;</div>'
+                );
+            });
+
         });
 
         describe('Несколько селекторов.', function() {
@@ -360,19 +372,19 @@ definer('TemplateTest', function(assert, Template, Helpers) {
 
                 });
 
-                it('Массивы конкатенируются', function() {
+                it('Массивы не конкатенируются', function() {
                     assert.equal(new Template('name', { mix: function() { return [{ block: 'mix2' }]; }}).match({
                         block: 'name', mix: [{ block: 'mix1' }]
                     }).toString(),
-                        '<div class="name i-bem mix1 mix2" data-bem="{&quot;name&quot;:{}}"></div>'
+                        '<div class="name i-bem mix2" data-bem="{&quot;name&quot;:{}}"></div>'
                     );
                 });
 
-                it('Объекты (карты) наследуются с приоритетом у шаблона', function() {
+                it('Объекты (карты) не наследуются', function() {
                     assert.equal(new Template('name', { mods: function() { return { a: 'b' }; }}).match({
                         block: 'name', mods: { a: 'c', d: 'e' }
                     }).toString(),
-                        '<div class="name i-bem name_a_b name_d_e" data-bem="{&quot;name&quot;:{}}"></div>'
+                        '<div class="name i-bem name_a_b" data-bem="{&quot;name&quot;:{}}"></div>'
                     );
                 });
 
