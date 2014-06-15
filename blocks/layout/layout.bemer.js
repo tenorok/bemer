@@ -27,7 +27,14 @@ bemer.match('layout', {
                             },
                             '.'
                         ],
-                        'Bemer — шаблонизатор, стремящийся идти по пути упрощения работы с БЭМ. Он должен быть очень удобным для разработки малых и средних проектов.',
+                        [
+                            {
+                                block: 'link',
+                                href: 'https://github.com/tenorok/bemer#bemer--%D0%91%D0%AD%D0%9C-%D1%88%D0%B0%D0%B1%D0%BB%D0%BE%D0%BD%D0%B8%D0%B7%D0%B0%D1%82%D0%BE%D1%80',
+                                content: 'Bemer'
+                            },
+                            ' — шаблонизатор, стремящийся идти по пути упрощения работы с БЭМ. Он должен быть очень удобным для разработки малых и средних проектов.'
+                        ],
                         [
                             'Исходный код шаблонизатора разделён на ',
                             {
@@ -61,7 +68,7 @@ bemer.match('layout', {
             content: [
                 {
                     elem: 'templates',
-                    title: 'Шаблоны',
+                    title: 'Декларируем шаблоны',
                     content: {
                         block: 'ace',
                         mode: 'javascript'
@@ -69,7 +76,14 @@ bemer.match('layout', {
                 },
                 {
                     elem: 'bemjson',
-                    title: 'BEMJSON',
+                    title: [
+                        'Подаём входящие данные в формате ',
+                        {
+                            block: 'link',
+                            href: 'http://ru.bem.info/tools/templating-engines/BEMHTML/#bemjson',
+                            content: 'BEMJSON'
+                        }
+                    ],
                     content: {
                         block: 'ace',
                         mode: 'javascript'
@@ -77,7 +91,7 @@ bemer.match('layout', {
                 },
                 {
                     elem: 'result',
-                    title: 'Результирующий HTML',
+                    title: 'Получаем результирующий HTML',
                     content: {
                         block: 'ace',
                         mode: 'html'
