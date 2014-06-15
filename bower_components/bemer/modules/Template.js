@@ -223,12 +223,8 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
         /**
          * Получить значение моды.
          *
-         * Значения в виде массивов конкатенируются.
-         *
-         * Значения в виде объектов (карт) наследуются.
-         *
-         * Если значение в шаблоне скалярное, то приоритет у BEMJSON.
-         * Если значение в шаблоне задано функцией, то приоритет у шаблона.
+         * Если значение в шаблоне скалярное, то массивы конкатенируются,
+         * а объекты (карты) наследуются с приоритетом у BEMJSON.
          *
          * @private
          * @param {Object} modes Экземпляр класса по модам
@@ -242,12 +238,12 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
                 val = isValFunc ? modes[name].call(modes, bemjsonVal) : modes[name],
                 priorityVal = this._getPriorityValue(isValFunc, val, bemjsonVal);
 
-            if(is.array(val, bemjsonVal)) {
-                return bemjsonVal.concat(val);
-            } else if(is.map(val, bemjsonVal)) {
-                return isValFunc
-                    ? object.extend(bemjsonVal, val)
-                    : object.extend(object.clone(val), bemjsonVal);
+            if(!isValFunc) {
+                if(is.array(val, bemjsonVal)) {
+                    priorityVal = bemjsonVal.concat(val);
+                } else if(is.map(val, bemjsonVal)) {
+                    priorityVal = object.extend(object.clone(val), bemjsonVal);
+                }
             }
 
             if(name === 'content') {

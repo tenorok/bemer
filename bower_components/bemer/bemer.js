@@ -174,8 +174,8 @@ defineAsGlobal && (global.inherit = inherit);
  * @file Template engine. BEMJSON to HTML processor.
  * @copyright 2014 Artem Kurbatov, tenorok.ru
  * @license MIT license
- * @version 0.1.3
- * @date 4 June 2014
+ * @version 0.2.0
+ * @date 15 June 2014
  */
 (function(global, undefined) {
 var definer = {
@@ -2419,12 +2419,8 @@ Template = (function (Match, classify, Node, Name, Helpers, object, string, is) 
         /**
          * Получить значение моды.
          *
-         * Значения в виде массивов конкатенируются.
-         *
-         * Значения в виде объектов (карт) наследуются.
-         *
-         * Если значение в шаблоне скалярное, то приоритет у BEMJSON.
-         * Если значение в шаблоне задано функцией, то приоритет у шаблона.
+         * Если значение в шаблоне скалярное, то массивы конкатенируются,
+         * а объекты (карты) наследуются с приоритетом у BEMJSON.
          *
          * @private
          * @param {Object} modes Экземпляр класса по модам
@@ -2438,12 +2434,12 @@ Template = (function (Match, classify, Node, Name, Helpers, object, string, is) 
                 val = isValFunc ? modes[name].call(modes, bemjsonVal) : modes[name],
                 priorityVal = this._getPriorityValue(isValFunc, val, bemjsonVal);
 
-            if(is.array(val, bemjsonVal)) {
-                return bemjsonVal.concat(val);
-            } else if(is.map(val, bemjsonVal)) {
-                return isValFunc
-                    ? object.extend(bemjsonVal, val)
-                    : object.extend(object.clone(val), bemjsonVal);
+            if(!isValFunc) {
+                if(is.array(val, bemjsonVal)) {
+                    priorityVal = bemjsonVal.concat(val);
+                } else if(is.map(val, bemjsonVal)) {
+                    priorityVal = object.extend(object.clone(val), bemjsonVal);
+                }
             }
 
             if(name === 'content') {
