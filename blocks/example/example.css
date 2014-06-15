@@ -3,9 +3,17 @@
     margin: 0 auto;
 }
 
+.example__title {
+    line-height: 22px;
+}
+
 .example__templates,
 .example__bemjson,
 .example__result {
+    position: relative;
+
+    display: inline-block;
+
     vertical-align: top;
 }
 

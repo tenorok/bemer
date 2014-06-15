@@ -10,19 +10,28 @@ bemer.match('layout', {
             block: 'example',
             content: [
                 {
-                    block: 'ace',
-                    mode: 'javascript',
-                    mix: [{ block: 'example', elem: 'templates' }]
+                    elem: 'templates',
+                    title: 'Шаблоны',
+                    content: {
+                        block: 'ace',
+                        mode: 'javascript'
+                    }
                 },
                 {
-                    block: 'ace',
-                    mode: 'javascript',
-                    mix: [{ block: 'example', elem: 'bemjson' }]
+                    elem: 'bemjson',
+                    title: 'BEMJSON',
+                    content: {
+                        block: 'ace',
+                        mode: 'javascript'
+                    }
                 },
                 {
-                    block: 'ace',
-                    mode: 'html',
-                    mix: [{ block: 'example', elem: 'result' }]
+                    elem: 'result',
+                    title: 'Результирующий HTML',
+                    content: {
+                        block: 'ace',
+                        mode: 'html'
+                    }
                 }
             ]
         }

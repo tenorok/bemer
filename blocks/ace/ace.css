@@ -1,8 +1,12 @@
 .ace {
-    position: relative;
-    overflow: auto;
+    position: absolute;
 
-    display: inline-block;
+    top: 22px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    overflow: auto;
 
     border: 1px dashed #aaa;
     background: #2D2D2D;

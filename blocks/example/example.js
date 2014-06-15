@@ -4,9 +4,9 @@ BEM.DOM.decl('example', {
         js: {
             inited: function() {
                 this.editors = {
-                    templates: this.findBlockOn(this.elem('templates'), 'ace'),
-                    bemjson: this.findBlockOn(this.elem('bemjson'), 'ace'),
-                    result: this.findBlockOn(this.elem('result'), 'ace')
+                    templates: this.findBlockInside(this.elem('templates'), 'ace'),
+                    bemjson: this.findBlockInside(this.elem('bemjson'), 'ace'),
+                    result: this.findBlockInside(this.elem('result'), 'ace')
                 };
             }
         }
