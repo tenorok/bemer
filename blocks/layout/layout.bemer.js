@@ -74,7 +74,11 @@ bemer.match('layout', {
                     },
                     content: {
                         block: 'ace',
-                        mode: 'javascript'
+                        js: {
+                            mode: 'javascript',
+                            minLines: 17,
+                            maxLines: 45
+                        }
                     }
                 },
                 {
@@ -89,7 +93,11 @@ bemer.match('layout', {
                     ],
                     content: {
                         block: 'ace',
-                        mode: 'javascript'
+                        js: {
+                            mode: 'javascript',
+                            minLines: 17,
+                            maxLines: 45
+                        }
                     }
                 },
                 {
@@ -101,7 +109,9 @@ bemer.match('layout', {
                     },
                     content: {
                         block: 'ace',
-                        mode: 'html'
+                        js: {
+                            mode: 'html'
+                        }
                     }
                 }
             ]

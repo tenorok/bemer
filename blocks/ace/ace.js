@@ -9,7 +9,8 @@ BEM.DOM.decl('ace', {
                 this.editor.getSession().setUseWrapMode(true);
 
                 this.editor.setOptions({
-                    maxLines: Infinity
+                    minLines: this.params.minLines || 0,
+                    maxLines: this.params.maxLines || Infinity
                 });
             }
         }
