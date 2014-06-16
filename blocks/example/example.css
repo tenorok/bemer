@@ -21,7 +21,7 @@
 .example__templates,
 .example__bemjson {
     width: 440px;
-    height: 300px;
+    min-height: 300px;
 
     margin-bottom: 20px;
 }

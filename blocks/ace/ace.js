@@ -6,6 +6,11 @@ BEM.DOM.decl('ace', {
                 this.editor = ace.edit(this.domElem.attr('id'));
                 this.editor.setTheme('ace/theme/' + this.params.theme);
                 this.editor.getSession().setMode('ace/mode/' + this.params.mode);
+                this.editor.getSession().setUseWrapMode(true);
+
+                this.editor.setOptions({
+                    maxLines: Infinity
+                });
             }
         }
     },

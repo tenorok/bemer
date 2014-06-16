@@ -66,7 +66,7 @@ BEM.DOM.decl('example', {
         }
 
         if(window.bemjson) {
-            this.editors.result.val(bemer(window.bemjson));
+            this.editors.result.val(style_html(bemer(window.bemjson)));
         }
 
         return this;
