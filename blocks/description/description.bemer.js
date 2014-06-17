@@ -1,20 +1,20 @@
-bemer.match('description', {
+bemer
+    .match('description', {
 
-    js: false,
+        js: false,
 
-    content: function(content) {
-        return content.map(function(paragraph) {
-            return {
-                elem: 'paragraph',
-                content: paragraph
-            };
-        });
-    }
+        content: function(content) {
+            return content.map(function(paragraph) {
+                return {
+                    elem: 'paragraph',
+                    content: paragraph
+                };
+            });
+        }
 
-});
+    })
+    .match('description__paragraph', {
 
-bemer.match('description__paragraph', {
+        tag: 'p'
 
-    tag: 'p'
-
-});
+    });

@@ -1,5 +1,6 @@
 .download {
     display: inline-block;
+    margin-bottom: 25px;
 }
 
 .download__link {

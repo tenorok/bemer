@@ -3,5 +3,14 @@
     vertical-align: top;
 
     width: 300px;
-    padding-left: 60px;
+    padding: 20px 0 0 60px;
+}
+
+.install__paragraph {
+    font-size: 14px;
+}
+
+.install__hint {
+    margin-left: 10px;
+    color: #777;
 }

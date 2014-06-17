@@ -62,12 +62,10 @@ bemer.match('layout', {
                 },
                 {
                     block: 'install',
-                    content: [
-                        {
-                            block: 'download',
-                            version: '0.2.0'
-                        }
-                    ]
+                    version: '0.2.0',
+                    size: {
+                        min: 19
+                    }
                 }
             ]
         },
