@@ -1,4 +1,6 @@
 .description {
+    display: inline-block;
+
     width: 500px;
     margin-left: -20px;
     padding: 1px 20px;
