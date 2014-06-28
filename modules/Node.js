@@ -162,7 +162,8 @@ definer('Node', /** @exports Node */ function(Tag, Name, object) {
             }
 
             if(!object.isEmpty(node.mods)) {
-                this._tag.addClass(this._getModsClasses('mod'));
+                var mods = this._getModsClasses('mod');
+                this._tag.addClass(mods.length ? mods : this._name.toString());
             }
 
             if(this.isElem() && !object.isEmpty(node.elemMods)) {
@@ -218,7 +219,9 @@ definer('Node', /** @exports Node */ function(Tag, Name, object) {
         _getModsClasses: function(method) {
             var mods = this._node[method + 's'];
             return Object.keys(mods).reduce(function(classes, key) {
-                classes.push(this._name[method](key, mods[key]).toString());
+                if(mods[key]) {
+                    classes.push(this._name[method](key, mods[key]).toString());
+                }
                 return classes;
             }.bind(this), []);
         },
