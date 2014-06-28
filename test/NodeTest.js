@@ -312,6 +312,70 @@ definer('NodeTest', function(assert, Node) {
                 );
             });
 
+            describe('Элемент с булевыми модификаторами блока.', function() {
+
+                it('Один положительный', function() {
+                    assert.equal(new Node({
+                        block: 'name',
+                        mods: { visible: true },
+                        elem: 'element'
+                    }).toString(),
+                        '<div class="name_visible__element"></div>'
+                    );
+                });
+
+                it('Один отрицательный', function() {
+                    assert.equal(new Node({
+                        block: 'name',
+                        mods: { visible: false },
+                        elem: 'element'
+                    }).toString(),
+                        '<div class="name__element"></div>'
+                    );
+                });
+
+                it('Два положительных', function() {
+                    assert.equal(new Node({
+                        block: 'name',
+                        mods: { visible: true, overflow: true },
+                        elem: 'element'
+                    }).toString(),
+                        '<div class="name_visible__element name_overflow__element"></div>'
+                    );
+                });
+
+                it('Два отрицательных', function() {
+                    assert.equal(new Node({
+                        block: 'name',
+                        mods: { visible: false, overflow: false },
+                        elem: 'element'
+                    }).toString(),
+                        '<div class="name__element"></div>'
+                    );
+                });
+
+                it('Один положительный и один отрицательный', function() {
+                    assert.equal(new Node({
+                        block: 'name',
+                        mods: { visible: true, overflow: false },
+                        elem: 'element'
+                    }).toString(),
+                        '<div class="name_visible__element"></div>'
+                    );
+                });
+
+                it('Один отрицательный и один положительный', function() {
+                    assert.equal(new Node({
+                        block: 'name',
+                        mods: { visible: false, overflow: true },
+                        elem: 'element'
+                    }).toString(),
+                        '<div class="name_overflow__element"></div>'
+                    );
+                });
+
+            });
+
         });
 
     });
