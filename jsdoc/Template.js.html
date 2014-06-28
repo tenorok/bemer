@@ -250,12 +250,8 @@
         /**
          * Получить значение моды.
          *
-         * Значения в виде массивов конкатенируются.
-         *
-         * Значения в виде объектов (карт) наследуются.
-         *
-         * Если значение в шаблоне скалярное, то приоритет у BEMJSON.
-         * Если значение в шаблоне задано функцией, то приоритет у шаблона.
+         * Если значение в шаблоне скалярное, то массивы конкатенируются,
+         * а объекты (карты) наследуются с приоритетом у BEMJSON.
          *
          * @private
          * @param {Object} modes Экземпляр класса по модам
@@ -269,19 +265,41 @@
                 val = isValFunc ? modes[name].call(modes, bemjsonVal) : modes[name],
                 priorityVal = this._getPriorityValue(isValFunc, val, bemjsonVal);
 
-            if(is.array(val, bemjsonVal)) {
-                return bemjsonVal.concat(val);
-            } else if(is.map(val, bemjsonVal)) {
-                return isValFunc
-                    ? object.extend(bemjsonVal, val)
-                    : object.extend(object.clone(val), bemjsonVal);
+            if(!isValFunc) {
+                if(is.array(val, bemjsonVal)) {
+                    priorityVal = bemjsonVal.concat(val);
+                } else if(is.map(val, bemjsonVal)) {
+                    priorityVal = object.extend(object.clone(val), bemjsonVal);
+                }
             }
 
-            if(name === 'content' &amp;&amp; is.string(priorityVal)) {
-                return string.htmlEscape(priorityVal);
+            if(name === 'content') {
+                return this._escapeContent(priorityVal);
             }
 
             return priorityVal;
+        },
+
+        /**
+         * Заэкранировать содержимое узла.
+         *
+         * @private
+         * @param {*} content Содержимое
+         * @returns {*}
+         */
+        _escapeContent: function(content) {
+
+            if(is.string(content)) {
+                return string.htmlEscape(content);
+            }
+
+            if(is.array(content)) {
+                return content.map(function(item) {
+                    return this._escapeContent(item);
+                }, this);
+            }
+
+            return content;
         },
 
         /**
@@ -316,13 +334,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-bemer.html">bemer</a></li><li><a href="module-functions.html">functions</a></li><li><a href="module-Helpers.html">Helpers</a></li><li><a href="module-is.html">is</a></li><li><a href="module-Match.html">Match</a></li><li><a href="module-Name.html">Name</a></li><li><a href="module-Node.html">Node</a></li><li><a href="module-number.html">number</a></li><li><a href="module-object.html">object</a></li><li><a href="module-Pool.html">Pool</a></li><li><a href="module-string.html">string</a></li><li><a href="module-Tag.html">Tag</a></li><li><a href="module-Template.html">Template</a></li><li><a href="module-Tree.html">Tree</a></li></ul><h3>Classes</h3><ul><li><a href="module-bemer-bemer.html">bemer</a></li><li><a href="module-functions-functions.html">functions</a></li><li><a href="module-Helpers-Helpers.html">Helpers</a></li><li><a href="module-is-is.html">is</a></li><li><a href="module-Match-Match.html">Match</a></li><li><a href="module-Name-Name.html">Name</a></li><li><a href="module-Node-Node.html">Node</a></li><li><a href="module-number-number.html">number</a></li><li><a href="module-object-object.html">object</a></li><li><a href="module-Pool-Pool.html">Pool</a></li><li><a href="module-string-string.html">string</a></li><li><a href="module-Tag-Tag.html">Tag</a></li><li><a href="module-Template-Template.html">Template</a></li><li><a href="module-Tree-Tree.html">Tree</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-bemer.html">bemer</a></li><li><a href="module-functions.html">functions</a></li><li><a href="module-Helpers.html">Helpers</a></li><li><a href="module-is.html">is</a></li><li><a href="module-Match.html">Match</a></li><li><a href="module-modules.html">modules</a></li><li><a href="module-Name.html">Name</a></li><li><a href="module-Node.html">Node</a></li><li><a href="module-number.html">number</a></li><li><a href="module-object.html">object</a></li><li><a href="module-Pool.html">Pool</a></li><li><a href="module-string.html">string</a></li><li><a href="module-Tag.html">Tag</a></li><li><a href="module-Template.html">Template</a></li><li><a href="module-Tree.html">Tree</a></li></ul><h3>Classes</h3><ul><li><a href="module-bemer-bemer.html">bemer</a></li><li><a href="module-functions-functions.html">functions</a></li><li><a href="module-Helpers-Helpers.html">Helpers</a></li><li><a href="module-is-is.html">is</a></li><li><a href="module-Match-Match.html">Match</a></li><li><a href="module-modules-modules.html">modules</a></li><li><a href="module-Name-Name.html">Name</a></li><li><a href="module-Node-Node.html">Node</a></li><li><a href="module-number-number.html">number</a></li><li><a href="module-object-object.html">object</a></li><li><a href="module-Pool-Pool.html">Pool</a></li><li><a href="module-string-string.html">string</a></li><li><a href="module-Tag-Tag.html">Tag</a></li><li><a href="module-Template-Template.html">Template</a></li><li><a href="module-Tree-Tree.html">Tree</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sun Jun 01 2014 22:39:23 GMT+0400 (MSK)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha8</a> on Sat Jun 28 2014 16:53:30 GMT+0400 (MSK)
 </footer>
 
 <script> prettyPrint(); </script>
