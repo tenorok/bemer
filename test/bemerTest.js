@@ -248,5 +248,15 @@ definer('bemerTest', function(assert, bemer, Helpers) {
 
         });
 
+        describe('Получение внутренних модулей.', function() {
+
+            it('Получить заданный модуль', function() {
+                var name = bemer.modules('Name');
+                assert.isTrue(is.function(name));
+                assert.isTrue(new name instanceof Name);
+            });
+
+        });
+
     });
 });
