@@ -17,7 +17,8 @@ Target.definer = function() {
             'is',
             'functions',
             'number',
-            'bemer'
+            'bemer',
+            'modules'
         ],
 
         directories = ['modules/', 'test/'],

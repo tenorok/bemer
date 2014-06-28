@@ -104,6 +104,21 @@ definer('TemplateTest', function(assert, Template, Helpers) {
             );
         });
 
+        it('Шаблонизировать с добавлением булевых модификаторов блоку', function() {
+            assert.equal(new Template('name', {
+                js: false,
+                mods: { checked: true }
+            }).match({ block: 'name' }).toString(),
+                '<div class="name name_checked"></div>'
+            );
+            assert.equal(new Template('name', {
+                js: false,
+                mods: { checked: false }
+            }).match({ block: 'name' }).toString(),
+                '<div class="name"></div>'
+            );
+        });
+
         it('Шаблонизировать с добавлением модификаторов элементу', function() {
             assert.equal(new Template('name__elem', {
                 elemMods: { checked: true }

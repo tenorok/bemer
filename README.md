@@ -113,6 +113,7 @@ bemer({
     - [Изменение настроек шаблонизации](#Изменение-настроек-шаблонизации)
     - [Сброс настроек шаблонизации до стандартных](#Сброс-настроек-шаблонизации-до-стандартных)
   - [Метод `clean`](#Метод-clean)
+  - [Метод `modules`](#Метод-modules)
   - [Метод `helper`](#Метод-helper)
     - [Добавление помощника](#Добавление-помощника)
 - [Функции-помощники](#Функции-помощники)
@@ -830,6 +831,47 @@ bemer({ block: 'name' })
 
 ```html
 <div class="name i-bem" data-bem="{&quot;name&quot;:{}}"></div>
+```
+
+### Метод `modules`
+
+Шаблонизатор bemer состоит из множества самостоятельных модулей,
+каждый из которых выполняет только свою заданную функцию.
+
+Имеющиеся модули достаточно абстрактные, благодаря чему могут быть использованы за пределами bemer:
+
+* [`number`](http://tenorok.github.io/bemer/jsdoc/module-number-number.html) — работа с числами
+* [`string`](http://tenorok.github.io/bemer/jsdoc/module-string-string.html) — работа со строками
+* [`object`](http://tenorok.github.io/bemer/jsdoc/module-object-object.html) — работа с объектами
+* [`functions`](http://tenorok.github.io/bemer/jsdoc/module-functions-functions.html) — работа с функциями
+* [`is`](http://tenorok.github.io/bemer/jsdoc/module-is-is.html) — работа с типами данных
+* [`Tag`](http://tenorok.github.io/bemer/jsdoc/module-Tag-Tag.html) — работа с тегом
+* [`Name`](http://tenorok.github.io/bemer/jsdoc/module-Name-Name.html) — работа с именем БЭМ-сущности
+* [`Node`](http://tenorok.github.io/bemer/jsdoc/module-Node-Node.html) — работа с БЭМ-узлом
+* [`Match`](http://tenorok.github.io/bemer/jsdoc/module-Match-Match.html) — проверка БЭМ-узла на соответствие шаблону
+
+Для получения вышеперечисленных модулей предназначен метод `modules`, который принимает один необязательный параметр:
+
+* `{string}` `[name]` — имя модуля
+
+Возвращает: `{object|*}` — все модули или один заданный модуль
+
+Использование модуля `Name`:
+
+```js
+var Name = bemer.modules('Name');
+
+var header = new Name('header_theme')
+    .modVal('dark')
+    .elem('logo')
+    .elemMod('size', 's');
+
+console.log(header.toString());
+```
+
+В консоль будет выведена строка:
+```
+header_theme_dark__logo_size_s
 ```
 
 ### Метод `helper`

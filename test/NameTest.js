@@ -121,13 +121,18 @@ definer('NameTest', function(assert, Name) {
                 assert.equal(new Name().block('block').mod('mod', 'val').elemMod('fake').toString(), 'block_mod_val');
             });
 
-            it('Булевы модификаторы', function() {
+            it('Установить булевы модификаторы', function() {
                 assert.equal(new Name().block('block').mod('mod', true).toString(), 'block_mod');
                 assert.equal(new Name().block('block').elem('elem').mod('mod', true).toString(), 'block_mod__elem');
                 assert.equal(new Name().block('block').elem('elem').elemMod('mod', true).toString(), 'block__elem_mod');
                 assert.equal(new Name().block('block').mod('vis', true).elem('elem').elemMod('mod', true).toString(),
                     'block_vis__elem_mod'
                 );
+            });
+
+            it('Снять булевы модификаторы', function() {
+                assert.equal(new Name().block('block').mod('mod', false).toString(), 'block');
+                assert.equal(new Name().block('block').elem('elem').elemMod('mod', false).toString(), 'block__elem');
             });
 
             it('Пустое имя', function() {

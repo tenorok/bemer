@@ -1,4 +1,6 @@
-definer.export('bemer', /** @exports bemer */ function(Tree, Template, Pool, functions, Name, Node, object, Helpers) {
+definer.export('bemer', /** @exports bemer */ function(
+    Tree, Template, Pool, functions, Name, Node, object, Helpers, modules
+) {
 
     /**
      * Экземпляр для хранения списка шаблонов.
@@ -126,6 +128,16 @@ definer.export('bemer', /** @exports bemer */ function(Tree, Template, Pool, fun
         }
 
         return this;
+    };
+
+    /**
+     * Получить заданный внутренний модуль или все модули.
+     *
+     * @param {string} [name] Имя модуля
+     * @returns {object|*}
+     */
+    bemer.modules = function(name) {
+        return modules.get(name);
     };
 
     return bemer;
