@@ -174,8 +174,8 @@ defineAsGlobal && (global.inherit = inherit);
  * @file Template engine. BEMJSON to HTML processor.
  * @copyright 2014 Artem Kurbatov, tenorok.ru
  * @license MIT license
- * @version 0.2.0
- * @date 15 June 2014
+ * @version 0.2.1
+ * @date 28 June 2014
  */
 (function(global, undefined) {
 var definer = {
@@ -1241,27 +1241,13 @@ Name = (function () {
          * @returns {string}
          */
         toString: function() {
-            var mod = Name.delimiters.mod,
-                name = [this._block];
-
-            if(this._modName) {
-                name.push(mod, this._modName);
-
-                if(this._modVal && this._modVal !== true) {
-                    name.push(mod, this._modVal);
-                }
-            }
+            var name = [this._block].concat(this._getMod('_modName', '_modVal'));
 
             if(this._elem) {
-                name.push(Name.delimiters.elem, this._elem);
-
-                if(this._elemModName) {
-                    name.push(mod, this._elemModName);
-
-                    if(this._elemModVal && this._elemModVal !== true) {
-                        name.push(mod, this._elemModVal);
-                    }
-                }
+                name = name.concat(
+                    Name.delimiters.elem, this._elem,
+                    this._getMod('_elemModName', '_elemModVal')
+                );
             }
 
             return name.join('');
@@ -1295,6 +1281,30 @@ Name = (function () {
                 modName: blockAndMod[1] || '',
                 modVal: blockAndMod[2] || ''
             };
+        },
+
+        /**
+         * Получить модификатор.
+         *
+         * @private
+         * @param {string} name Имя поля имени модификатора
+         * @param {string} val Имя поля значения модификатора
+         * @returns {array}
+         */
+        _getMod: function(name, val) {
+            var mod = [],
+                name = this[name],
+                val = this[val];
+
+            if(name && val !== false) {
+                mod.push(Name.delimiters.mod, name);
+
+                if(val && val !== true) {
+                    mod.push(Name.delimiters.mod, val);
+                }
+            }
+
+            return mod;
         },
 
         /**
@@ -2668,7 +2678,49 @@ functions = (function () {
     return functions;
 
 }).call(global),
-bemer = definer.export("bemer", (function (Tree, Template, Pool, functions, Name, Node, object, Helpers) {
+modules = (function (number, string, object, functions, is, Tag, Name, Node, Match) {
+
+    /**
+     * Модуль для экспорта других внутренних модулей.
+     *
+     * @class
+     */
+    function modules() {}
+
+    /**
+     * Список предоставляемых модулей.
+     *
+     * @private
+     * @type {object}
+     */
+    modules._list = {
+        number: number,
+        string: string,
+        object: object,
+        functions: functions,
+        is: is,
+        Tag: Tag,
+        Name: Name,
+        Node: Node,
+        Match: Match
+    };
+
+    /**
+     * Получить заданный модуль или все модули.
+     *
+     * @param {string} [name] Имя модуля
+     * @returns {object|*}
+     */
+    modules.get = function(name) {
+        return name ? modules._list[name] : modules._list;
+    };
+
+    return modules;
+
+}).call(global, number, string, object, functions, is, Tag, Name, Node, Match),
+bemer = definer.export("bemer", (function (
+    Tree, Template, Pool, functions, Name, Node, object, Helpers, modules
+) {
 
     /**
      * Экземпляр для хранения списка шаблонов.
@@ -2798,8 +2850,18 @@ bemer = definer.export("bemer", (function (Tree, Template, Pool, functions, Name
         return this;
     };
 
+    /**
+     * Получить заданный внутренний модуль или все модули.
+     *
+     * @param {string} [name] Имя модуля
+     * @returns {object|*}
+     */
+    bemer.modules = function(name) {
+        return modules.get(name);
+    };
+
     return bemer;
 
-}).call(global, Tree, Template, Pool, functions, Name, Node, object, Helpers));
+}).call(global, Tree, Template, Pool, functions, Name, Node, object, Helpers, modules));
 ["inherit"].forEach(function(g) { delete global[g]; });
 })(this);
