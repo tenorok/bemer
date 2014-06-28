@@ -221,27 +221,13 @@ definer('Name', /** @exports Name */ function() {
          * @returns {string}
          */
         toString: function() {
-            var mod = Name.delimiters.mod,
-                name = [this._block];
-
-            if(this._modName) {
-                name.push(mod, this._modName);
-
-                if(this._modVal && this._modVal !== true) {
-                    name.push(mod, this._modVal);
-                }
-            }
+            var name = [this._block].concat(this._getMod('_modName', '_modVal'));
 
             if(this._elem) {
-                name.push(Name.delimiters.elem, this._elem);
-
-                if(this._elemModName) {
-                    name.push(mod, this._elemModName);
-
-                    if(this._elemModVal && this._elemModVal !== true) {
-                        name.push(mod, this._elemModVal);
-                    }
-                }
+                name = name.concat(
+                    Name.delimiters.elem, this._elem,
+                    this._getMod('_elemModName', '_elemModVal')
+                );
             }
 
             return name.join('');
@@ -275,6 +261,30 @@ definer('Name', /** @exports Name */ function() {
                 modName: blockAndMod[1] || '',
                 modVal: blockAndMod[2] || ''
             };
+        },
+
+        /**
+         * Получить модификатор.
+         *
+         * @private
+         * @param {string} name Имя поля имени модификатора
+         * @param {string} val Имя поля значения модификатора
+         * @returns {array}
+         */
+        _getMod: function(name, val) {
+            var mod = [],
+                name = this[name],
+                val = this[val];
+
+            if(name && val !== false) {
+                mod.push(Name.delimiters.mod, name);
+
+                if(val && val !== true) {
+                    mod.push(Name.delimiters.mod, val);
+                }
+            }
+
+            return mod;
         },
 
         /**
