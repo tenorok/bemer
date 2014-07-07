@@ -79,6 +79,13 @@ definer('Selector', /** @exports Selector */ function() {
         elem: '__'
     };
 
+    /**
+     * Символ любого значения.
+     *
+     * @type {string}
+     */
+    Selector.any = '*';
+
     Selector.prototype = {
 
         /**

@@ -17,13 +17,6 @@ definer('Match', /** @exports Match */ function(Selector, object, is) {
         this._pattern = new Selector(pattern);
     }
 
-    /**
-     * Символ любого значения.
-     *
-     * @type {string}
-     */
-    Match.any = '*';
-
     Match.prototype = {
 
         /**
@@ -134,7 +127,7 @@ definer('Match', /** @exports Match */ function(Selector, object, is) {
          */
         _block: function(block) {
             var pattern = this._pattern.block();
-            return pattern === Match.any || block === Match.any || pattern === block;
+            return pattern === Selector.any || block === Selector.any || pattern === block;
         },
 
         /**
@@ -177,7 +170,7 @@ definer('Match', /** @exports Match */ function(Selector, object, is) {
                 return true;
             }
 
-            return pattern === Match.any || elem === Match.any || pattern === elem;
+            return pattern === Selector.any || elem === Selector.any || pattern === elem;
         },
 
         /**
@@ -240,26 +233,27 @@ definer('Match', /** @exports Match */ function(Selector, object, is) {
          * @returns {boolean}
          */
         _mod: function(patternName, patternVal, name, val) {
+            var any = Selector.any;
 
-            if(patternName === Match.any && patternVal === Match.any || name === Match.any && val === Match.any) {
+            if(patternName === any && patternVal === any || name === any && val === any) {
                 return true;
             }
 
-            if(patternName === Match.any) {
-                return val === Match.any || patternVal === val;
+            if(patternName === any) {
+                return val === any || patternVal === val;
             }
 
-            if(name === Match.any) {
-                return patternVal === Match.any || patternVal === val;
+            if(name === any) {
+                return patternVal === any || patternVal === val;
             }
 
             // Вторая проверка на булев модификатор
-            if(patternVal === Match.any || !patternVal && val === true) {
-                return name === Match.any || patternName === name;
+            if(patternVal === any || !patternVal && val === true) {
+                return name === any || patternName === name;
             }
 
-            if(val === Match.any) {
-                return patternName === Match.any || patternName === name;
+            if(val === any) {
+                return patternName === any || patternName === name;
             }
 
             return patternName === name && patternVal === val;
