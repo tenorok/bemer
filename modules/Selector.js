@@ -64,6 +64,14 @@ definer('Selector', /** @exports Selector */ function() {
          */
         this._elemModVal = '';
 
+        /**
+         * Вес селектора.
+         *
+         * @private
+         * @type {number}
+         */
+        this._weight = 0;
+
         this.info();
     }
 
@@ -130,7 +138,7 @@ definer('Selector', /** @exports Selector */ function() {
          * Получить/установить имя блока.
          *
          * @param {string} [name] Имя блока
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         block: function(name) {
             return this._getSet('_block', name);
@@ -141,7 +149,7 @@ definer('Selector', /** @exports Selector */ function() {
          *
          * @param {string} [name] Имя модификатора
          * @param {string} [val] Значение модификатора
-         * @returns {{name: string, val: string}|Name}
+         * @returns {{name: string, val: string}|Selector}
          */
         mod: function(name, val) {
             if(name === undefined && val === undefined) return {
@@ -158,7 +166,7 @@ definer('Selector', /** @exports Selector */ function() {
          * Получить/установить имя модификатора блока.
          *
          * @param {string} [name] Имя модификатора
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         modName: function(name) {
             return this._getSet('_modName', name);
@@ -168,7 +176,7 @@ definer('Selector', /** @exports Selector */ function() {
          * Получить/установить значение модификатора блока.
          *
          * @param {string} [val] Значение модификатора
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         modVal: function(val) {
             return this._getSet('_modVal', val);
@@ -178,7 +186,7 @@ definer('Selector', /** @exports Selector */ function() {
          * Получить/установить элемент.
          *
          * @param {string} [name] Имя элемента
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         elem: function(name) {
             return this._getSet('_elem', name);
@@ -189,7 +197,7 @@ definer('Selector', /** @exports Selector */ function() {
          *
          * @param {string} [name] Имя модификатора
          * @param {string} [val] Значение модификатора
-         * @returns {{name: string, val: string}|Name}
+         * @returns {{name: string, val: string}|Selector}
          */
         elemMod: function(name, val) {
             if(name === undefined && val === undefined) return {
@@ -206,7 +214,7 @@ definer('Selector', /** @exports Selector */ function() {
          * Получить/установить имя модификатора элемента.
          *
          * @param {string} [name] Имя модификатора
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         elemModName: function(name) {
             return this._getSet('_elemModName', name);
@@ -216,7 +224,7 @@ definer('Selector', /** @exports Selector */ function() {
          * Получить/установить значение модификатора элемента.
          *
          * @param {string} [val] Значение модификатора
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         elemModVal: function(val) {
             return this._getSet('_elemModVal', val);
@@ -238,6 +246,23 @@ definer('Selector', /** @exports Selector */ function() {
             }
 
             return name.join('');
+        },
+
+        /**
+         * Получить/установить вес селектора.
+         *
+         * @param {number} [weight] Вес селектора
+         * @returns {number|Selector}
+         */
+        weight: function(weight) {
+            if(weight) {
+                this._weight = weight;
+                return this;
+            }
+
+            if(this._weight) {
+                return this._weight;
+            }
         },
 
         /**
@@ -300,7 +325,7 @@ definer('Selector', /** @exports Selector */ function() {
          * @private
          * @param {string} name Имя поля
          * @param {*} [val] Значение
-         * @returns {*|Name}
+         * @returns {*|Selector}
          */
         _getSet: function(name, val) {
             if(val === undefined) return this[name];

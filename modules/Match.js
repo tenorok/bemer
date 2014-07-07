@@ -12,7 +12,7 @@ definer('Match', /** @exports Match */ function(Selector, object, is) {
          * Экземпляр шаблона.
          *
          * @private
-         * @type {Name}
+         * @type {Selector}
          */
         this._pattern = new Selector(pattern);
     }

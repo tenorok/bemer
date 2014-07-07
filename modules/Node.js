@@ -28,7 +28,7 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
          * Экземпляр имени БЭМ-сущности.
          *
          * @private
-         * @type {Name}
+         * @type {Selector}
          */
         this._name = this.getName();
 
@@ -88,7 +88,7 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
          *
          * Это может быть блок или элемент блока.
          *
-         * @returns {Name}
+         * @returns {Selector}
          */
         getName: function() {
 

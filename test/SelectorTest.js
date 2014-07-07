@@ -140,5 +140,14 @@ definer('SelectorTest', function(assert, Selector) {
             });
         });
 
+        describe('Вычисление веса селектора.', function() {
+
+            it('Установить и получить вес селектора', function() {
+                var selector = new Selector().weight(45);
+                assert.equal(selector.weight(), 45);
+            });
+
+        });
+
     });
 });
