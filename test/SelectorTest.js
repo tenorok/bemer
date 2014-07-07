@@ -147,6 +147,10 @@ definer('SelectorTest', function(assert, Selector) {
                 assert.equal(selector.weight(), 45);
             });
 
+            it('block < block_mod', function() {
+                assert.isTrue(new Selector('block').weight() < new Selector('block_mod').weight());
+            });
+
         });
 
     });

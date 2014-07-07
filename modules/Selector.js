@@ -263,6 +263,23 @@ definer('Selector', /** @exports Selector */ function() {
             if(this._weight) {
                 return this._weight;
             }
+
+            var weights = {
+                block: 0,
+                mod: 6,
+                val: 6,
+                elem: 28,
+                elemMod: 2,
+                elemVal: 2
+            };
+
+            weight = weights.block;
+
+            if(this.modName()) {
+                weight += weights.mod;
+            }
+
+            return weight;
         },
 
         /**
