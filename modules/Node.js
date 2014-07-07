@@ -1,4 +1,4 @@
-definer('Node', /** @exports Node */ function(Tag, Name, object) {
+definer('Node', /** @exports Node */ function(Tag, Selector, object) {
 
     /**
      * Модуль работы с БЭМ-узлом.
@@ -92,7 +92,7 @@ definer('Node', /** @exports Node */ function(Tag, Name, object) {
          */
         getName: function() {
 
-            var name = new Name(this._node.block);
+            var name = new Selector(this._node.block);
 
             if(this.isElem()) {
                 name.elem(this._node.elem);

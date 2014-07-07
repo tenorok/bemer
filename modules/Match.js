@@ -1,4 +1,4 @@
-definer('Match', /** @exports Match */ function(Name, object, is) {
+definer('Match', /** @exports Match */ function(Selector, object, is) {
 
     /**
      * Модуль проверки БЭМ-узла на соответствие шаблону.
@@ -14,7 +14,7 @@ definer('Match', /** @exports Match */ function(Name, object, is) {
          * @private
          * @type {Name}
          */
-        this._pattern = new Name(pattern);
+        this._pattern = new Selector(pattern);
     }
 
     /**
@@ -55,7 +55,7 @@ definer('Match', /** @exports Match */ function(Name, object, is) {
          * @returns {boolean}
          */
         _name: function(name, method) {
-            name = new Name(name);
+            name = new Selector(name);
 
             var mods = {};
             mods[name.modName()] = name.modVal();

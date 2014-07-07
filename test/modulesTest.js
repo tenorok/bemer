@@ -1,4 +1,4 @@
-definer('modulesTest', function(assert, modules, is, Name) {
+definer('modulesTest', function(assert, modules, is, Selector) {
     describe('Модуль modules.', function() {
 
         it('Получить все модули', function() {
@@ -9,16 +9,16 @@ definer('modulesTest', function(assert, modules, is, Name) {
                 'functions',
                 'is',
                 'Tag',
-                'Name',
+                'Selector',
                 'Node',
                 'Match'
             ].sort());
         });
 
         it('Получить заданный модуль', function() {
-            var name = modules.get('Name');
-            assert.isTrue(is.function(name));
-            assert.isTrue(new name instanceof Name);
+            var selector = modules.get('Selector');
+            assert.isTrue(is.function(selector));
+            assert.isTrue(new selector instanceof Selector);
         });
 
     });

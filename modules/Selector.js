@@ -1,20 +1,20 @@
-definer('Name', /** @exports Name */ function() {
+definer('Selector', /** @exports Selector */ function() {
 
     /**
-     * Модуль работы с именем БЭМ-сущности.
+     * Модуль работы с БЭМ-селектором.
      *
      * @constructor
-     * @param {string} [name] Имя БЭМ-сущности
+     * @param {string} [selector] БЭМ-селектор
      */
-    function Name(name) {
+    function Selector(selector) {
 
         /**
-         * Имя БЭМ-сущности.
+         * БЭМ-селектор.
          *
          * @private
          * @type {string}
          */
-        this._name = name || '';
+        this._selector = selector || '';
 
         /**
          * Имя блока.
@@ -74,12 +74,12 @@ definer('Name', /** @exports Name */ function() {
      * @property {string} mod Разделитель блока и модификатора, элемента и модификатора, модификатора и значения
      * @property {string} elem Разделитель блока и элемента
      */
-    Name.delimiters = {
+    Selector.delimiters = {
         mod: '_',
         elem: '__'
     };
 
-    Name.prototype = {
+    Selector.prototype = {
 
         /**
          * Получить информацию по БЭМ-сущности.
@@ -225,7 +225,7 @@ definer('Name', /** @exports Name */ function() {
 
             if(this._elem) {
                 name = name.concat(
-                    Name.delimiters.elem, this._elem,
+                    Selector.delimiters.elem, this._elem,
                     this._getMod('_elemModName', '_elemModVal')
                 );
             }
@@ -240,7 +240,7 @@ definer('Name', /** @exports Name */ function() {
          * @returns {{block: string, elem: string}}
          */
         _getBlockAndElem: function() {
-            var blockAndElem = this._name.split(Name.delimiters.elem);
+            var blockAndElem = this._selector.split(Selector.delimiters.elem);
             return {
                 block: blockAndElem[0] || '',
                 elem: blockAndElem[1] || ''
@@ -255,7 +255,7 @@ definer('Name', /** @exports Name */ function() {
          * @returns {{object: string, modName: string, modVal: string}}
          */
         _getObjectAndMods: function(object) {
-            var blockAndMod = object.split(Name.delimiters.mod);
+            var blockAndMod = object.split(Selector.delimiters.mod);
             return {
                 object: blockAndMod[0],
                 modName: blockAndMod[1] || '',
@@ -277,10 +277,10 @@ definer('Name', /** @exports Name */ function() {
                 val = this[val];
 
             if(name && val !== false) {
-                mod.push(Name.delimiters.mod, name);
+                mod.push(Selector.delimiters.mod, name);
 
                 if(val && val !== true) {
-                    mod.push(Name.delimiters.mod, val);
+                    mod.push(Selector.delimiters.mod, val);
                 }
             }
 
@@ -304,6 +304,6 @@ definer('Name', /** @exports Name */ function() {
 
     };
 
-    return Name;
+    return Selector;
 
 });

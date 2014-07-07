@@ -3,7 +3,7 @@ function Target() {}
 Target.definer = function() {
 
     var modules = [
-            'Name',
+            'Selector',
             'Tag',
             'Node',
             'Match',
