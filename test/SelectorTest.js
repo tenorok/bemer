@@ -167,6 +167,38 @@ definer('SelectorTest', function(assert, Selector) {
                 assert.isTrue(new Selector('block__elem_mod').weight() < new Selector('block__elem_mod_val').weight());
             });
 
+            it('block_mod__elem < block_mod_val__elem', function() {
+                assert.isTrue(new Selector('block_mod__elem').weight() < new Selector('block_mod_val__elem').weight());
+            });
+
+            it('block_mod_val__elem < block__elem_mod', function() {
+                assert.isTrue(new Selector('block_mod_val__elem').weight() < new Selector('block__elem_mod').weight());
+            });
+
+            it('* < block', function() {
+                assert.isTrue(new Selector('*').weight() < new Selector('block').weight());
+            });
+
+            it('block < block_*', function() {
+                assert.isTrue(new Selector('block').weight() < new Selector('block_*').weight());
+            });
+
+            it('block_mod = block_*_*', function() {
+                assert.isTrue(new Selector('block_mod').weight() === new Selector('block_*_*').weight());
+            });
+
+            it('block_mod_val < block__*', function() {
+                assert.isTrue(new Selector('block_mod_val').weight() < new Selector('block__*').weight());
+            });
+
+            it('*_mod_val < *__*', function() {
+                assert.isTrue(new Selector('*_mod_val').weight() < new Selector('*__*').weight());
+            });
+
+            it('block_*_val < block_*__elem', function() {
+                assert.isTrue(new Selector('block_*_val').weight() < new Selector('block_*__elem').weight());
+            });
+
         });
 
     });

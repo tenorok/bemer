@@ -265,23 +265,24 @@ definer('Selector', /** @exports Selector */ function() {
             }
 
             var weights = {
-                block: 0,
-                modName: 6,
-                modVal: 6,
-                elem: 28,
-                elemModName: 2,
-                elemModVal: 2
+                block: 2,
+                modName: 2,
+                modVal: 2,
+                elem: 10,
+                elemModName: 6,
+                elemModVal: 6
             };
 
-            weight = weights.block;
-
-            ['modName', 'modVal', 'elem', 'elemModName', 'elemModVal'].forEach(function(part) {
-                if(this[part]()) {
-                    weight += weights[part];
-                }
-            }, this);
-
-            return weight;
+            return [
+                'block', 'modName', 'modVal',
+                'elem', 'elemModName', 'elemModVal'
+            ].reduce(function(weight, partName) {
+                    var part = this[partName]();
+                    if(part) {
+                        weight += part === Selector.any ? weights[partName] / 2 : weights[partName];
+                    }
+                    return weight;
+                }.bind(this), 0);
         },
 
         /**
