@@ -174,8 +174,8 @@ defineAsGlobal && (global.inherit = inherit);
  * @file Template engine. BEMJSON to HTML processor.
  * @copyright 2014 Artem Kurbatov, tenorok.ru
  * @license MIT license
- * @version 0.2.2
- * @date 28 June 2014
+ * @version 0.3.0
+ * @date 8 July 2014
  */
 (function(global, undefined) {
 var definer = {
@@ -1018,23 +1018,23 @@ Helpers = (function (string, number, object, is) {
     return Helpers;
 
 }).call(global, string, number, object, is),
-Name = (function () {
+Selector = (function () {
 
     /**
-     * Модуль работы с именем БЭМ-сущности.
+     * Модуль работы с БЭМ-селектором.
      *
      * @constructor
-     * @param {string} [name] Имя БЭМ-сущности
+     * @param {string} [selector] БЭМ-селектор
      */
-    function Name(name) {
+    function Selector(selector) {
 
         /**
-         * Имя БЭМ-сущности.
+         * БЭМ-селектор.
          *
          * @private
          * @type {string}
          */
-        this._name = name || '';
+        this._selector = selector || '';
 
         /**
          * Имя блока.
@@ -1084,6 +1084,14 @@ Name = (function () {
          */
         this._elemModVal = '';
 
+        /**
+         * Вес селектора.
+         *
+         * @private
+         * @type {number}
+         */
+        this._weight = 0;
+
         this.info();
     }
 
@@ -1094,12 +1102,19 @@ Name = (function () {
      * @property {string} mod Разделитель блока и модификатора, элемента и модификатора, модификатора и значения
      * @property {string} elem Разделитель блока и элемента
      */
-    Name.delimiters = {
+    Selector.delimiters = {
         mod: '_',
         elem: '__'
     };
 
-    Name.prototype = {
+    /**
+     * Символ любого значения.
+     *
+     * @type {string}
+     */
+    Selector.any = '*';
+
+    Selector.prototype = {
 
         /**
          * Получить информацию по БЭМ-сущности.
@@ -1143,7 +1158,7 @@ Name = (function () {
          * Получить/установить имя блока.
          *
          * @param {string} [name] Имя блока
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         block: function(name) {
             return this._getSet('_block', name);
@@ -1154,7 +1169,7 @@ Name = (function () {
          *
          * @param {string} [name] Имя модификатора
          * @param {string} [val] Значение модификатора
-         * @returns {{name: string, val: string}|Name}
+         * @returns {{name: string, val: string}|Selector}
          */
         mod: function(name, val) {
             if(name === undefined && val === undefined) return {
@@ -1171,7 +1186,7 @@ Name = (function () {
          * Получить/установить имя модификатора блока.
          *
          * @param {string} [name] Имя модификатора
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         modName: function(name) {
             return this._getSet('_modName', name);
@@ -1181,7 +1196,7 @@ Name = (function () {
          * Получить/установить значение модификатора блока.
          *
          * @param {string} [val] Значение модификатора
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         modVal: function(val) {
             return this._getSet('_modVal', val);
@@ -1191,7 +1206,7 @@ Name = (function () {
          * Получить/установить элемент.
          *
          * @param {string} [name] Имя элемента
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         elem: function(name) {
             return this._getSet('_elem', name);
@@ -1202,7 +1217,7 @@ Name = (function () {
          *
          * @param {string} [name] Имя модификатора
          * @param {string} [val] Значение модификатора
-         * @returns {{name: string, val: string}|Name}
+         * @returns {{name: string, val: string}|Selector}
          */
         elemMod: function(name, val) {
             if(name === undefined && val === undefined) return {
@@ -1219,7 +1234,7 @@ Name = (function () {
          * Получить/установить имя модификатора элемента.
          *
          * @param {string} [name] Имя модификатора
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         elemModName: function(name) {
             return this._getSet('_elemModName', name);
@@ -1229,7 +1244,7 @@ Name = (function () {
          * Получить/установить значение модификатора элемента.
          *
          * @param {string} [val] Значение модификатора
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         elemModVal: function(val) {
             return this._getSet('_elemModVal', val);
@@ -1245,12 +1260,49 @@ Name = (function () {
 
             if(this._elem) {
                 name = name.concat(
-                    Name.delimiters.elem, this._elem,
+                    Selector.delimiters.elem, this._elem,
                     this._getMod('_elemModName', '_elemModVal')
                 );
             }
 
             return name.join('');
+        },
+
+        /**
+         * Получить/установить вес селектора.
+         *
+         * @param {number} [weight] Вес селектора
+         * @returns {number|Selector}
+         */
+        weight: function(weight) {
+            if(weight) {
+                this._weight = weight;
+                return this;
+            }
+
+            if(this._weight) {
+                return this._weight;
+            }
+
+            var weights = {
+                block: 2,
+                modName: 2,
+                modVal: 2,
+                elem: 10,
+                elemModName: 6,
+                elemModVal: 6
+            };
+
+            return [
+                'block', 'modName', 'modVal',
+                'elem', 'elemModName', 'elemModVal'
+            ].reduce(function(weight, partName) {
+                    var part = this[partName]();
+                    if(part) {
+                        weight += part === Selector.any ? weights[partName] / 2 : weights[partName];
+                    }
+                    return weight;
+                }.bind(this), 0);
         },
 
         /**
@@ -1260,7 +1312,7 @@ Name = (function () {
          * @returns {{block: string, elem: string}}
          */
         _getBlockAndElem: function() {
-            var blockAndElem = this._name.split(Name.delimiters.elem);
+            var blockAndElem = this._selector.split(Selector.delimiters.elem);
             return {
                 block: blockAndElem[0] || '',
                 elem: blockAndElem[1] || ''
@@ -1275,7 +1327,7 @@ Name = (function () {
          * @returns {{object: string, modName: string, modVal: string}}
          */
         _getObjectAndMods: function(object) {
-            var blockAndMod = object.split(Name.delimiters.mod);
+            var blockAndMod = object.split(Selector.delimiters.mod);
             return {
                 object: blockAndMod[0],
                 modName: blockAndMod[1] || '',
@@ -1297,10 +1349,10 @@ Name = (function () {
                 val = this[val];
 
             if(name && val !== false) {
-                mod.push(Name.delimiters.mod, name);
+                mod.push(Selector.delimiters.mod, name);
 
                 if(val && val !== true) {
-                    mod.push(Name.delimiters.mod, val);
+                    mod.push(Selector.delimiters.mod, val);
                 }
             }
 
@@ -1313,7 +1365,7 @@ Name = (function () {
          * @private
          * @param {string} name Имя поля
          * @param {*} [val] Значение
-         * @returns {*|Name}
+         * @returns {*|Selector}
          */
         _getSet: function(name, val) {
             if(val === undefined) return this[name];
@@ -1324,10 +1376,10 @@ Name = (function () {
 
     };
 
-    return Name;
+    return Selector;
 
 }).call(global),
-Match = (function (Name, object, is) {
+Match = (function (Selector, object, is) {
 
     /**
      * Модуль проверки БЭМ-узла на соответствие шаблону.
@@ -1341,17 +1393,10 @@ Match = (function (Name, object, is) {
          * Экземпляр шаблона.
          *
          * @private
-         * @type {Name}
+         * @type {Selector}
          */
-        this._pattern = new Name(pattern);
+        this._pattern = new Selector(pattern);
     }
-
-    /**
-     * Символ любого значения.
-     *
-     * @type {string}
-     */
-    Match.any = '*';
 
     Match.prototype = {
 
@@ -1384,7 +1429,7 @@ Match = (function (Name, object, is) {
          * @returns {boolean}
          */
         _name: function(name, method) {
-            name = new Name(name);
+            name = new Selector(name);
 
             var mods = {};
             mods[name.modName()] = name.modVal();
@@ -1463,7 +1508,7 @@ Match = (function (Name, object, is) {
          */
         _block: function(block) {
             var pattern = this._pattern.block();
-            return pattern === Match.any || block === Match.any || pattern === block;
+            return pattern === Selector.any || block === Selector.any || pattern === block;
         },
 
         /**
@@ -1506,7 +1551,7 @@ Match = (function (Name, object, is) {
                 return true;
             }
 
-            return pattern === Match.any || elem === Match.any || pattern === elem;
+            return pattern === Selector.any || elem === Selector.any || pattern === elem;
         },
 
         /**
@@ -1569,26 +1614,27 @@ Match = (function (Name, object, is) {
          * @returns {boolean}
          */
         _mod: function(patternName, patternVal, name, val) {
+            var any = Selector.any;
 
-            if(patternName === Match.any && patternVal === Match.any || name === Match.any && val === Match.any) {
+            if(patternName === any && patternVal === any || name === any && val === any) {
                 return true;
             }
 
-            if(patternName === Match.any) {
-                return val === Match.any || patternVal === val;
+            if(patternName === any) {
+                return val === any || patternVal === val;
             }
 
-            if(name === Match.any) {
-                return patternVal === Match.any || patternVal === val;
+            if(name === any) {
+                return patternVal === any || patternVal === val;
             }
 
             // Вторая проверка на булев модификатор
-            if(patternVal === Match.any || !patternVal && val === true) {
-                return name === Match.any || patternName === name;
+            if(patternVal === any || !patternVal && val === true) {
+                return name === any || patternName === name;
             }
 
-            if(val === Match.any) {
-                return patternName === Match.any || patternName === name;
+            if(val === any) {
+                return patternName === any || patternName === name;
             }
 
             return patternName === name && patternVal === val;
@@ -1598,7 +1644,7 @@ Match = (function (Name, object, is) {
 
     return Match;
 
-}).call(global, Name, object, is),
+}).call(global, Selector, object, is),
 Tag = (function (string, is) {
 
     /**
@@ -1854,7 +1900,7 @@ Tag = (function (string, is) {
     return Tag;
 
 }).call(global, string, is),
-Node = (function (Tag, Name, object) {
+Node = (function (Tag, Selector, object) {
 
     /**
      * Модуль работы с БЭМ-узлом.
@@ -1884,7 +1930,7 @@ Node = (function (Tag, Name, object) {
          * Экземпляр имени БЭМ-сущности.
          *
          * @private
-         * @type {Name}
+         * @type {Selector}
          */
         this._name = this.getName();
 
@@ -1944,11 +1990,11 @@ Node = (function (Tag, Name, object) {
          *
          * Это может быть блок или элемент блока.
          *
-         * @returns {Name}
+         * @returns {Selector}
          */
         getName: function() {
 
-            var name = new Name(this._node.block);
+            var name = new Selector(this._node.block);
 
             if(this.isElem()) {
                 name.elem(this._node.elem);
@@ -2103,7 +2149,7 @@ Node = (function (Tag, Name, object) {
 
     return Node;
 
-}).call(global, Tag, Name, object),
+}).call(global, Tag, Selector, object),
 Pool = (function () {
 
     /**
@@ -2207,7 +2253,7 @@ Pool = (function () {
 classify = (function (inherit) {
     return inherit;
 }).call(global, inherit),
-Template = (function (Match, classify, Node, Name, Helpers, object, string, is) {
+Template = (function (Match, classify, Node, Selector, Helpers, object, string, is) {
 
     /**
      * Модуль шаблонизации BEMJSON-узла.
@@ -2278,7 +2324,7 @@ Template = (function (Match, classify, Node, Name, Helpers, object, string, is) 
      */
     Template.base = function(bemjson, data) {
         return new Template(
-            new Node(bemjson).isBlock() ? '*' : '*' + Name.delimiters.elem + '*', {}
+            new Node(bemjson).isBlock() ? '*' : '*' + Selector.delimiters.elem + '*', {}
         ).transform(bemjson, data);
     };
 
@@ -2413,7 +2459,7 @@ Template = (function (Match, classify, Node, Name, Helpers, object, string, is) 
         _getDefaultModes: function() {
 
             var hasBlock = this._patterns.some(function(pattern) {
-                return new Name(pattern).isBlock();
+                return new Selector(pattern).isBlock();
             }, this);
 
             return {
@@ -2505,7 +2551,7 @@ Template = (function (Match, classify, Node, Name, Helpers, object, string, is) 
 
     return Template;
 
-}).call(global, Match, classify, Node, Name, Helpers, object, string, is),
+}).call(global, Match, classify, Node, Selector, Helpers, object, string, is),
 Tree = (function (Template, is, object) {
 
     /**
@@ -2681,7 +2727,7 @@ functions = (function () {
     return functions;
 
 }).call(global),
-modules = (function (number, string, object, functions, is, Tag, Name, Node, Match) {
+modules = (function (number, string, object, functions, is, Tag, Selector, Node, Match) {
 
     /**
      * Модуль для экспорта других внутренних модулей.
@@ -2703,7 +2749,7 @@ modules = (function (number, string, object, functions, is, Tag, Name, Node, Mat
         functions: functions,
         is: is,
         Tag: Tag,
-        Name: Name,
+        Selector: Selector,
         Node: Node,
         Match: Match
     };
@@ -2720,9 +2766,9 @@ modules = (function (number, string, object, functions, is, Tag, Name, Node, Mat
 
     return modules;
 
-}).call(global, number, string, object, functions, is, Tag, Name, Node, Match),
+}).call(global, number, string, object, functions, is, Tag, Selector, Node, Match),
 bemer = definer.export("bemer", (function (
-    Tree, Template, Pool, functions, Name, Node, object, Helpers, modules
+    Tree, Template, Pool, functions, Selector, Node, object, Helpers, modules
 ) {
 
     /**
@@ -2799,8 +2845,8 @@ bemer = definer.export("bemer", (function (
      */
     var defaultConfig = {
         delimiters: {
-            mod: Name.delimiters.mod,
-            elem: Name.delimiters.elem
+            mod: Selector.delimiters.mod,
+            elem: Selector.delimiters.elem
         },
         tag: Template.tag,
         bemClass: Node.bemClass,
@@ -2831,7 +2877,7 @@ bemer = definer.export("bemer", (function (
         config = config || defaultConfig;
 
         if(config.delimiters) {
-            object.extend(Name.delimiters, config.delimiters);
+            object.extend(Selector.delimiters, config.delimiters);
         }
 
         if(config.tag) {
@@ -2865,6 +2911,6 @@ bemer = definer.export("bemer", (function (
 
     return bemer;
 
-}).call(global, Tree, Template, Pool, functions, Name, Node, object, Helpers, modules));
+}).call(global, Tree, Template, Pool, functions, Selector, Node, object, Helpers, modules));
 ["inherit"].forEach(function(g) { delete global[g]; });
 })(this);

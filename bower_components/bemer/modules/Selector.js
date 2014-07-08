@@ -1,47 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>JSDoc: Source: Name.js</title>
-
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
-</head>
-
-<body>
-
-<div id="main">
-
-    <h1 class="page-title">Source: Name.js</h1>
-
-    
-
-
-    
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>definer('Name', /** @exports Name */ function() {
+definer('Selector', /** @exports Selector */ function() {
 
     /**
-     * Модуль работы с именем БЭМ-сущности.
+     * Модуль работы с БЭМ-селектором.
      *
      * @constructor
-     * @param {string} [name] Имя БЭМ-сущности
+     * @param {string} [selector] БЭМ-селектор
      */
-    function Name(name) {
+    function Selector(selector) {
 
         /**
-         * Имя БЭМ-сущности.
+         * БЭМ-селектор.
          *
          * @private
          * @type {string}
          */
-        this._name = name || '';
+        this._selector = selector || '';
 
         /**
          * Имя блока.
@@ -91,6 +64,14 @@
          */
         this._elemModVal = '';
 
+        /**
+         * Вес селектора.
+         *
+         * @private
+         * @type {number}
+         */
+        this._weight = 0;
+
         this.info();
     }
 
@@ -101,12 +82,19 @@
      * @property {string} mod Разделитель блока и модификатора, элемента и модификатора, модификатора и значения
      * @property {string} elem Разделитель блока и элемента
      */
-    Name.delimiters = {
+    Selector.delimiters = {
         mod: '_',
         elem: '__'
     };
 
-    Name.prototype = {
+    /**
+     * Символ любого значения.
+     *
+     * @type {string}
+     */
+    Selector.any = '*';
+
+    Selector.prototype = {
 
         /**
          * Получить информацию по БЭМ-сущности.
@@ -150,7 +138,7 @@
          * Получить/установить имя блока.
          *
          * @param {string} [name] Имя блока
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         block: function(name) {
             return this._getSet('_block', name);
@@ -161,10 +149,10 @@
          *
          * @param {string} [name] Имя модификатора
          * @param {string} [val] Значение модификатора
-         * @returns {{name: string, val: string}|Name}
+         * @returns {{name: string, val: string}|Selector}
          */
         mod: function(name, val) {
-            if(name === undefined &amp;&amp; val === undefined) return {
+            if(name === undefined && val === undefined) return {
                 name: this.modName(),
                 val: this.modVal()
             };
@@ -178,7 +166,7 @@
          * Получить/установить имя модификатора блока.
          *
          * @param {string} [name] Имя модификатора
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         modName: function(name) {
             return this._getSet('_modName', name);
@@ -188,7 +176,7 @@
          * Получить/установить значение модификатора блока.
          *
          * @param {string} [val] Значение модификатора
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         modVal: function(val) {
             return this._getSet('_modVal', val);
@@ -198,7 +186,7 @@
          * Получить/установить элемент.
          *
          * @param {string} [name] Имя элемента
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         elem: function(name) {
             return this._getSet('_elem', name);
@@ -209,10 +197,10 @@
          *
          * @param {string} [name] Имя модификатора
          * @param {string} [val] Значение модификатора
-         * @returns {{name: string, val: string}|Name}
+         * @returns {{name: string, val: string}|Selector}
          */
         elemMod: function(name, val) {
-            if(name === undefined &amp;&amp; val === undefined) return {
+            if(name === undefined && val === undefined) return {
                 name: this.elemModName(),
                 val: this.elemModVal()
             };
@@ -226,7 +214,7 @@
          * Получить/установить имя модификатора элемента.
          *
          * @param {string} [name] Имя модификатора
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         elemModName: function(name) {
             return this._getSet('_elemModName', name);
@@ -236,7 +224,7 @@
          * Получить/установить значение модификатора элемента.
          *
          * @param {string} [val] Значение модификатора
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         elemModVal: function(val) {
             return this._getSet('_elemModVal', val);
@@ -252,12 +240,49 @@
 
             if(this._elem) {
                 name = name.concat(
-                    Name.delimiters.elem, this._elem,
+                    Selector.delimiters.elem, this._elem,
                     this._getMod('_elemModName', '_elemModVal')
                 );
             }
 
             return name.join('');
+        },
+
+        /**
+         * Получить/установить вес селектора.
+         *
+         * @param {number} [weight] Вес селектора
+         * @returns {number|Selector}
+         */
+        weight: function(weight) {
+            if(weight) {
+                this._weight = weight;
+                return this;
+            }
+
+            if(this._weight) {
+                return this._weight;
+            }
+
+            var weights = {
+                block: 2,
+                modName: 2,
+                modVal: 2,
+                elem: 10,
+                elemModName: 6,
+                elemModVal: 6
+            };
+
+            return [
+                'block', 'modName', 'modVal',
+                'elem', 'elemModName', 'elemModVal'
+            ].reduce(function(weight, partName) {
+                    var part = this[partName]();
+                    if(part) {
+                        weight += part === Selector.any ? weights[partName] / 2 : weights[partName];
+                    }
+                    return weight;
+                }.bind(this), 0);
         },
 
         /**
@@ -267,7 +292,7 @@
          * @returns {{block: string, elem: string}}
          */
         _getBlockAndElem: function() {
-            var blockAndElem = this._name.split(Name.delimiters.elem);
+            var blockAndElem = this._selector.split(Selector.delimiters.elem);
             return {
                 block: blockAndElem[0] || '',
                 elem: blockAndElem[1] || ''
@@ -282,7 +307,7 @@
          * @returns {{object: string, modName: string, modVal: string}}
          */
         _getObjectAndMods: function(object) {
-            var blockAndMod = object.split(Name.delimiters.mod);
+            var blockAndMod = object.split(Selector.delimiters.mod);
             return {
                 object: blockAndMod[0],
                 modName: blockAndMod[1] || '',
@@ -303,11 +328,11 @@
                 name = this[name],
                 val = this[val];
 
-            if(name &amp;&amp; val !== false) {
-                mod.push(Name.delimiters.mod, name);
+            if(name && val !== false) {
+                mod.push(Selector.delimiters.mod, name);
 
-                if(val &amp;&amp; val !== true) {
-                    mod.push(Name.delimiters.mod, val);
+                if(val && val !== true) {
+                    mod.push(Selector.delimiters.mod, val);
                 }
             }
 
@@ -320,7 +345,7 @@
          * @private
          * @param {string} name Имя поля
          * @param {*} [val] Значение
-         * @returns {*|Name}
+         * @returns {*|Selector}
          */
         _getSet: function(name, val) {
             if(val === undefined) return this[name];
@@ -331,29 +356,6 @@
 
     };
 
-    return Name;
+    return Selector;
 
 });
-</code></pre>
-        </article>
-    </section>
-
-
-
-
-</div>
-
-<nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-bemer.html">bemer</a></li><li><a href="module-functions.html">functions</a></li><li><a href="module-Helpers.html">Helpers</a></li><li><a href="module-is.html">is</a></li><li><a href="module-Match.html">Match</a></li><li><a href="module-modules.html">modules</a></li><li><a href="module-Name.html">Name</a></li><li><a href="module-Node.html">Node</a></li><li><a href="module-number.html">number</a></li><li><a href="module-object.html">object</a></li><li><a href="module-Pool.html">Pool</a></li><li><a href="module-string.html">string</a></li><li><a href="module-Tag.html">Tag</a></li><li><a href="module-Template.html">Template</a></li><li><a href="module-Tree.html">Tree</a></li></ul><h3>Classes</h3><ul><li><a href="module-bemer-bemer.html">bemer</a></li><li><a href="module-functions-functions.html">functions</a></li><li><a href="module-Helpers-Helpers.html">Helpers</a></li><li><a href="module-is-is.html">is</a></li><li><a href="module-Match-Match.html">Match</a></li><li><a href="module-modules-modules.html">modules</a></li><li><a href="module-Name-Name.html">Name</a></li><li><a href="module-Node-Node.html">Node</a></li><li><a href="module-number-number.html">number</a></li><li><a href="module-object-object.html">object</a></li><li><a href="module-Pool-Pool.html">Pool</a></li><li><a href="module-string-string.html">string</a></li><li><a href="module-Tag-Tag.html">Tag</a></li><li><a href="module-Template-Template.html">Template</a></li><li><a href="module-Tree-Tree.html">Tree</a></li></ul>
-</nav>
-
-<br clear="both">
-
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha8</a> on Sat Jun 28 2014 16:53:30 GMT+0400 (MSK)
-</footer>
-
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
-</body>
-</html>

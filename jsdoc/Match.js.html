@@ -25,7 +25,7 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>definer('Match', /** @exports Match */ function(Name, object, is) {
+            <pre class="prettyprint source linenums"><code>definer('Match', /** @exports Match */ function(Selector, object, is) {
 
     /**
      * Модуль проверки БЭМ-узла на соответствие шаблону.
@@ -39,17 +39,10 @@
          * Экземпляр шаблона.
          *
          * @private
-         * @type {Name}
+         * @type {Selector}
          */
-        this._pattern = new Name(pattern);
+        this._pattern = new Selector(pattern);
     }
-
-    /**
-     * Символ любого значения.
-     *
-     * @type {string}
-     */
-    Match.any = '*';
 
     Match.prototype = {
 
@@ -82,7 +75,7 @@
          * @returns {boolean}
          */
         _name: function(name, method) {
-            name = new Name(name);
+            name = new Selector(name);
 
             var mods = {};
             mods[name.modName()] = name.modVal();
@@ -161,7 +154,7 @@
          */
         _block: function(block) {
             var pattern = this._pattern.block();
-            return pattern === Match.any || block === Match.any || pattern === block;
+            return pattern === Selector.any || block === Selector.any || pattern === block;
         },
 
         /**
@@ -204,7 +197,7 @@
                 return true;
             }
 
-            return pattern === Match.any || elem === Match.any || pattern === elem;
+            return pattern === Selector.any || elem === Selector.any || pattern === elem;
         },
 
         /**
@@ -267,26 +260,27 @@
          * @returns {boolean}
          */
         _mod: function(patternName, patternVal, name, val) {
+            var any = Selector.any;
 
-            if(patternName === Match.any &amp;&amp; patternVal === Match.any || name === Match.any &amp;&amp; val === Match.any) {
+            if(patternName === any &amp;&amp; patternVal === any || name === any &amp;&amp; val === any) {
                 return true;
             }
 
-            if(patternName === Match.any) {
-                return val === Match.any || patternVal === val;
+            if(patternName === any) {
+                return val === any || patternVal === val;
             }
 
-            if(name === Match.any) {
-                return patternVal === Match.any || patternVal === val;
+            if(name === any) {
+                return patternVal === any || patternVal === val;
             }
 
             // Вторая проверка на булев модификатор
-            if(patternVal === Match.any || !patternVal &amp;&amp; val === true) {
-                return name === Match.any || patternName === name;
+            if(patternVal === any || !patternVal &amp;&amp; val === true) {
+                return name === any || patternName === name;
             }
 
-            if(val === Match.any) {
-                return patternName === Match.any || patternName === name;
+            if(val === any) {
+                return patternName === any || patternName === name;
             }
 
             return patternName === name &amp;&amp; patternVal === val;
@@ -307,13 +301,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-bemer.html">bemer</a></li><li><a href="module-functions.html">functions</a></li><li><a href="module-Helpers.html">Helpers</a></li><li><a href="module-is.html">is</a></li><li><a href="module-Match.html">Match</a></li><li><a href="module-modules.html">modules</a></li><li><a href="module-Name.html">Name</a></li><li><a href="module-Node.html">Node</a></li><li><a href="module-number.html">number</a></li><li><a href="module-object.html">object</a></li><li><a href="module-Pool.html">Pool</a></li><li><a href="module-string.html">string</a></li><li><a href="module-Tag.html">Tag</a></li><li><a href="module-Template.html">Template</a></li><li><a href="module-Tree.html">Tree</a></li></ul><h3>Classes</h3><ul><li><a href="module-bemer-bemer.html">bemer</a></li><li><a href="module-functions-functions.html">functions</a></li><li><a href="module-Helpers-Helpers.html">Helpers</a></li><li><a href="module-is-is.html">is</a></li><li><a href="module-Match-Match.html">Match</a></li><li><a href="module-modules-modules.html">modules</a></li><li><a href="module-Name-Name.html">Name</a></li><li><a href="module-Node-Node.html">Node</a></li><li><a href="module-number-number.html">number</a></li><li><a href="module-object-object.html">object</a></li><li><a href="module-Pool-Pool.html">Pool</a></li><li><a href="module-string-string.html">string</a></li><li><a href="module-Tag-Tag.html">Tag</a></li><li><a href="module-Template-Template.html">Template</a></li><li><a href="module-Tree-Tree.html">Tree</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-bemer.html">bemer</a></li><li><a href="module-functions.html">functions</a></li><li><a href="module-Helpers.html">Helpers</a></li><li><a href="module-is.html">is</a></li><li><a href="module-Match.html">Match</a></li><li><a href="module-modules.html">modules</a></li><li><a href="module-Node.html">Node</a></li><li><a href="module-number.html">number</a></li><li><a href="module-object.html">object</a></li><li><a href="module-Pool.html">Pool</a></li><li><a href="module-Selector.html">Selector</a></li><li><a href="module-string.html">string</a></li><li><a href="module-Tag.html">Tag</a></li><li><a href="module-Template.html">Template</a></li><li><a href="module-Tree.html">Tree</a></li></ul><h3>Classes</h3><ul><li><a href="module-bemer-bemer.html">bemer</a></li><li><a href="module-functions-functions.html">functions</a></li><li><a href="module-Helpers-Helpers.html">Helpers</a></li><li><a href="module-is-is.html">is</a></li><li><a href="module-Match-Match.html">Match</a></li><li><a href="module-modules-modules.html">modules</a></li><li><a href="module-Node-Node.html">Node</a></li><li><a href="module-number-number.html">number</a></li><li><a href="module-object-object.html">object</a></li><li><a href="module-Pool-Pool.html">Pool</a></li><li><a href="module-Selector-Selector.html">Selector</a></li><li><a href="module-string-string.html">string</a></li><li><a href="module-Tag-Tag.html">Tag</a></li><li><a href="module-Template-Template.html">Template</a></li><li><a href="module-Tree-Tree.html">Tree</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha8</a> on Sat Jun 28 2014 16:53:30 GMT+0400 (MSK)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha8</a> on Tue Jul 08 2014 23:13:46 GMT+0400 (MSK)
 </footer>
 
 <script> prettyPrint(); </script>
