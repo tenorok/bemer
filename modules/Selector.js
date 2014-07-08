@@ -1,20 +1,20 @@
-definer('Name', /** @exports Name */ function() {
+definer('Selector', /** @exports Selector */ function() {
 
     /**
-     * Модуль работы с именем БЭМ-сущности.
+     * Модуль работы с БЭМ-селектором.
      *
      * @constructor
-     * @param {string} [name] Имя БЭМ-сущности
+     * @param {string} [selector] БЭМ-селектор
      */
-    function Name(name) {
+    function Selector(selector) {
 
         /**
-         * Имя БЭМ-сущности.
+         * БЭМ-селектор.
          *
          * @private
          * @type {string}
          */
-        this._name = name || '';
+        this._selector = selector || '';
 
         /**
          * Имя блока.
@@ -64,6 +64,14 @@ definer('Name', /** @exports Name */ function() {
          */
         this._elemModVal = '';
 
+        /**
+         * Вес селектора.
+         *
+         * @private
+         * @type {number}
+         */
+        this._weight = 0;
+
         this.info();
     }
 
@@ -74,12 +82,19 @@ definer('Name', /** @exports Name */ function() {
      * @property {string} mod Разделитель блока и модификатора, элемента и модификатора, модификатора и значения
      * @property {string} elem Разделитель блока и элемента
      */
-    Name.delimiters = {
+    Selector.delimiters = {
         mod: '_',
         elem: '__'
     };
 
-    Name.prototype = {
+    /**
+     * Символ любого значения.
+     *
+     * @type {string}
+     */
+    Selector.any = '*';
+
+    Selector.prototype = {
 
         /**
          * Получить информацию по БЭМ-сущности.
@@ -123,7 +138,7 @@ definer('Name', /** @exports Name */ function() {
          * Получить/установить имя блока.
          *
          * @param {string} [name] Имя блока
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         block: function(name) {
             return this._getSet('_block', name);
@@ -134,7 +149,7 @@ definer('Name', /** @exports Name */ function() {
          *
          * @param {string} [name] Имя модификатора
          * @param {string} [val] Значение модификатора
-         * @returns {{name: string, val: string}|Name}
+         * @returns {{name: string, val: string}|Selector}
          */
         mod: function(name, val) {
             if(name === undefined && val === undefined) return {
@@ -151,7 +166,7 @@ definer('Name', /** @exports Name */ function() {
          * Получить/установить имя модификатора блока.
          *
          * @param {string} [name] Имя модификатора
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         modName: function(name) {
             return this._getSet('_modName', name);
@@ -161,7 +176,7 @@ definer('Name', /** @exports Name */ function() {
          * Получить/установить значение модификатора блока.
          *
          * @param {string} [val] Значение модификатора
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         modVal: function(val) {
             return this._getSet('_modVal', val);
@@ -171,7 +186,7 @@ definer('Name', /** @exports Name */ function() {
          * Получить/установить элемент.
          *
          * @param {string} [name] Имя элемента
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         elem: function(name) {
             return this._getSet('_elem', name);
@@ -182,7 +197,7 @@ definer('Name', /** @exports Name */ function() {
          *
          * @param {string} [name] Имя модификатора
          * @param {string} [val] Значение модификатора
-         * @returns {{name: string, val: string}|Name}
+         * @returns {{name: string, val: string}|Selector}
          */
         elemMod: function(name, val) {
             if(name === undefined && val === undefined) return {
@@ -199,7 +214,7 @@ definer('Name', /** @exports Name */ function() {
          * Получить/установить имя модификатора элемента.
          *
          * @param {string} [name] Имя модификатора
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         elemModName: function(name) {
             return this._getSet('_elemModName', name);
@@ -209,7 +224,7 @@ definer('Name', /** @exports Name */ function() {
          * Получить/установить значение модификатора элемента.
          *
          * @param {string} [val] Значение модификатора
-         * @returns {string|Name}
+         * @returns {string|Selector}
          */
         elemModVal: function(val) {
             return this._getSet('_elemModVal', val);
@@ -225,12 +240,49 @@ definer('Name', /** @exports Name */ function() {
 
             if(this._elem) {
                 name = name.concat(
-                    Name.delimiters.elem, this._elem,
+                    Selector.delimiters.elem, this._elem,
                     this._getMod('_elemModName', '_elemModVal')
                 );
             }
 
             return name.join('');
+        },
+
+        /**
+         * Получить/установить вес селектора.
+         *
+         * @param {number} [weight] Вес селектора
+         * @returns {number|Selector}
+         */
+        weight: function(weight) {
+            if(weight) {
+                this._weight = weight;
+                return this;
+            }
+
+            if(this._weight) {
+                return this._weight;
+            }
+
+            var weights = {
+                block: 2,
+                modName: 2,
+                modVal: 2,
+                elem: 10,
+                elemModName: 6,
+                elemModVal: 6
+            };
+
+            return [
+                'block', 'modName', 'modVal',
+                'elem', 'elemModName', 'elemModVal'
+            ].reduce(function(weight, partName) {
+                    var part = this[partName]();
+                    if(part) {
+                        weight += part === Selector.any ? weights[partName] / 2 : weights[partName];
+                    }
+                    return weight;
+                }.bind(this), 0);
         },
 
         /**
@@ -240,7 +292,7 @@ definer('Name', /** @exports Name */ function() {
          * @returns {{block: string, elem: string}}
          */
         _getBlockAndElem: function() {
-            var blockAndElem = this._name.split(Name.delimiters.elem);
+            var blockAndElem = this._selector.split(Selector.delimiters.elem);
             return {
                 block: blockAndElem[0] || '',
                 elem: blockAndElem[1] || ''
@@ -255,7 +307,7 @@ definer('Name', /** @exports Name */ function() {
          * @returns {{object: string, modName: string, modVal: string}}
          */
         _getObjectAndMods: function(object) {
-            var blockAndMod = object.split(Name.delimiters.mod);
+            var blockAndMod = object.split(Selector.delimiters.mod);
             return {
                 object: blockAndMod[0],
                 modName: blockAndMod[1] || '',
@@ -277,10 +329,10 @@ definer('Name', /** @exports Name */ function() {
                 val = this[val];
 
             if(name && val !== false) {
-                mod.push(Name.delimiters.mod, name);
+                mod.push(Selector.delimiters.mod, name);
 
                 if(val && val !== true) {
-                    mod.push(Name.delimiters.mod, val);
+                    mod.push(Selector.delimiters.mod, val);
                 }
             }
 
@@ -293,7 +345,7 @@ definer('Name', /** @exports Name */ function() {
          * @private
          * @param {string} name Имя поля
          * @param {*} [val] Значение
-         * @returns {*|Name}
+         * @returns {*|Selector}
          */
         _getSet: function(name, val) {
             if(val === undefined) return this[name];
@@ -304,6 +356,6 @@ definer('Name', /** @exports Name */ function() {
 
     };
 
-    return Name;
+    return Selector;
 
 });

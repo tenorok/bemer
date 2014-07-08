@@ -846,7 +846,7 @@ bemer({ block: 'name' })
 * [`functions`](http://tenorok.github.io/bemer/jsdoc/module-functions-functions.html) — работа с функциями
 * [`is`](http://tenorok.github.io/bemer/jsdoc/module-is-is.html) — работа с типами данных
 * [`Tag`](http://tenorok.github.io/bemer/jsdoc/module-Tag-Tag.html) — работа с тегом
-* [`Name`](http://tenorok.github.io/bemer/jsdoc/module-Name-Name.html) — работа с именем БЭМ-сущности
+* [`Selector`](http://tenorok.github.io/bemer/jsdoc/module-Selector-Selector.html) — работа с БЭМ-селектором
 * [`Node`](http://tenorok.github.io/bemer/jsdoc/module-Node-Node.html) — работа с БЭМ-узлом
 * [`Match`](http://tenorok.github.io/bemer/jsdoc/module-Match-Match.html) — проверка БЭМ-узла на соответствие шаблону
 
@@ -856,12 +856,12 @@ bemer({ block: 'name' })
 
 Возвращает: `{object|*}` — все модули или один заданный модуль
 
-Использование модуля `Name`:
+Использование модуля `Selector`:
 
 ```js
-var Name = bemer.modules('Name');
+var Selector = bemer.modules('Selector');
 
-var header = new Name('header_theme')
+var header = new Selector('header_theme')
     .modVal('dark')
     .elem('logo')
     .elemMod('size', 's');

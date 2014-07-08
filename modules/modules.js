@@ -1,4 +1,4 @@
-definer('modules', /** @exports modules */ function(number, string, object, functions, is, Tag, Name, Node, Match) {
+definer('modules', /** @exports modules */ function(number, string, object, functions, is, Tag, Selector, Node, Match) {
 
     /**
      * Модуль для экспорта других внутренних модулей.
@@ -20,7 +20,7 @@ definer('modules', /** @exports modules */ function(number, string, object, func
         functions: functions,
         is: is,
         Tag: Tag,
-        Name: Name,
+        Selector: Selector,
         Node: Node,
         Match: Match
     };

@@ -1,4 +1,4 @@
-definer('Template', /** @exports Template */ function(Match, classify, Node, Name, Helpers, object, string, is) {
+definer('Template', /** @exports Template */ function(Match, classify, Node, Selector, Helpers, object, string, is) {
 
     /**
      * Модуль шаблонизации BEMJSON-узла.
@@ -69,7 +69,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
      */
     Template.base = function(bemjson, data) {
         return new Template(
-            new Node(bemjson).isBlock() ? '*' : '*' + Name.delimiters.elem + '*', {}
+            new Node(bemjson).isBlock() ? '*' : '*' + Selector.delimiters.elem + '*', {}
         ).transform(bemjson, data);
     };
 
@@ -204,7 +204,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Nam
         _getDefaultModes: function() {
 
             var hasBlock = this._patterns.some(function(pattern) {
-                return new Name(pattern).isBlock();
+                return new Selector(pattern).isBlock();
             }, this);
 
             return {
