@@ -266,18 +266,20 @@ definer('Selector', /** @exports Selector */ function() {
 
             var weights = {
                 block: 0,
-                mod: 6,
-                val: 6,
+                modName: 6,
+                modVal: 6,
                 elem: 28,
-                elemMod: 2,
-                elemVal: 2
+                elemModName: 2,
+                elemModVal: 2
             };
 
             weight = weights.block;
 
-            if(this.modName()) {
-                weight += weights.mod;
-            }
+            ['modName', 'modVal', 'elem', 'elemModName', 'elemModVal'].forEach(function(part) {
+                if(this[part]()) {
+                    weight += weights[part];
+                }
+            }, this);
 
             return weight;
         },

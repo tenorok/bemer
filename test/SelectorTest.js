@@ -151,6 +151,22 @@ definer('SelectorTest', function(assert, Selector) {
                 assert.isTrue(new Selector('block').weight() < new Selector('block_mod').weight());
             });
 
+            it('block_mod < block_mod_val', function() {
+                assert.isTrue(new Selector('block_mod').weight() < new Selector('block_mod_val').weight());
+            });
+
+            it('block_mod_val < block__elem', function() {
+                assert.isTrue(new Selector('block_mod_val').weight() < new Selector('block__elem').weight());
+            });
+
+            it('block__elem < block__elem_mod', function() {
+                assert.isTrue(new Selector('block__elem').weight() < new Selector('block__elem_mod').weight());
+            });
+
+            it('block__elem_mod < block__elem_mod_val', function() {
+                assert.isTrue(new Selector('block__elem_mod').weight() < new Selector('block__elem_mod_val').weight());
+            });
+
         });
 
     });
