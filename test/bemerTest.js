@@ -251,9 +251,9 @@ definer('bemerTest', function(assert, bemer, Helpers) {
         describe('Получение внутренних модулей.', function() {
 
             it('Получить заданный модуль', function() {
-                var name = bemer.modules('Name');
-                assert.isTrue(is.function(name));
-                assert.isTrue(new name instanceof Name);
+                var selector = bemer.modules('Selector');
+                assert.isTrue(is.function(selector));
+                assert.isTrue(new selector instanceof Selector);
             });
 
         });

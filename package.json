@@ -1,7 +1,7 @@
 {
     "name": "bemer",
     "description": "Template engine. BEMJSON to HTML processor.",
-    "version": "0.2.2",
+    "version": "0.3.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/tenorok/bemer.git"
@@ -17,7 +17,7 @@
     },
     "devDependencies": {
         "git-hooks": "~0.0.6",
-        "jsdoc": "~3.3.0",
+        "jsdoc": "~3.2.2",
         "chai": "~1.8.1",
         "jscs": "~1.2.4",
         "grunt-prompt": "~1.1.0",

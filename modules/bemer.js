@@ -1,5 +1,5 @@
 definer.export('bemer', /** @exports bemer */ function(
-    Tree, Template, Pool, functions, Name, Node, object, Helpers, modules
+    Tree, Template, Pool, functions, Selector, Node, object, Helpers, modules
 ) {
 
     /**
@@ -76,8 +76,8 @@ definer.export('bemer', /** @exports bemer */ function(
      */
     var defaultConfig = {
         delimiters: {
-            mod: Name.delimiters.mod,
-            elem: Name.delimiters.elem
+            mod: Selector.delimiters.mod,
+            elem: Selector.delimiters.elem
         },
         tag: Template.tag,
         bemClass: Node.bemClass,
@@ -108,7 +108,7 @@ definer.export('bemer', /** @exports bemer */ function(
         config = config || defaultConfig;
 
         if(config.delimiters) {
-            object.extend(Name.delimiters, config.delimiters);
+            object.extend(Selector.delimiters, config.delimiters);
         }
 
         if(config.tag) {
