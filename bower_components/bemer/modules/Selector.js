@@ -107,12 +107,12 @@ definer('Selector', /** @exports Selector */ function() {
                 elem = this._getObjectAndMods(blockAndElem.elem);
 
             return {
-                block: this._block = block.object,
-                modName: this._modName = block.modName,
-                modVal: this._modVal = block.modVal,
-                elem: this._elem = elem.object,
-                elemModName: this._elemModName = elem.modName,
-                elemModVal: this._elemModVal = elem.modVal
+                block: this._block || (this._block = block.object),
+                modName: this._modName || (this._modName = block.modName),
+                modVal: this._modVal || (this._modVal = block.modVal),
+                elem: this._elem || (this._elem = elem.object),
+                elemModName: this._elemModName || (this._elemModName = elem.modName),
+                elemModVal: this._elemModVal || (this._elemModVal = elem.modVal)
             };
         },
 

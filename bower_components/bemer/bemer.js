@@ -174,8 +174,8 @@ defineAsGlobal && (global.inherit = inherit);
  * @file Template engine. BEMJSON to HTML processor.
  * @copyright 2014 Artem Kurbatov, tenorok.ru
  * @license MIT license
- * @version 0.3.0
- * @date 8 July 2014
+ * @version 0.3.1
+ * @date 17 July 2014
  */
 (function(global, undefined) {
 var definer = {
@@ -1127,12 +1127,12 @@ Selector = (function () {
                 elem = this._getObjectAndMods(blockAndElem.elem);
 
             return {
-                block: this._block = block.object,
-                modName: this._modName = block.modName,
-                modVal: this._modVal = block.modVal,
-                elem: this._elem = elem.object,
-                elemModName: this._elemModName = elem.modName,
-                elemModVal: this._elemModVal = elem.modVal
+                block: this._block || (this._block = block.object),
+                modName: this._modName || (this._modName = block.modName),
+                modVal: this._modVal || (this._modVal = block.modVal),
+                elem: this._elem || (this._elem = elem.object),
+                elemModName: this._elemModName || (this._elemModName = elem.modName),
+                elemModVal: this._elemModVal || (this._elemModVal = elem.modVal)
             };
         },
 
