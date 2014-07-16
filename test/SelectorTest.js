@@ -138,6 +138,11 @@ definer('SelectorTest', function(assert, Selector) {
             it('Пустое имя', function() {
                 assert.equal(new Selector().toString(), '');
             });
+
+            it('Изменение частей селектора с последующим получением полной информации', function() {
+                assert.equal(new Selector().block('block').info().block, 'block');
+                assert.equal(new Selector('block').elem('elem').info().elem, 'elem');
+            });
         });
 
         describe('Вычисление веса селектора.', function() {
