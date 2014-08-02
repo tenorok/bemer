@@ -3,7 +3,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
 
         it('Шаблонизировать простой блок', function() {
             assert.equal(new Template('name', {}).match({ block: 'name' }).toString(),
-                '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}"></div>'
+                '<div class="name"></div>'
             );
             assert.isNull(new Template('name', {}).match({ block: 'name2' }));
         });
@@ -35,7 +35,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
             assert.equal(new Template('name', {
                 tag: 'span'
             }).match({ block: 'name' }).toString(),
-                '<span class="name i-bem" data-bem="{&quot;name&quot;:{}}"></span>'
+                '<span class="name"></span>'
             );
         });
 
@@ -61,7 +61,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                 tag: 'img',
                 attrs: { alt: 'image' }
             }).match({ block: 'picture', attrs: { src: '1.png' }}).toString(),
-                '<img class="picture i-bem" alt="image" src="1.png" data-bem="{&quot;picture&quot;:{}}"/>'
+                '<img class="picture" alt="image" src="1.png"/>'
             );
         });
 
@@ -70,7 +70,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                 tag: 'img',
                 mix: [{ block: 'image', js: true }]
             }).match({ block: 'picture', mix: [{ block: 'link' }] }).toString(),
-                '<img class="picture i-bem link image" data-bem="{&quot;picture&quot;:{},&quot;image&quot;:{}}"/>'
+                '<img class="picture i-bem link image" data-bem="{&quot;image&quot;:{}}"/>'
             );
         });
 
@@ -78,7 +78,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
             assert.equal(new Template('name', {
                 cls: 'my1 my2'
             }).match({ block: 'name' }).toString(),
-                '<div class="my1 my2 name i-bem" data-bem="{&quot;name&quot;:{}}"></div>'
+                '<div class="my1 my2 name"></div>'
             );
         });
 
@@ -87,7 +87,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                 mods: { theme: 'normal' },
                 elemMods: { fake: true }
             }).match({ block: 'name' }).toString(),
-                '<div class="name i-bem name_theme_normal" data-bem="{&quot;name&quot;:{}}"></div>'
+                '<div class="name name_theme_normal"></div>'
             );
         });
 
@@ -95,12 +95,12 @@ definer('TemplateTest', function(assert, Template, Helpers) {
             assert.equal(new Template('name_size_s', {
                 mods: { theme: 'normal' }
             }).match({ block: 'name', mods: { size: 's' }}).toString(),
-                '<div class="name i-bem name_theme_normal name_size_s" data-bem="{&quot;name&quot;:{}}"></div>'
+                '<div class="name name_theme_normal name_size_s"></div>'
             );
             assert.equal(new Template('name_size_s', {
                 mods: { theme: 'normal' }
             }).match({ block: 'name', mods: { size: 's', theme: 'dark' }}).toString(),
-                '<div class="name i-bem name_theme_dark name_size_s" data-bem="{&quot;name&quot;:{}}"></div>'
+                '<div class="name name_theme_dark name_size_s"></div>'
             );
         });
 
@@ -131,17 +131,17 @@ definer('TemplateTest', function(assert, Template, Helpers) {
             assert.equal(new Template('name', {
                 content: 'просто текст'
             }).match({ block: 'name' }).toString(),
-                '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">просто текст</div>'
+                '<div class="name">просто текст</div>'
             );
             assert.equal(new Template('name', {
                 content: ['первый', ' и ', 'второй']
             }).match({ block: 'name' }).toString(),
-                '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">первый и второй</div>'
+                '<div class="name">первый и второй</div>'
             );
             assert.equal(new Template('name', {
                 content: ['один']
             }).match({ block: 'name', content: 'два' }).toString(),
-                '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">два</div>'
+                '<div class="name">два</div>'
             );
         });
 
@@ -151,7 +151,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                 assert.equal(new Template('name', {
                     content: '>>экранирование<<'
                 }).match({ block: 'name' }).toString(),
-                    '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">&gt;&gt;экранирование&lt;&lt;</div>'
+                    '<div class="name">&gt;&gt;экранирование&lt;&lt;</div>'
                 );
             });
 
@@ -162,7 +162,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                         '&"два"'
                     ]
                 }).match({ block: 'name' }).toString(),
-                    '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">&gt;раз&lt;&amp;&quot;два&quot;</div>'
+                    '<div class="name">&gt;раз&lt;&amp;&quot;два&quot;</div>'
                 );
             });
 
@@ -173,7 +173,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                         ['&"два"']
                     ]
                 }).match({ block: 'name' }).toString(),
-                    '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">&gt;раз&lt;&amp;&quot;два&quot;</div>'
+                    '<div class="name">&gt;раз&lt;&amp;&quot;два&quot;</div>'
                 );
             });
 
@@ -184,8 +184,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                         '&"три"'
                     ]
                 }).match({ block: 'name', content: ['<раз>'] }).toString(),
-                    '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">' +
-                        '&lt;раз&gt;&gt;два&lt;&amp;&quot;три&quot;</div>'
+                    '<div class="name">&lt;раз&gt;&gt;два&lt;&amp;&quot;три&quot;</div>'
                 );
             });
 
@@ -195,7 +194,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
 
             it('Несколько блоков', function() {
                 assert.equal(new Template('name1', 'name2', 'name3', {}).match({ block: 'name2' }).toString(),
-                    '<div class="name2 i-bem" data-bem="{&quot;name2&quot;:{}}"></div>'
+                    '<div class="name2"></div>'
                 );
                 assert.isNull(new Template('name1', 'name2', 'name3', {}).match({ block: 'name4' }));
             });
@@ -204,7 +203,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                 assert.equal(new Template('name1', 'name2_mod_val', 'name3', {}).match(
                     { block: 'name2', mods: { mod: 'val' }}
                 ).toString(),
-                    '<div class="name2 i-bem name2_mod_val" data-bem="{&quot;name2&quot;:{}}"></div>'
+                    '<div class="name2 name2_mod_val"></div>'
                 );
             });
 
@@ -220,8 +219,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                 assert.equal(new Template('block', 'block__elem', 'block__elem2', {}).match(
                     { block: 'block', elem: 'elem2' }
                 ).toString(),
-                    '<div class="block__elem2 i-bem" data-bem="{&quot;block__elem2&quot;:{}}"></div>',
-                    'Применяются базовые моды для блоков, потому что в списке селекторов присутствует блок'
+                    '<div class="block__elem2"></div>'
                 );
             });
 
@@ -230,7 +228,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
         describe('Наследование шаблонов.', function() {
 
             it('Одиночное наследование', function() {
-                assert.equal(new Template('parent', { mods: function() { return { a: 1 }; }})
+                assert.equal(new Template('parent', { js: true, mods: function() { return { a: 1 }; }})
                     .extend(new Template('child', { mods: function() { return { a: this.__base().a, b: 2 }; }}))
                     .match({ block: 'child' }).toString(),
                     '<div class="child i-bem child_a_1 child_b_2" data-bem="{&quot;child&quot;:{}}"></div>'
@@ -299,13 +297,13 @@ definer('TemplateTest', function(assert, Template, Helpers) {
 
             it('Блок', function() {
                 assert.equal(Template.base({ block: 'a' }).toString(),
-                    '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}"></div>'
+                    '<div class="a"></div>'
                 );
             });
 
             it('Блок с модификатором', function() {
                 assert.equal(Template.base({ block: 'a', mods: { b: 'c' }}).toString(),
-                    '<div class="a i-bem a_b_c" data-bem="{&quot;a&quot;:{}}"></div>'
+                    '<div class="a a_b_c"></div>'
                 );
             });
 
@@ -340,7 +338,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
             it('Для примитивных значений приоритет у bemjson', function() {
 
                 assert.equal(new Template('name', { tag: 'span' }).match({ block: 'name', tag: 'i' }).toString(),
-                    '<i class="name i-bem" data-bem="{&quot;name&quot;:{}}"></i>',
+                    '<i class="name"></i>',
                     'строка'
                 );
 
@@ -355,7 +353,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                 assert.equal(new Template('name', { mix: [{ block: 'mix2' }] }).match({
                     block: 'name', mix: [{ block: 'mix1' }]
                 }).toString(),
-                    '<div class="name i-bem mix1 mix2" data-bem="{&quot;name&quot;:{}}"></div>'
+                    '<div class="name mix1 mix2"></div>'
                 );
             });
 
@@ -363,7 +361,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                 assert.equal(new Template('name', { mods: { a: 'b' }}).match({
                     block: 'name', mods: { a: 'c', d: 'e' }
                 }).toString(),
-                    '<div class="name i-bem name_a_c name_d_e" data-bem="{&quot;name&quot;:{}}"></div>'
+                    '<div class="name name_a_c name_d_e"></div>'
                 );
             });
 
@@ -374,7 +372,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                     assert.equal(new Template('name', { tag: function() { return 'span'; }}).match({
                         block: 'name', tag: 'i'
                     }).toString(),
-                        '<span class="name i-bem" data-bem="{&quot;name&quot;:{}}"></span>',
+                        '<span class="name"></span>',
                         'строка'
                     );
 
@@ -391,7 +389,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                     assert.equal(new Template('name', { mix: function() { return [{ block: 'mix2' }]; }}).match({
                         block: 'name', mix: [{ block: 'mix1' }]
                     }).toString(),
-                        '<div class="name i-bem mix2" data-bem="{&quot;name&quot;:{}}"></div>'
+                        '<div class="name mix2"></div>'
                     );
                 });
 
@@ -399,7 +397,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                     assert.equal(new Template('name', { mods: function() { return { a: 'b' }; }}).match({
                         block: 'name', mods: { a: 'c', d: 'e' }
                     }).toString(),
-                        '<div class="name i-bem name_a_b" data-bem="{&quot;name&quot;:{}}"></div>'
+                        '<div class="name name_a_b"></div>'
                     );
                 });
 
@@ -421,7 +419,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                             }
                         }
                     }).match({ block: 'name', index: true }).toString(),
-                        '<div class="name i-bem name_theme_normal" data-bem="{&quot;name&quot;:{}}"></div>'
+                        '<div class="name name_theme_normal"></div>'
                     );
                 });
 
@@ -436,7 +434,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                             }
                         }
                     }).match({ block: 'name', index: true }).toString(),
-                        '<div class="name i-bem name_theme_normal" data-bem="{&quot;name&quot;:{}}"></div>'
+                        '<div class="name name_theme_normal"></div>'
                     );
                 });
 
@@ -453,7 +451,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                             return this.blockName;
                         }
                     }).match({ block: 'name', index: true }).toString(),
-                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">name</div>'
+                        '<div class="name">name</div>'
                     );
                 });
 
@@ -469,7 +467,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                     }).match({
                             block: 'name'
                         }).toString(),
-                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">true</div>'
+                        '<div class="name">true</div>'
                     );
                 });
 
@@ -481,7 +479,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                     }).match({
                             block: 'name'
                         }).toString(),
-                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">true</div>'
+                        '<div class="name">true</div>'
                     );
                 });
 
@@ -494,13 +492,13 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                     assert.equal(template.match({
                         block: 'name'
                     }).toString(),
-                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">false!</div>'
+                        '<div class="name">false!</div>'
                     );
                     assert.equal(template.match({
                         block: 'name',
                         elem: 'elem'
                     }).toString(),
-                        '<div class="name__elem i-bem" data-bem="{&quot;name__elem&quot;:{}}">true!</div>'
+                        '<div class="name__elem">true!</div>'
                     );
                 });
 
@@ -513,13 +511,13 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                     assert.equal(template.match({
                         block: 'name'
                     }).toString(),
-                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">true!</div>'
+                        '<div class="name">true!</div>'
                     );
                     assert.equal(template.match({
                         block: 'name',
                         elem: 'elem'
                     }).toString(),
-                        '<div class="name__elem i-bem" data-bem="{&quot;name__elem&quot;:{}}">false!</div>'
+                        '<div class="name__elem">false!</div>'
                     );
                 });
 
@@ -580,7 +578,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                             block: 'name',
                             content: 'Just   text  in    paragraph.'
                         }).toString(),
-                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">Just text in paragraph.</div>'
+                        '<div class="name">Just text in paragraph.</div>'
                     );
                 });
 
@@ -593,7 +591,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                             block: 'name',
                             content: '<p>Text and <a href="#">link</a>.</p>'
                         }).toString(),
-                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">Text and link.</div>'
+                        '<div class="name">Text and link.</div>'
                     );
                 });
 
@@ -606,7 +604,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                             block: 'name',
                             content: 'abcd'
                         }).toString(),
-                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">ABCD</div>'
+                        '<div class="name">ABCD</div>'
                     );
                 });
 
@@ -619,7 +617,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                             block: 'name',
                             content: 'ABCD'
                         }).toString(),
-                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">abcd</div>'
+                        '<div class="name">abcd</div>'
                     );
                 });
 
@@ -632,7 +630,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                             block: 'name',
                             content: 'a'
                         }).toString(),
-                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">a+a+a</div>'
+                        '<div class="name">a+a+a</div>'
                     );
                 });
 
@@ -648,7 +646,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                             block: 'name',
                             attrs: { a: 1 }
                         }).toString(),
-                        '<div class="name i-bem" a="2" b="3" data-bem="{&quot;name&quot;:{}}"></div>'
+                        '<div class="name" a="2" b="3"></div>'
                     );
                 });
 
@@ -661,7 +659,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                             block: 'name',
                             content: ['a', 'b']
                         }).toString(),
-                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">array</div>'
+                        '<div class="name">array</div>'
                     );
                 });
 
@@ -716,7 +714,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                             block: 'name',
                             content: 100
                         }).toString(),
-                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">300!</div>'
+                        '<div class="name">300!</div>'
                     );
                 });
 
@@ -738,7 +736,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                             block: 'name',
                             content: 100
                         }).toString(),
-                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">300!</div>'
+                        '<div class="name">300!</div>'
                     );
                 });
 
@@ -756,7 +754,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                             block: 'a',
                             content: 100
                         }).toString(),
-                        '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">300</div>'
+                        '<div class="a">300</div>'
                     );
                 });
 
@@ -770,7 +768,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                             return content + '!';
                         }
                     }).match({ block: 'name', content: 'text' }).toString(),
-                        '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">text!</div>'
+                        '<div class="name">text!</div>'
                     );
                 });
 
@@ -780,7 +778,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                             return tag + '';
                         }
                     }).match({ block: 'name' }).toString(),
-                        '<undefined class="name i-bem" data-bem="{&quot;name&quot;:{}}"></undefined>'
+                        '<undefined class="name"></undefined>'
                     );
                 });
 
