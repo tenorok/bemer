@@ -25,7 +25,6 @@ BEM.DOM.decl('example', {
         this.editors.templates.val(
             "bemer\n" +
             "   .match('header', {\n" +
-            "       js: false,\n" +
             "       tag: 'header',\n" +
             "       content: function() {\n" +
             "           return {\n" +

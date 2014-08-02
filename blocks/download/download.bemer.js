@@ -1,8 +1,6 @@
 bemer
     .match('download', {
 
-        js: false,
-
         content: function() {
             return [
                 {

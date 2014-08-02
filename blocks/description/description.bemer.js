@@ -1,8 +1,6 @@
 bemer
     .match('description', {
 
-        js: false,
-
         content: function(content) {
             return content.map(function(paragraph) {
                 return {

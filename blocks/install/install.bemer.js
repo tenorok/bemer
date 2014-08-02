@@ -5,8 +5,6 @@ bemer
             this.version = 'v' + bemjson.version;
         },
 
-        js: false,
-
         content: function() {
             return [
                 {

@@ -2,8 +2,6 @@ bemer.match('layout', {
 
     tag: 'div',
 
-    js: false,
-
     content: [
         {
             block: 'header',
@@ -83,7 +81,7 @@ bemer.match('layout', {
                         block: 'ace',
                         js: {
                             mode: 'javascript',
-                            minLines: 17,
+                            minLines: 16,
                             maxLines: 45
                         }
                     }
@@ -102,7 +100,7 @@ bemer.match('layout', {
                         block: 'ace',
                         js: {
                             mode: 'javascript',
-                            minLines: 17,
+                            minLines: 16,
                             maxLines: 45
                         }
                     }
