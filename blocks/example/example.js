@@ -9,6 +9,9 @@ BEM.DOM.decl('example', {
                     result: this.findBlockInside(this.elem('result'), 'ace')
                 };
 
+                this._templatesValue = '';
+                this._bemjsonValue = '';
+
                 this.setDefaultExample();
             }
         }
@@ -54,13 +57,21 @@ BEM.DOM.decl('example', {
     },
 
     setResult: function() {
+        var templatesValue = this.editors.templates.val(),
+            bemjsonValue = this.editors.bemjson.val();
+
+        if(this._templatesValue === templatesValue && this._bemjsonValue === bemjsonValue) return;
+
+        this._templatesValue = templatesValue;
+        this._bemjsonValue = bemjsonValue;
+
         bemer.clean();
 
-        try { eval(this.editors.templates.val()); } catch(e) {
+        try { eval(templatesValue); } catch(e) {
             console.log(e);
         }
 
-        try { eval('window.bemjson = ' + this.editors.bemjson.val()); } catch(e) {
+        try { eval('window.bemjson = ' + bemjsonValue); } catch(e) {
             console.log(e);
         }
 
