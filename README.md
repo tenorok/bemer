@@ -56,7 +56,7 @@ bemer({ block: 'page' });
 Результат:
 
 ```html
-<div class="page i-bem" data-bem="{&quot;page&quot;:{}}"></div>
+<div class="page"></div>
 ```
 
 ### Блок с элементами
@@ -74,7 +74,7 @@ bemer({
 Результат:
 
 ```html
-<div class="item i-bem" data-bem="{&quot;item&quot;:{}}">
+<div class="item">
     <div class="item__title">Фотоаппарат</div>
     <div class="item__price">14999</div>
 </div>
@@ -306,7 +306,7 @@ bemer({ block: 'text' });
 ```
 
 ```html
-<span class="text i-bem" data-bem="{&quot;text&quot;:{}}"></span>
+<span class="text"></span>
 ```
 
 ###### Поле `attrs`
@@ -325,7 +325,7 @@ bemer({ block: 'input' });
 ```
 
 ```html
-<input class="input i-bem" type="text" data-bem="{&quot;input&quot;:{}}"/>
+<input class="input" type="text"/>
 ```
 
 Атрибуты в шаблоне и входящем BEMJSON складываются:
@@ -336,29 +336,29 @@ bemer({ block: 'input', attrs: { placeholder: 'login' }});
 ```
 
 ```html
-<input class="input i-bem" type="text" placeholder="login" data-bem="{&quot;input&quot;:{}}"/>
+<input class="input" type="text" placeholder="login"/>
 ```
 
 ###### Поле `js`
 
 Тип: `{boolean}` `{object}`
 
-По умолчанию: для блока `true`, для элемента `false`
+По умолчанию: `false`
 
 Поле `js` указывает на наличие клиентского JavaScript у блока или элемента.
 При этом в результирующий HTML-тег добавляется:
 * дополнительный CSS-класс, по умолчанию: `i-bem`
 * атрибут с параметрами инициализации, по умолчанию: `data-bem`
 
-Блок без JS-реализации:
+Блок с JS-реализацией:
 
 ```js
-bemer.match('menu', { js: false });
+bemer.match('menu', { js: true });
 bemer({ block: 'menu' });
 ```
 
 ```html
-<div class="menu"></div>
+<div class="menu i-bem" data-bem="{&quot;menu&quot;:{}}"></div>
 ```
 
 Элемент с JS-реализацией:
@@ -393,10 +393,10 @@ bemer({ block: 'man' });
 
 Поле `bem` указывает на необходимость добавления сформированных CSS-классов для БЭМ-сущности.
 
-Тег `html` без JS-параметров и без БЭМ-классов:
+Тег `html` без БЭМ-классов:
 
 ```js
-bemer.match('page', { tag: 'html', js: false, bem: false });
+bemer.match('page', { tag: 'html', bem: false });
 bemer({ block: 'page' });
 ```
 
@@ -420,7 +420,7 @@ bemer({ block: 'untypical' });
 ```
 
 ```html
-<div class="custom1 custom2 untypical i-bem" data-bem="{&quot;untypical&quot;:{}}"></div>
+<div class="custom1 custom2 untypical"></div>
 ```
 
 ###### Поле `mods`
@@ -439,7 +439,7 @@ bemer({ block: 'header' });
 ```
 
 ```html
-<div class="header i-bem header_theme_red" data-bem="{&quot;header&quot;:{}}"></div>
+<div class="header header_theme_red"></div>
 ```
 
 Модификаторы в шаблоне и входящем BEMJSON складываются:
@@ -450,7 +450,7 @@ bemer({ block: 'header', mods: { adaptive: true }});
 ```
 
 ```html
-<div class="header i-bem header_theme_red header_adaptive" data-bem="{&quot;header&quot;:{}}"></div>
+<div class="header header_theme_red header_adaptive"></div>
 ```
 
 Элемент `logo` блока `header` с модификатором `theme` в значении `blue`:
@@ -501,7 +501,7 @@ bemer({ block: 'header' });
 ```
 
 ```html
-<div class="header i-bem clearfix" data-bem="{&quot;header&quot;:{}}"></div>
+<div class="header clearfix"></div>
 ```
 
 Примешивание блока `menu` с JS-параметрами:
@@ -512,7 +512,7 @@ bemer({ block: 'header' });
 ```
 
 ```html
-<div class="header i-bem menu" data-bem="{&quot;header&quot;:{},&quot;menu&quot;:{&quot;length&quot;:10}}"></div>
+<div class="header i-bem menu" data-bem="{&quot;menu&quot;:{&quot;length&quot;:10}}"></div>
 ```
 
 Примешиваемые сущности в шаблоне и входящем BEMJSON складываются:
@@ -523,7 +523,7 @@ bemer({ block: 'header', mix: [{ block: 'menu', elem: 'wrap' }] });
 ```
 
 ```html
-<div class="header i-bem menu__wrap clearfix" data-bem="{&quot;header&quot;:{}}"></div>
+<div class="header menu__wrap clearfix"></div>
 ```
 
 ###### Поле `content`
@@ -541,7 +541,7 @@ bemer({ block: 'page' });
 ```
 
 ```html
-<div class="page i-bem" data-bem="{&quot;page&quot;:{}}">Hello world!</div>
+<div class="page">Hello world!</div>
 ```
 
 Добавление блоков `header` и `footer` в содержимое блока `page`:
@@ -555,9 +555,9 @@ bemer({ block: 'page' });
 ```
 
 ```html
-<div class="page i-bem" data-bem="{&quot;page&quot;:{}}">
-    <div class="header i-bem" data-bem="{&quot;header&quot;:{}}"></div>
-    <div class="footer i-bem" data-bem="{&quot;footer&quot;:{}}"></div>
+<div class="page">
+    <div class="header"></div>
+    <div class="footer"></div>
 </div>
 ```
 
@@ -582,7 +582,7 @@ var any = bemer({ block: 'bold', tag: 'span' });
 
 В результате у блока `bold` будет тег `b`:
 ```html
-<b class="bold i-bem" data-bem="{&quot;bold&quot;:{}}"></b>
+<b class="bold"></b>
 ```
 
 ###### Объект `this.bemjson`
@@ -601,7 +601,7 @@ bemer({ block: 'header' });
 В содержимое блока `header` было установлено значение по умолчанию, так как в BEMJSON оно не было указано:
 
 ```html
-<div class="header i-bem" data-bem="{&quot;header&quot;:{}}">Hello world!</div>
+<div class="header">Hello world!</div>
 ```
 
 ##### Приоритеты в стандартных полях шаблона
@@ -620,7 +620,7 @@ bemer({ block: 'text', tag: 'b' });
 Приоритет у BEMJSON, поэтому блоку `text` будет присвоен тег `b`:
 
 ```html
-<b class="text i-bem" data-bem="{&quot;text&quot;:{}}"></b>
+<b class="text"></b>
 ```
 
 ###### Массивы и объекты
@@ -640,7 +640,7 @@ var header = bemer({ block: 'input', attrs: { type: 'number' }});
 Приоритет у BEMJSON, поэтому атрибуту `type` блока `input` будет присвоено значение `number`:
 
 ```html
-<div class="input i-bem" type="number" name="age" data-bem="{&quot;input&quot;:{}}"></div>
+<div class="input" type="number" name="age"></div>
 ```
 
 ###### Функции
@@ -659,7 +659,7 @@ bemer({ block: 'text', tag: 'b' });
 Приоритет у функции, поэтому блоку `text` будет присвоен тег `span`:
 
 ```html
-<span class="text i-bem" data-bem="{&quot;text&quot;:{}}"></span>
+<span class="text"></span>
 ```
 
 ##### Произвольные поля шаблона
@@ -684,7 +684,7 @@ bemer({ block: 'sum', a: 3, b: 7 });
 Сумма устанавливается в содержимое:
 
 ```html
-<div class="sum i-bem" data-bem="{&quot;sum&quot;:{}}">10</div>
+<div class="sum">10</div>
 ```
 
 ##### Наследование шаблонов
@@ -696,7 +696,7 @@ bemer({ block: 'sum', a: 3, b: 7 });
 
 ```js
 bemer
-    .match('input', { tag: 'input' })
+    .match('input', { js: true, tag: 'input' })
     .match('input', { attrs: { type: 'text' }})
     .match('input_inactive', { js: false });
 
@@ -749,7 +749,7 @@ bemer({ block: 'text' });
 В результате выполнения цепочки вызовов в содержимое устанавливается строка «Hello world!»:
 
 ```html
-<div class="text i-bem" data-bem="{&quot;text&quot;:{}}">Hello world!</div>
+<div class="text">Hello world!</div>
 ```
 
 ### Метод `config`
@@ -830,7 +830,7 @@ bemer({ block: 'name' })
 Блоку `name` будет установлен тег `div`, потому что шаблон был удалён:
 
 ```html
-<div class="name i-bem" data-bem="{&quot;name&quot;:{}}"></div>
+<div class="name"></div>
 ```
 
 ### Метод `modules`
@@ -908,7 +908,7 @@ bemer({ block: 'header', content: [4, 9] })
 Произведение устанавливается в содержимое:
 
 ```html
-<div class="header i-bem" data-bem="{&quot;header&quot;:{}}">36</div>
+<div class="header">36</div>
 ```
 
 ## Функции-помощники
