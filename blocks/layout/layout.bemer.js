@@ -60,7 +60,7 @@ bemer.match('layout', {
                 },
                 {
                     block: 'install',
-                    version: '0.3.1',
+                    version: '0.4.0',
                     size: {
                         min: 20
                     }
