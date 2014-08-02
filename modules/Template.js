@@ -202,13 +202,8 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
          * @returns {object}
          */
         _getDefaultModes: function() {
-
-            var hasBlock = this._patterns.some(function(pattern) {
-                return new Selector(pattern).isBlock();
-            }, this);
-
             return {
-                js: hasBlock,
+                js: false,
                 bem: true,
                 mods: {},
                 elemMods: {},

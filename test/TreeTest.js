@@ -1,16 +1,77 @@
 definer('TreeTest', function(assert, Tree, Pool, Template) {
     describe('Модуль Tree.', function() {
 
+        it('Один простой блок', function() {
+            var tree = new Tree({ block: 'a' }, new Pool().add(new Template('a', {})));
+            assert.equal(tree.toString(), '<div class="a"></div>');
+        });
+
+        it('Использование большого количества шаблонов', function() {
+
+            var pool = new Pool()
+                .add(new Template('a', { js: true, mix: [{ block: 'mix' }] }))
+                .add(new Template('b', { tag: 'span' }))
+                .add(new Template('a_a11y', { js: false, attrs: { 'data-clickable': true }}))
+                .add(new Template('a__wrap', {
+                    __constructor: function(bemjson) {
+                        this.bemjson = bemjson;
+                    },
+                    cls: 'cls',
+                    content: function() {
+                        return { elem: 'content', content: this.bemjson.content };
+                    }
+                }))
+                .add(new Template('a__content', { js: true }))
+                .add(new Template('b_place_top', { tag: 'header' }))
+                .add(new Template('a__content_type_link', { tag: 'a', js: false, attrs: { target: '_blank' }}));
+
+            assert.equal(new Tree({
+                block: 'a',
+                content: [
+                    {
+                        block: 'b',
+                        mods: { place: 'top' }
+                    },
+                    {
+                        elem: 'wrap',
+                        content: [
+                            { block: 'a', mods: { a11y: true }, content: 'welcome' },
+                            {
+                                block: 'b',
+                                content: {
+                                    block: 'a',
+                                    elem: 'content',
+                                    elemMods: { type: 'link' },
+                                    content: 'hello'
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }, pool).toString(),
+                '<div class="a i-bem mix" data-bem="{&quot;a&quot;:{}}">' +
+                    '<header class="b b_place_top"></header>' +
+                    '<div class="cls a__wrap">' +
+                        '<div class="a__content i-bem" data-bem="{&quot;a__content&quot;:{}}">' +
+                            '<div class="a a_a11y mix" data-clickable="true">welcome</div>' +
+                            '<span class="b">' +
+                                '<a class="a__content a__content_type_link" target="_blank">hello</a>' +
+                            '</span>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>');
+        });
+
         describe('Сущности без шаблонов.', function() {
 
             it('Блок', function() {
                 var tree = new Tree({ block: 'a' }, new Pool());
-                assert.equal(tree.toString(), '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}"></div>');
+                assert.equal(tree.toString(), '<div class="a"></div>');
             });
 
             it('Блок с модификатором', function() {
                 var tree = new Tree({ block: 'a', mods: { b: 'c' }}, new Pool());
-                assert.equal(tree.toString(), '<div class="a i-bem a_b_c" data-bem="{&quot;a&quot;:{}}"></div>');
+                assert.equal(tree.toString(), '<div class="a a_b_c"></div>');
             });
 
             it('Элемент', function() {
@@ -41,31 +102,26 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
 
         });
 
-        it('Один простой блок', function() {
-            var tree = new Tree({ block: 'a' }, new Pool().add(new Template('a', {})));
-            assert.equal(tree.toString(), '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}"></div>');
-        });
-
         describe('Примитивные типы в контенте блока.', function() {
 
             it('Строка', function() {
                 var tree = new Tree({ block: 'a', content: 'content' }, new Pool().add(new Template('a', {})));
-                assert.equal(tree.toString(), '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">content</div>');
+                assert.equal(tree.toString(), '<div class="a">content</div>');
             });
 
             it('Число', function() {
                 var tree = new Tree({ block: 'a', content: 100 }, new Pool().add(new Template('a', {})));
-                assert.equal(tree.toString(), '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">100</div>');
+                assert.equal(tree.toString(), '<div class="a">100</div>');
             });
 
             it('Логический тип', function() {
                 var tree = new Tree({ block: 'a', content: true }, new Pool().add(new Template('a', {})));
-                assert.equal(tree.toString(), '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">true</div>');
+                assert.equal(tree.toString(), '<div class="a">true</div>');
             });
 
             it('Массив примитивов', function() {
                 var tree = new Tree({ block: 'a', content: ['a', 100, true] }, new Pool().add(new Template('a', {})));
-                assert.equal(tree.toString(), '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">a100true</div>');
+                assert.equal(tree.toString(), '<div class="a">a100true</div>');
             });
 
         });
@@ -73,23 +129,23 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
         describe('Вложенные блоки.', function() {
 
             it('Один вложенный блок', function() {
-                var tree = new Tree({ block: 'a', content: { block: 'b' }},
-                    new Pool().add(new Template('b', { js: false }))
+                var tree = new Tree({ block: 'a', js: true, content: { block: 'b' }},
+                    new Pool().add(new Template('b', { tag: 'img' }))
                 );
                 assert.equal(tree.toString(),
                     '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">' +
-                        '<div class="b"></div>' +
+                        '<img class="b"/>' +
                     '</div>');
             });
 
             it('Массив вложенных блоков', function() {
-                var tree = new Tree({ block: 'a', content: [{ block: 'b' }, { block: 'c' }] },
-                    new Pool().add(new Template('b', 'c', { js: false }))
+                var tree = new Tree({ block: 'a', js: true, content: [{ block: 'b' }, { block: 'c' }] },
+                    new Pool().add(new Template('b', 'c', { tag: 'span' }))
                 );
                 assert.equal(tree.toString(),
                     '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">' +
-                        '<div class="b"></div>' +
-                        '<div class="c"></div>' +
+                        '<span class="b"></span>' +
+                        '<span class="c"></span>' +
                     '</div>');
             });
 
@@ -124,14 +180,14 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
             });
 
             it('Массив вложенных блоков и примитивов', function() {
-                var tree = new Tree({ block: 'a', content: [{ block: 'b' }, 'text', { block: 'c' }] },
-                    new Pool().add(new Template('b', 'c', { js: false }))
+                var tree = new Tree({ block: 'a', js: true, content: [{ block: 'b' }, 'text', { block: 'c' }] },
+                    new Pool().add(new Template('b', 'c', { tag: 'span' }))
                 );
                 assert.equal(tree.toString(),
                     '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">' +
-                        '<div class="b"></div>' +
+                        '<span class="b"></span>' +
                         'text' +
-                        '<div class="c"></div>' +
+                        '<span class="c"></span>' +
                     '</div>');
             });
 
@@ -248,7 +304,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     }
                 }, new Pool());
                 assert.equal(tree.toString(), '' +
-                    '<div class="a i-bem a_c_d" data-bem="{&quot;a&quot;:{}}">' +
+                    '<div class="a a_c_d">' +
                         '<div class="a_c_d__b"></div>' +
                     '</div>');
             });
@@ -263,7 +319,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     }
                 }, new Pool());
                 assert.equal(tree.toString(), '' +
-                    '<div class="a i-bem a_c_d" data-bem="{&quot;a&quot;:{}}">' +
+                    '<div class="a a_c_d">' +
                         '<div class="a_c_d__b a_c_d__b_e_f"></div>' +
                     '</div>');
             });
@@ -279,7 +335,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     }
                 }, new Pool());
                 assert.equal(tree.toString(), '' +
-                    '<div class="a i-bem a_c_d" data-bem="{&quot;a&quot;:{}}">' +
+                    '<div class="a a_c_d">' +
                         '<div class="a_g_h__b a_c_d__b a_g_h__b_e_f a_c_d__b_e_f"></div>' +
                     '</div>');
             });
@@ -290,11 +346,11 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
 
             it('Блок с текстом', function() {
                 var tree = new Tree({ block: 'a' }, new Pool().add(new Template('a', { content: 'content' })));
-                assert.equal(tree.toString(), '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">content</div>');
+                assert.equal(tree.toString(), '<div class="a">content</div>');
             });
 
             it('Указание контекста в шаблоне и входящих данных одновременно', function() {
-                var tree = new Tree({ block: 'a', content: 'text1' },
+                var tree = new Tree({ block: 'a', js: true, content: 'text1' },
                     new Pool().add(new Template('a', { content: 'text2' })));
                 assert.equal(tree.toString(), '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">text1</div>');
             });
@@ -302,15 +358,15 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
             it('Блок с вложенным блоком', function() {
                 var tree = new Tree({ block: 'a' }, new Pool().add(new Template('a', { content: { block: 'b' }})));
                 assert.equal(tree.toString(),
-                    '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">' +
-                        '<div class="b i-bem" data-bem="{&quot;b&quot;:{}}"></div>' +
+                    '<div class="a">' +
+                        '<div class="b"></div>' +
                     '</div>');
             });
 
             it('Вложенный блок с собственным шаблоном', function() {
                 var tree = new Tree({ block: 'a' }, new Pool()
-                    .add(new Template('a', { content: { block: 'b' }}))
-                    .add(new Template('b', { js: false, content: 'content' })));
+                    .add(new Template('a', { js: true, content: { block: 'b' }}))
+                    .add(new Template('b', { content: 'content' })));
 
                 assert.equal(tree.toString(),
                     '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">' +
@@ -320,13 +376,13 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
 
             it('Вложенный блок и элемент', function() {
                 var tree = new Tree({ block: 'a' }, new Pool()
-                    .add(new Template('a', { content: [{ block: 'b' }, { elem: 'c', content: 'content' }] }))
-                    .add(new Template('b', { js: false }))
+                    .add(new Template('a', { js: true, content: [{ block: 'b' }, { elem: 'c', content: 'content' }] }))
+                    .add(new Template('b', { tag: 'b' }))
                     .add(new Template('a__c', { tag: 'span' })));
 
                 assert.equal(tree.toString(),
                     '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">' +
-                        '<div class="b"></div>' +
+                        '<b class="b"></b>' +
                         '<span class="a__c">content</span>' +
                     '</div>');
             });
@@ -341,8 +397,8 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     }
                 })));
                 assert.equal(tree.toString(),
-                    '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">' +
-                        '<div class="b i-bem" data-bem="{&quot;b&quot;:{}}">text</div>' +
+                    '<div class="a">' +
+                        '<div class="b">text</div>' +
                     '</div>');
             });
 
@@ -356,67 +412,11 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     }
                 })));
                 assert.equal(tree.toString(),
-                    '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">' +
+                    '<div class="a">' +
                         '<div class="a__b">text</div>' +
                     '</div>');
             });
 
-        });
-
-        it('Использование большого количества шаблонов', function() {
-
-            var pool = new Pool()
-                .add(new Template('a', { mix: [{ block: 'mix' }] }))
-                .add(new Template('b', { tag: 'span', js: false }))
-                .add(new Template('a_a11y', { js: false, attrs: { 'data-clickable': true }}))
-                .add(new Template('a__wrap', {
-                    __constructor: function(bemjson) {
-                        this.bemjson = bemjson;
-                    },
-                    cls: 'cls',
-                    content: function() {
-                        return { elem: 'content', content: this.bemjson.content };
-                    }
-                }))
-                .add(new Template('a__content', { js: true }))
-                .add(new Template('b_place_top', { tag: 'header' }))
-                .add(new Template('a__content_type_link', { tag: 'a', js: false, attrs: { target: '_blank' }}));
-
-            assert.equal(new Tree({
-                block: 'a',
-                content: [
-                    {
-                        block: 'b',
-                        mods: { place: 'top' }
-                    },
-                    {
-                        elem: 'wrap',
-                        content: [
-                            { block: 'a', mods: { a11y: true }, content: 'welcome' },
-                            {
-                                block: 'b',
-                                content: {
-                                    block: 'a',
-                                    elem: 'content',
-                                    elemMods: { type: 'link' },
-                                    content: 'hello'
-                                }
-                            }
-                        ]
-                    }
-                ]
-            }, pool).toString(),
-                '<div class="a i-bem mix" data-bem="{&quot;a&quot;:{}}">' +
-                    '<header class="b b_place_top"></header>' +
-                    '<div class="cls a__wrap">' +
-                        '<div class="a__content i-bem" data-bem="{&quot;a__content&quot;:{}}">' +
-                            '<div class="a a_a11y mix" data-clickable="true">welcome</div>' +
-                            '<span class="b">' +
-                                '<a class="a__content a__content_type_link" target="_blank">hello</a>' +
-                            '</span>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>');
         });
 
         describe('Проверка правильных значений в this.data.', function() {
@@ -529,7 +529,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     }
                 })));
                 assert.equal(tree.toString(),
-                    '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">!</div>');
+                    '<div class="a">!</div>');
             });
 
             it('mix', function() {
@@ -539,7 +539,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     }
                 })));
                 assert.equal(tree.toString(),
-                    '<div class="a i-bem b" data-bem="{&quot;a&quot;:{}}"></div>');
+                    '<div class="a b"></div>');
             });
 
         });

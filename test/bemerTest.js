@@ -7,12 +7,12 @@ definer('bemerTest', function(assert, bemer, Helpers) {
 
         it('Шаблонизация BEMJSON без шаблонов', function() {
             assert.equal(bemer({ block: 'name' }),
-                '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}"></div>'
+                '<div class="name"></div>'
             );
         });
 
         it('Простой шаблон и простой BEMJSON', function() {
-            bemer.match('name', { tag: 'span' });
+            bemer.match('name', { js: true, tag: 'span' });
             assert.equal(bemer({ block: 'name' }),
                 '<span class="name i-bem" data-bem="{&quot;name&quot;:{}}"></span>'
             );
@@ -22,7 +22,7 @@ definer('bemerTest', function(assert, bemer, Helpers) {
             bemer.match('name', { tag: 'span' });
             bemer.clean();
             assert.equal(bemer({ block: 'name' }),
-                '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}"></div>'
+                '<div class="name"></div>'
             );
         });
 
@@ -71,7 +71,7 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                 }
             });
             assert.equal(bemer({ block: 'name', content: 'Hello world!' }),
-                '<div class="name i-bem" data-bem="{&quot;name&quot;:{}}">' +
+                '<div class="name">' +
                     '<div class="name__foo">Hello world!</div>' +
                 '</div>'
             );
@@ -83,7 +83,7 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                     return { a: this.bemjson.flag };
                 }
             });
-            assert.equal(bemer({ block: 'name', flag: true }),
+            assert.equal(bemer({ block: 'name', js: true, flag: true }),
                 '<div class="name i-bem" a="true" data-bem="{&quot;name&quot;:{}}"></div>'
             );
         });
@@ -156,7 +156,7 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                 bemer.config({
                     tag: 'span'
                 });
-                assert.equal(bemer({ block: 'a' }), '<span class="a i-bem" data-bem="{&quot;a&quot;:{}}"></span>');
+                assert.equal(bemer({ block: 'a' }), '<span class="a"></span>');
             });
 
             it('Изменение БЭМ-класса и БЭМ-атрибута', function() {
@@ -164,7 +164,7 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                     bemClass: 'bem',
                     bemAttr: 'onclick'
                 });
-                assert.equal(bemer({ block: 'a' }), '<div class="a bem" onclick="{&quot;a&quot;:{}}"></div>');
+                assert.equal(bemer({ block: 'a', js: true }), '<div class="a bem" onclick="{&quot;a&quot;:{}}"></div>');
             });
 
             it('Изменение префикса для идентификаторов', function() {
@@ -187,7 +187,7 @@ definer('bemerTest', function(assert, bemer, Helpers) {
             it('Работа со строками', function() {
                 bemer.match('header', 'footer', { tag: function() { return this.upper('span'); }});
                 assert.equal(bemer({ block: 'header' }),
-                    '<SPAN class="header i-bem" data-bem="{&quot;header&quot;:{}}"></SPAN>'
+                    '<SPAN class="header"></SPAN>'
                 );
             });
 
@@ -223,7 +223,7 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                             }
                         });
 
-                    assert.equal(bemer({ block: 'a' }), '<foo class="a i-bem" data-bem="{&quot;a&quot;:{}}"></foo>');
+                    assert.equal(bemer({ block: 'a' }), '<foo class="a"></foo>');
                 });
 
                 it('Добавление нескольких функций', function() {
