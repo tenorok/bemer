@@ -59,7 +59,7 @@ definer('PoolTest', function(assert, Pool, Template) {
 
         });
 
-        describe('Поиск шаблона для BEMJSON', function() {
+        describe('Поиск шаблона для BEMJSON.', function() {
 
             it('Простой блок', function() {
                 assert.equal(new Pool()
@@ -68,7 +68,7 @@ definer('PoolTest', function(assert, Pool, Template) {
                     .add(new Template('footer', { tag: 'footer' }))
                     .find({ block: 'header' })
                     .toString(),
-                    '<header class="header i-bem" data-bem="{&quot;header&quot;:{}}"></header>'
+                    '<header class="header"></header>'
                 );
             });
 
@@ -85,7 +85,7 @@ definer('PoolTest', function(assert, Pool, Template) {
                     .add(new Template('footer', { tag: 'footer' }))
                     .find({ block: 'header', mods: { mod: 'val' }})
                     .toString(),
-                    '<header class="header i-bem header_mod_val" data-bem="{&quot;header&quot;:{}}"></header>'
+                    '<header class="header header_mod_val"></header>'
                 );
             });
 
