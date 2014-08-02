@@ -174,8 +174,8 @@ defineAsGlobal && (global.inherit = inherit);
  * @file Template engine. BEMJSON to HTML processor.
  * @copyright 2014 Artem Kurbatov, tenorok.ru
  * @license MIT license
- * @version 0.3.1
- * @date 17 July 2014
+ * @version 0.4.0
+ * @date 2 August 2014
  */
 (function(global, undefined) {
 var definer = {
@@ -2457,13 +2457,8 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
          * @returns {object}
          */
         _getDefaultModes: function() {
-
-            var hasBlock = this._patterns.some(function(pattern) {
-                return new Selector(pattern).isBlock();
-            }, this);
-
             return {
-                js: hasBlock,
+                js: false,
                 bem: true,
                 mods: {},
                 elemMods: {},

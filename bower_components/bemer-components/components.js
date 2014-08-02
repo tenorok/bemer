@@ -1,3 +1,6 @@
+bemer.match('i-block', {
+    js: true
+});
 /**
  * @class i-block
  * @abstract
@@ -79,6 +82,9 @@ BEM.DOM.decl('i-block', /** @lends i-block.prototype */ {}, /** @lends i-block *
     }
 
 });
+bemer.match('i-component', {
+    js: true
+});
 /**
  * @class i-component
  * @abstract
@@ -127,6 +133,9 @@ BEM.DOM.decl({ block: 'i-component', baseBlock: 'i-block' }, /** @lends i-compon
             });
     }
 
+});
+bemer.match('i-control', {
+    js: true
 });
 /**
  * @class i-control
@@ -257,16 +266,9 @@ BEM.DOM.decl({ block: 'i-control', baseBlock: 'i-component' }, /** @lends i-cont
     }
 
 });
-/**
- * @class textarea
- * @extends i-control
- */
-BEM.DOM.decl({ block: 'textarea', baseBlock: 'i-control' }, /** @lends textarea.prototype */ {
-
-}, /** @lends textarea */ {
-
-});
 bemer.match('textarea', {
+
+    js: true,
 
     tag: 'div',
 
@@ -290,6 +292,15 @@ bemer.match('textarea__control', {
             return { placeholder: this.bemjson.placeholder };
         }
     }
+
+});
+/**
+ * @class textarea
+ * @extends i-control
+ */
+BEM.DOM.decl({ block: 'textarea', baseBlock: 'i-control' }, /** @lends textarea.prototype */ {
+
+}, /** @lends textarea */ {
 
 });
 bemer.match('link', {

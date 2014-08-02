@@ -1,5 +1,7 @@
 bemer.match('textarea', {
 
+    js: true,
+
     tag: 'div',
 
     content: function() {

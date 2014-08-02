@@ -7,8 +7,8 @@
         "es5-shim": "3.4.0",
         "jquery": "~2.1.1",
         "lodash": "~2.4.1",
-        "bemer": "~0.1.3",
-        "i-bem": "~0.1.4",
+        "bemer": "^0.4.0",
+        "i-bem": "^0.1.4",
         "ace": "git@github.com:ajaxorg/ace.git#1.1.3"
     },
     "ignore": [
