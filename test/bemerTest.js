@@ -80,11 +80,11 @@ definer('bemerTest', function(assert, bemer, Helpers) {
         it('Использование this.bemjson', function() {
             bemer.match('name', {
                 attrs: function() {
-                    return { a: this.bemjson.flag };
+                    return { required: this.bemjson.flag };
                 }
             });
             assert.equal(bemer({ block: 'name', js: true, flag: true }),
-                '<div class="name i-bem" a="true" data-bem="{&quot;name&quot;:{}}"></div>'
+                '<div class="name i-bem" required data-bem="{&quot;name&quot;:{}}"></div>'
             );
         });
 
