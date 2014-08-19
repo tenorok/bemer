@@ -38,6 +38,7 @@ definer('TagTest', function(assert, Tag) {
             assert.deepEqual(tag.delAttr('type').delAttr('unexpect').attr(), { id: 100 });
             assert.equal(tag.attr('id'), 100);
             assert.isUndefined(tag.attr('type'));
+            assert.isUndefined(tag.attr('id', false).attr('id'));
         });
 
         it('Добавить атрибут со сложным значением', function() {
@@ -90,6 +91,13 @@ definer('TagTest', function(assert, Tag) {
                 '</span>'
             );
             assert.equal(tag.single(true).toString(), '<span class="block block_mod_val" id="i100" data-info="text"/>');
+            assert.equal(tag.attr({
+                disabled: true,
+                id: false,
+                'data-info': false
+            }).toString(),
+                '<span class="block block_mod_val" disabled/>'
+            );
         });
 
     });

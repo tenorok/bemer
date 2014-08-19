@@ -148,9 +148,12 @@ definer('Tag', /** @exports Tag */ function(string, is) {
         },
 
         /**
-         * Получить/установить атрибут.
+         * Получить/установить/удалить атрибут.
          * Установить список атрибутов.
          * Получить список атрибутов.
+         *
+         * При указании значения `false` атрибут будет удалён.
+         * При указании значения `true` будет установлен булев атрибут без значения.
          *
          * В качестве значения атрибуту можно передавать массив или объект,
          * они будут установлены в заэкранированном виде.
@@ -175,7 +178,12 @@ definer('Tag', /** @exports Tag */ function(string, is) {
                 val = string.htmlEscape(JSON.stringify(val));
             }
 
-            this._attr[name] = val;
+            if(val === false) {
+                this.delAttr(name);
+            } else {
+                this._attr[name] = val;
+            }
+
             return this;
         },
 
@@ -234,7 +242,9 @@ definer('Tag', /** @exports Tag */ function(string, is) {
             }
 
             Object.keys(attrs).forEach(function(attr) {
-                tag.push(' ' + attr + '="' + attrs[attr] + '"');
+                attrs[attr] === true
+                    ? tag.push(' ' + attr)
+                    : tag.push(' ' + attr + '="' + attrs[attr] + '"');
             }, this);
 
             if(this.single()) {

@@ -11,7 +11,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
             var pool = new Pool()
                 .add(new Template('a', { js: true, mix: [{ block: 'mix' }] }))
                 .add(new Template('b', { tag: 'span' }))
-                .add(new Template('a_a11y', { js: false, attrs: { 'data-clickable': true }}))
+                .add(new Template('a_a11y', { js: false, attrs: { disabled: true, 'data-clickable': 'true' }}))
                 .add(new Template('a__wrap', {
                     __constructor: function(bemjson) {
                         this.bemjson = bemjson;
@@ -53,7 +53,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     '<header class="b b_place_top"></header>' +
                     '<div class="cls a__wrap">' +
                         '<div class="a__content i-bem" data-bem="{&quot;a__content&quot;:{}}">' +
-                            '<div class="a a_a11y mix" data-clickable="true">welcome</div>' +
+                            '<div class="a a_a11y mix" disabled data-clickable="true">welcome</div>' +
                             '<span class="b">' +
                                 '<a class="a__content a__content_type_link" target="_blank">hello</a>' +
                             '</span>' +
