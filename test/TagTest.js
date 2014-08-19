@@ -38,6 +38,7 @@ definer('TagTest', function(assert, Tag) {
             assert.deepEqual(tag.delAttr('type').delAttr('unexpect').attr(), { id: 100 });
             assert.equal(tag.attr('id'), 100);
             assert.isUndefined(tag.attr('type'));
+            assert.isUndefined(tag.attr('id', false).attr('id'));
         });
 
         it('Добавить атрибут со сложным значением', function() {
