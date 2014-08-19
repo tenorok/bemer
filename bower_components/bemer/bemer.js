@@ -174,8 +174,8 @@ defineAsGlobal && (global.inherit = inherit);
  * @file Template engine. BEMJSON to HTML processor.
  * @copyright 2014 Artem Kurbatov, tenorok.ru
  * @license MIT license
- * @version 0.4.0
- * @date 2 August 2014
+ * @version 0.4.1
+ * @date 19 August 2014
  */
 (function(global, undefined) {
 var definer = {
@@ -1795,9 +1795,12 @@ Tag = (function (string, is) {
         },
 
         /**
-         * Получить/установить атрибут.
+         * Получить/установить/удалить атрибут.
          * Установить список атрибутов.
          * Получить список атрибутов.
+         *
+         * При указании значения `false` атрибут будет удалён.
+         * При указании значения `true` будет установлен булев атрибут без значения.
          *
          * В качестве значения атрибуту можно передавать массив или объект,
          * они будут установлены в заэкранированном виде.
@@ -1822,7 +1825,12 @@ Tag = (function (string, is) {
                 val = string.htmlEscape(JSON.stringify(val));
             }
 
-            this._attr[name] = val;
+            if(val === false) {
+                this.delAttr(name);
+            } else {
+                this._attr[name] = val;
+            }
+
             return this;
         },
 
@@ -1881,7 +1889,9 @@ Tag = (function (string, is) {
             }
 
             Object.keys(attrs).forEach(function(attr) {
-                tag.push(' ' + attr + '="' + attrs[attr] + '"');
+                attrs[attr] === true
+                    ? tag.push(' ' + attr)
+                    : tag.push(' ' + attr + '="' + attrs[attr] + '"');
             }, this);
 
             if(this.single()) {
