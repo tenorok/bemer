@@ -91,6 +91,13 @@ definer('TagTest', function(assert, Tag) {
                 '</span>'
             );
             assert.equal(tag.single(true).toString(), '<span class="block block_mod_val" id="i100" data-info="text"/>');
+            assert.equal(tag.attr({
+                disabled: true,
+                id: false,
+                'data-info': false
+            }).toString(),
+                '<span class="block block_mod_val" disabled/>'
+            );
         });
 
     });
