@@ -85,6 +85,7 @@ definer('MatchTest', function(assert, Match) {
                 var match = new Match('block__*');
                 assert.isTrue(match.is({ block: 'block', elem: 'element' }));
                 assert.isFalse(match.is({ block: 'not-block', elem: 'not-element' }));
+                assert.isFalse(match.is({ block: 'block' }));
             });
 
             it('Любое соответствие', function() {
