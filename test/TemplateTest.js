@@ -47,6 +47,14 @@ definer('TemplateTest', function(assert, Template, Helpers) {
             );
         });
 
+        it('Изменить содержимое элементов в функции по селектору со звёздочкой', function() {
+            assert.equal(new Template('list__*', {
+                content: function(content) { return content || 'default'; }
+            }).match({ block: 'list', elem: 'item' }).toString(),
+                '<div class="list__item">default</div>'
+            );
+        });
+
         it('Шаблонизировать без БЭМ', function() {
             assert.equal(new Template('name', {
                 js: false,
