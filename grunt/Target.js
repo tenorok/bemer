@@ -42,6 +42,12 @@ Target.definer = function() {
                 directory: testDirectories,
                 verbose: verbose,
                 clean: clean
+            },
+            benchmark: {
+                target: 'test/tmp/benchmark.js',
+                directory: directories.concat('test/helpers/', 'benchmark/'),
+                verbose: verbose,
+                clean: clean
             }
         };
 
