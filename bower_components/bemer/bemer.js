@@ -174,8 +174,8 @@ defineAsGlobal && (global.inherit = inherit);
  * @file Template engine. BEMJSON to HTML processor.
  * @copyright 2014 Artem Kurbatov, tenorok.ru
  * @license MIT license
- * @version 0.4.2
- * @date 20 August 2014
+ * @version 0.4.4
+ * @date 24 August 2014
  */
 (function(global, undefined) {
 var definer = {
@@ -1142,7 +1142,7 @@ Selector = (function () {
          * @returns {boolean}
          */
         isBlock: function() {
-            return !this.isElem();
+            return !!this._block && !this.isElem();
         },
 
         /**
@@ -1735,7 +1735,7 @@ Tag = (function (string, is) {
          * @returns {Tag}
          */
         addClass: function(cls) {
-            var names = Array.isArray(cls) ? cls : [cls];
+            var names = is.array(cls) ? cls : [cls];
             names.forEach(function(name) {
                 if(!this.hasClass(name)) {
                     this._class.push(name);
@@ -1866,7 +1866,7 @@ Tag = (function (string, is) {
          * @returns {Tag}
          */
         addContent: function(content) {
-            if(Array.isArray(content)) {
+            if(is.array(content)) {
                 this._content = this._content.concat(content);
             } else {
                 this._content.push(content);
@@ -1983,7 +1983,7 @@ Node = (function (Tag, Selector, object) {
          * @returns {boolean}
          */
         isBlock: function() {
-            return !this.isElem();
+            return !!this._node.block && !this.isElem();
         },
 
         /**
@@ -2638,12 +2638,9 @@ Tree = (function (Template, is, object) {
                         elemData.context = data.context;
                     }
 
-                    var node;
-                    if(is.array(elem)) {
-                        node = this._getContent(elem, data);
-                    } else {
-                        node = this._getNode(elem, elemData)
-                    }
+                    var node = is.array(elem)
+                        ? this._getContent(elem, data)
+                        : this._getNode(elem, elemData);
 
                     if(is.array(node)) {
                         list = list.concat(node);

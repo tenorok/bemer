@@ -71,7 +71,7 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
          * @returns {boolean}
          */
         isBlock: function() {
-            return !this.isElem();
+            return !!this._node.block && !this.isElem();
         },
 
         /**
