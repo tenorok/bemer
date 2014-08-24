@@ -88,7 +88,7 @@ definer('Tag', /** @exports Tag */ function(string, is) {
          * @returns {Tag}
          */
         addClass: function(cls) {
-            var names = Array.isArray(cls) ? cls : [cls];
+            var names = is.array(cls) ? cls : [cls];
             names.forEach(function(name) {
                 if(!this.hasClass(name)) {
                     this._class.push(name);
@@ -219,7 +219,7 @@ definer('Tag', /** @exports Tag */ function(string, is) {
          * @returns {Tag}
          */
         addContent: function(content) {
-            if(Array.isArray(content)) {
+            if(is.array(content)) {
                 this._content = this._content.concat(content);
             } else {
                 this._content.push(content);
