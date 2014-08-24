@@ -4,7 +4,8 @@ bemer.match('ace', {
 
     js: function(js) {
         return this.extend(js || {}, {
-            theme: this.bemjson.theme || 'tomorrow_night_eighties'
+            theme: this.bemjson.theme || 'tomorrow_night_eighties',
+            lightTheme: this.bemjson.lightTheme || 'kuroir'
         });
     },
 
