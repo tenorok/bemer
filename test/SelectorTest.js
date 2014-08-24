@@ -80,6 +80,7 @@ definer('SelectorTest', function(assert, Selector) {
         });
 
         it('Проверить на блок', function() {
+            assert.isFalse(new Selector().isBlock());
             assert.isTrue(new Selector('block').isBlock());
             assert.isTrue(new Selector('block_mod_val').isBlock());
             assert.isFalse(new Selector('block__elem').isBlock());
@@ -118,21 +119,28 @@ definer('SelectorTest', function(assert, Selector) {
             it('Блок и элемент с назначением модификаторов методами', function() {
                 assert.equal(new Selector('block').modVal('val').toString(), 'block');
                 assert.equal(new Selector('block__element').elemModVal('val').toString(), 'block__element');
-                assert.equal(new Selector().block('block').mod('mod', 'val').elemMod('fake').toString(), 'block_mod_val');
+                assert.equal(new Selector().block('block').mod('mod', 'val').elemMod('fake').toString(),
+                    'block_mod_val'
+                );
             });
 
             it('Установить булевы модификаторы', function() {
                 assert.equal(new Selector().block('block').mod('mod', true).toString(), 'block_mod');
                 assert.equal(new Selector().block('block').elem('elem').mod('mod', true).toString(), 'block_mod__elem');
-                assert.equal(new Selector().block('block').elem('elem').elemMod('mod', true).toString(), 'block__elem_mod');
-                assert.equal(new Selector().block('block').mod('vis', true).elem('elem').elemMod('mod', true).toString(),
+                assert.equal(new Selector().block('block').elem('elem').elemMod('mod', true).toString(),
+                    'block__elem_mod'
+                );
+                assert.equal(new Selector().block('block').mod('vis', true).elem('elem').elemMod('mod', true)
+                    .toString(),
                     'block_vis__elem_mod'
                 );
             });
 
             it('Снять булевы модификаторы', function() {
                 assert.equal(new Selector().block('block').mod('mod', false).toString(), 'block');
-                assert.equal(new Selector().block('block').elem('elem').elemMod('mod', false).toString(), 'block__elem');
+                assert.equal(new Selector().block('block').elem('elem').elemMod('mod', false).toString(),
+                    'block__elem'
+                );
             });
 
             it('Пустое имя', function() {

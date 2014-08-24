@@ -122,7 +122,7 @@ definer('Selector', /** @exports Selector */ function() {
          * @returns {boolean}
          */
         isBlock: function() {
-            return !this.isElem();
+            return !!this._block && !this.isElem();
         },
 
         /**

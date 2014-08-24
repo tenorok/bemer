@@ -303,6 +303,12 @@ definer('TemplateTest', function(assert, Template, Helpers) {
 
         describe('Применение стандартного шаблона.', function() {
 
+            it('Безымянный тег', function() {
+                assert.equal(Template.base({}).toString(),
+                    '<div></div>'
+                );
+            });
+
             it('Блок', function() {
                 assert.equal(Template.base({ block: 'a' }).toString(),
                     '<div class="a"></div>'

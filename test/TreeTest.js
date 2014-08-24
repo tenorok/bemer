@@ -387,6 +387,13 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     '</div>');
             });
 
+            it('Пустой тег без классов в содержимом', function() {
+                var tree = new Tree({ block: 'menu' }, new Pool().add(new Template('menu', {
+                    content: function() { return {}; }}
+                )));
+                assert.equal(tree.toString(), '<div class="menu"><div></div></div>');
+            });
+
             it('Дополнительное оборачивание содержимого', function() {
                 var tree = new Tree({ block: 'a', content: 'text' }, new Pool().add(new Template('a', {
                     __constructor: function(bemjson) {

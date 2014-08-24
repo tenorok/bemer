@@ -2,6 +2,7 @@ definer('NodeTest', function(assert, Node) {
     describe('Модуль Node.', function() {
 
         it('Проверить узел на блок', function() {
+            assert.isFalse(new Node({}).isBlock());
             assert.isTrue(new Node({ block: 'name' }).isBlock());
             assert.isTrue(new Node({ block: 'name', js: true }).isBlock());
             assert.isFalse(new Node({ block: 'name', elem: 'elem' }).isBlock());
@@ -166,6 +167,10 @@ definer('NodeTest', function(assert, Node) {
         });
 
         describe('Получить строковое представление БЭМ-сущности.', function() {
+
+            it('Безымянная сущность', function() {
+                assert.equal(new Node({}).toString(), '<div></div>');
+            });
 
             it('Блок', function() {
                 assert.equal(new Node({ block: 'name' }).toString(), '<div class="name"></div>');
