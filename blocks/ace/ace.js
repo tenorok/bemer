@@ -7,6 +7,7 @@ BEM.DOM.decl('ace', {
                 this.editor.setTheme('ace/theme/' + this.params.theme);
                 this.editor.getSession().setMode('ace/mode/' + this.params.mode);
                 this.editor.getSession().setUseWrapMode(true);
+                this.editor.renderer.setScrollMargin(6, 6);
 
                 this.editor.setOptions({
                     minLines: this.params.minLines || 0,
