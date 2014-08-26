@@ -31,9 +31,13 @@ module.exports = function(grunt) {
             updatejsdoc: {
                 command: [
                     'cp -r jsdoc ../bemer-tmp-jsdoc',
-                    'git co gh-pages',
+                    'git checkout gh-pages',
                     'rm -rf jsdoc',
-                    'mv ../bemer-tmp-jsdoc jsdoc'
+                    'mv ../bemer-tmp-jsdoc jsdoc',
+                    'git add jsdoc',
+                    'git commit -m "Update JSDoc"',
+                    'git push origin gh-pages',
+                    'git checkout dev'
                 ].join(' && ')
             },
             prerelease: release.getShellPreRelease(),
