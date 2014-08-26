@@ -28,6 +28,18 @@ module.exports = function(grunt) {
         },
         shell: {
             jsdoc: { command: './node_modules/.bin/jsdoc -d jsdoc modules/' },
+            updatejsdoc: {
+                command: [
+                    'cp -r jsdoc ../bemer-tmp-jsdoc',
+                    'git checkout gh-pages',
+                    'rm -rf jsdoc',
+                    'mv ../bemer-tmp-jsdoc jsdoc',
+                    'git add jsdoc',
+                    'git commit -m "Update JSDoc"',
+                    'git push origin gh-pages',
+                    'git checkout dev'
+                ].join(' && ')
+            },
             prerelease: release.getShellPreRelease(),
             release:  {
                 command: function() {
@@ -61,6 +73,11 @@ module.exports = function(grunt) {
         'clean:test',
         'definer:' + module,
         'mochaTest'
+    ]);
+
+    grunt.registerTask('update:jsdoc', [
+        'jsdoc',
+        'shell:updatejsdoc'
     ]);
 
     grunt.registerTask('release', function() {
