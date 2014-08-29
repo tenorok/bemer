@@ -7,6 +7,7 @@ definer('MatchTest', function(assert, Match) {
                 var match = new Match('block');
                 assert.isTrue(match.is({ block: 'block' }));
                 assert.isFalse(match.is({ block: 'not-block' }));
+                assert.isFalse(match.is({ block: 'block', elem: '*' }));
             });
 
             it('Любому блоку', function() {
@@ -70,6 +71,7 @@ definer('MatchTest', function(assert, Match) {
             it('По имени', function() {
                 var match = new Match('block__element');
                 assert.isTrue(match.is({ block: 'block', elem: 'element' }));
+                assert.isFalse(match.is({ block: 'block' }));
                 assert.isFalse(match.is({ block: 'not-block', elem: 'element' }));
                 assert.isFalse(match.is({ block: 'block', elem: 'not-element' }));
                 assert.isFalse(match.is({ block: 'not-block', elem: 'not-element' }));

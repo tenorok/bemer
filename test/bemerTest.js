@@ -39,6 +39,25 @@ definer('bemerTest', function(assert, bemer, Helpers) {
             );
         });
 
+        it('Нестрогий шаблон на элементы, добавляемые в функции шаблона блока', function() {
+            bemer
+                .match('user', {
+                    content: function() {
+                        return [
+                            {elem: 'name', content: 'I'},
+                            {elem: 'mail', content: 7}
+                        ];
+                    }
+                })
+                .match('user__*', { tag: 'span' });
+
+            assert.equal(bemer({ block: 'user' }),
+                '<div class="user">' +
+                    '<span class="user__name">I</span>' +
+                    '<span class="user__mail">7</span>' +
+                '</div>');
+        });
+
         it('Наследование шаблонов', function() {
             bemer
                 .match('header', 'header_*_*__*', {
