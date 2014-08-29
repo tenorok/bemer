@@ -4,6 +4,8 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
      * Модуль работы с BEMJSON-деревом.
      *
      * @constructor
+     * @param {object} tree BEMJSON-дерево
+     * @param {Pool} pool Список шаблонов
      */
     function Tree(tree, pool) {
 
