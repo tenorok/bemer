@@ -174,8 +174,8 @@ defineAsGlobal && (global.inherit = inherit);
  * @file Template engine. BEMJSON to HTML processor.
  * @copyright 2014 Artem Kurbatov, tenorok.ru
  * @license MIT license
- * @version 0.4.4
- * @date 24 August 2014
+ * @version 0.4.5
+ * @date 29 August 2014
  */
 (function(global, undefined) {
 var definer = {
@@ -1547,6 +1547,10 @@ Match = (function (Selector, object, is) {
         _elem: function(elem) {
             var pattern = this._pattern.elem();
 
+            if(elem && !pattern) {
+                return false;
+            }
+
             if(!elem) {
                 return !pattern;
             }
@@ -2563,6 +2567,8 @@ Tree = (function (Template, is, object) {
      * Модуль работы с BEMJSON-деревом.
      *
      * @constructor
+     * @param {object} tree BEMJSON-дерево
+     * @param {Pool} pool Список шаблонов
      */
     function Tree(tree, pool) {
 
