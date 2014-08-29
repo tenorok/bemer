@@ -166,6 +166,10 @@ definer('Match', /** @exports Match */ function(Selector, object, is) {
         _elem: function(elem) {
             var pattern = this._pattern.elem();
 
+            if(elem && !pattern) {
+                return false;
+            }
+
             if(!elem) {
                 return !pattern;
             }
