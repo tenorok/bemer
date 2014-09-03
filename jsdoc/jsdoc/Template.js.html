@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Template.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Template.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>definer('Template', /** @exports Template */ function(Match, classify, Node, Selector, Helpers, object, string, is) {
+
+    /**
+     * Модуль шаблонизации BEMJSON-узла.
+     *
+     * @constructor
+     * @param {...string} pattern Шаблоны для матчинга
+     * @param {object} modes Моды для преобразования узла
+     */
+    function Template(pattern, modes) {
+
+        /**
+         * Шаблоны для матчинга.
+         *
+         * @private
+         * @type {string[]}
+         */
+        this._patterns = [].slice.call(arguments, 0, -1);
+
+        /**
+         * Моды для преобразования узла.
+         *
+         * @private
+         * @type {object}
+         */
+        this._modes = [].slice.call(arguments, -1)[0];
+
+        /**
+         * Функции-помощники.
+         *
+         * @private
+         * @type {Helpers}
+         */
+        this._helpers = new Helpers();
+
+        /**
+         * Экземпляры матчера.
+         *
+         * @private
+         * @type {Match[]}
+         */
+        this._matches = Object.keys(this._patterns).reduce(function(matches, key) {
+            matches.push(new Match(this._patterns[key]));
+            return matches;
+        }.bind(this), []);
+
+        /**
+         * Класс по модам.
+         *
+         * @private
+         * @type {Function}
+         */
+        this.Modes = this._classifyModes();
+    }
+
+    /**
+     * Стандартное значение моды `tag`.
+     *
+     * @type {string}
+     */
+    Template.tag = 'div';
+
+    /**
+     * Получить БЭМ-узел на основе BEMJSON по базому шаблону.
+     *
+     * @param {object} bemjson Входящий BEMJSON
+     * @param {object} [data] Данные по сущности в дереве
+     * @returns {Node}
+     */
+    Template.base = function(bemjson, data) {
+        return new Template(
+            new Node(bemjson).isBlock() ? '*' : '*' + Selector.delimiters.elem + '*', {}
+        ).transform(bemjson, data);
+    };
+
+    Template.prototype = {
+
+        /**
+         * Применить BEMJSON к шаблону.
+         *
+         * @param {object} bemjson Входящий BEMJSON
+         * @param {object} [data] Данные по сущности в дереве
+         * @returns {Node|null} Экземпляр БЭМ-узла или null при несоответствии BEMJSON шаблону
+         */
+        match: function(bemjson, data) {
+
+            for(var i = 0; i &lt; this._matches.length; i++) {
+                if(this._matches[i].is(bemjson)) {
+                    return this.transform(bemjson, data);
+                }
+            }
+
+            return null;
+        },
+
+        /**
+         * Получить БЭМ-узел на основе BEMJSON.
+         *
+         * @param {object} bemjson Входящий BEMJSON
+         * @param {object} [data] Данные по сущности в дереве
+         * @returns {Node}
+         */
+        transform: function(bemjson, data) {
+            var modes = new this.Modes(bemjson, data);
+
+            Object.keys(this._getDefaultModes()).forEach(function(mode) {
+                bemjson[mode] = this._getMode(modes, bemjson, mode);
+            }, this);
+
+            return new Node(bemjson);
+        },
+
+        /**
+         * Наследовать шаблон.
+         *
+         * @param {Template} template Базовый шаблон
+         * @returns {Template}
+         */
+        extend: function(template) {
+            template.Modes = classify(this.Modes, template._modes);
+            return template;
+        },
+
+        /**
+         * Разбить шаблон на шаблоны с единичными селекторами.
+         *
+         * @returns {Template[]}
+         */
+        split: function() {
+            return Object.keys(this._patterns).reduce(function(templates, key) {
+                templates.push(new Template(this._patterns[key], this._modes).helper(this._helpers.get()));
+                return templates;
+            }.bind(this), []);
+        },
+
+        /**
+         * Проверить шаблон на соответствие.
+         *
+         * Вернёт `true`, если хотя бы один селектор
+         * текущего шаблона и проверяемого пройдёт неточную проверку.
+         *
+         * @param {Template} template Шаблон
+         * @returns {boolean}
+         */
+        is: function(template) {
+            return this._matches.some(function(match) {
+                return Object.keys(template._patterns).some(function(key) {
+                    return match.is(template._patterns[key]);
+                });
+            });
+        },
+
+        /**
+         * Добавить одну или несколько
+         * пользовательских функций-помощников.
+         *
+         * @param {string|object} nameOrList Имя функции или карта помощников
+         * @param {function} [callback] Тело функции
+         * @returns {Template}
+         */
+        helper: function(nameOrList, callback) {
+
+            if(is.string(nameOrList)) {
+                this._helpers.add(nameOrList, callback);
+            } else {
+                Object.keys(nameOrList).forEach(function(name) {
+                    this._helpers.add(name, nameOrList[name]);
+                }, this);
+            }
+
+            this.Modes = this._classifyModes();
+            return this;
+        },
+
+        /**
+         * Сформировать класс на основе базовых полей.
+         *
+         * @private
+         * @returns {Function}
+         */
+        _classifyModes: function() {
+            return classify(classify(this._getBaseProps()), this._modes);
+        },
+
+        /**
+         * Получить базовые поля для класса.
+         *
+         * @private
+         * @returns {object}
+         */
+        _getBaseProps: function() {
+            return object.extend(this._getDefaultModes(), this._helpers.get());
+        },
+
+        /**
+         * Получить стандартные моды.
+         *
+         * Если среди селекторов шаблона присутствует хотя бы
+         * один блок, то будут отданы стандартные моды для блоков.
+         *
+         * @private
+         * @returns {object}
+         */
+        _getDefaultModes: function() {
+            return {
+                js: false,
+                bem: true,
+                mods: {},
+                elemMods: {},
+                attrs: {},
+                mix: [],
+                tag: Template.tag,
+                cls: '',
+                content: ''
+            };
+        },
+
+        /**
+         * Получить значение моды.
+         *
+         * Если значение в шаблоне скалярное, то массивы конкатенируются,
+         * а объекты (карты) наследуются с приоритетом у BEMJSON.
+         *
+         * @private
+         * @param {Object} modes Экземпляр класса по модам
+         * @param {object} bemjson Входящий BEMJSON
+         * @param {string} name Имя требуемой моды
+         * @returns {*}
+         */
+        _getMode: function(modes, bemjson, name) {
+            var isValFunc = is.function(modes[name]),
+                bemjsonVal = bemjson[name],
+                val = isValFunc ? modes[name].call(modes, bemjsonVal) : modes[name],
+                priorityVal = this._getPriorityValue(isValFunc, val, bemjsonVal);
+
+            if(!isValFunc) {
+                if(is.array(val, bemjsonVal)) {
+                    priorityVal = bemjsonVal.concat(val);
+                } else if(is.map(val, bemjsonVal)) {
+                    priorityVal = object.extend(object.clone(val), bemjsonVal);
+                }
+            }
+
+            if(name === 'content') {
+                return this._escapeContent(priorityVal);
+            }
+
+            return priorityVal;
+        },
+
+        /**
+         * Заэкранировать содержимое узла.
+         *
+         * @private
+         * @param {*} content Содержимое
+         * @returns {*}
+         */
+        _escapeContent: function(content) {
+
+            if(is.string(content)) {
+                return string.htmlEscape(content);
+            }
+
+            if(is.array(content)) {
+                return content.map(function(item) {
+                    return this._escapeContent(item);
+                }, this);
+            }
+
+            return content;
+        },
+
+        /**
+         * Получить приоритетное значение моды.
+         *
+         * Если значение моды в шаблоне задано функцией,
+         * то оно является приоритетным.
+         *
+         * @private
+         * @param {boolean} isValFunc Значение моды в шаблоне может быть задано функцией
+         * @param {*} val Значение моды в шаблоне
+         * @param {*} bemjsonVal Значение моды в BEMJSON
+         * @returns {*}
+         */
+        _getPriorityValue: function(isValFunc, val, bemjsonVal) {
+            if(isValFunc) return val;
+            return is.undefined(bemjsonVal) ? val : bemjsonVal;
+        }
+
+    };
+
+    return Template;
+
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-bemer.html">bemer</a></li><li><a href="module-Helpers.html">Helpers</a></li><li><a href="module-Match.html">Match</a></li><li><a href="module-modules.html">modules</a></li><li><a href="module-Node.html">Node</a></li><li><a href="module-Pool.html">Pool</a></li><li><a href="module-Selector.html">Selector</a></li><li><a href="module-Tag.html">Tag</a></li><li><a href="module-Template.html">Template</a></li><li><a href="module-Tree.html">Tree</a></li></ul><h3>Classes</h3><ul><li><a href="module-bemer-bemer.html">bemer</a></li><li><a href="module-Helpers-Helpers.html">Helpers</a></li><li><a href="module-Match-Match.html">Match</a></li><li><a href="module-modules-modules.html">modules</a></li><li><a href="module-Node-Node.html">Node</a></li><li><a href="module-Pool-Pool.html">Pool</a></li><li><a href="module-Selector-Selector.html">Selector</a></li><li><a href="module-Tag-Tag.html">Tag</a></li><li><a href="module-Template-Template.html">Template</a></li><li><a href="module-Tree-Tree.html">Tree</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha8</a> on Wed Sep 03 2014 23:13:51 GMT+0400 (MSK)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
