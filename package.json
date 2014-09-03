@@ -13,7 +13,8 @@
     },
     "license": "MIT",
     "dependencies": {
-        "inherit": "2.1.0"
+        "inherit": "2.1.0",
+        "molotok": "~0.1.0"
     },
     "devDependencies": {
         "git-hooks": "~0.0.6",
