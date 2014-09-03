@@ -3,11 +3,6 @@ definer('modulesTest', function(assert, modules, is, Selector) {
 
         it('Получить все модули', function() {
             assert.deepEqual(Object.keys(modules.get()).sort(), [
-                'number',
-                'string',
-                'object',
-                'functions',
-                'is',
                 'Tag',
                 'Selector',
                 'Node',
