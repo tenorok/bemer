@@ -1,7 +1,7 @@
 {
   "name": "bemer-components",
   "description": "Base components to web-site on BEM methodology.",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.3",
   "license": "MIT",
   "dependencies": {
     "es5-shim": "3.4.0",
@@ -23,11 +23,11 @@
     "components"
   ],
   "homepage": "https://github.com/tenorok/bemer-components",
-  "_release": "0.1.0-alpha.2",
+  "_release": "0.1.0-alpha.3",
   "_resolution": {
     "type": "version",
-    "tag": "v0.1.0-alpha.2",
-    "commit": "325f6ea55ec212994c3b013ff39852267ff4b62a"
+    "tag": "v0.1.0-alpha.3",
+    "commit": "512c0d0ea287d4e2cda55d67b6754179f551a9c4"
   },
   "_source": "git://github.com/tenorok/bemer-components.git",
   "_target": "^0.1.0",

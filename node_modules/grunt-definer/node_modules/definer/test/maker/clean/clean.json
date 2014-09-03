@@ -1,0 +1,10 @@
+{
+    "clean": {
+        "$": [
+            "libs/jquery.js",
+            "libs/jquery.ui.js",
+            "libs/plugins/plugin.jquery.js"
+        ],
+        "_": "libs/underscore.js"
+    }
+}

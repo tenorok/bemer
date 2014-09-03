@@ -1,7 +1,7 @@
 {
     "name": "bemer-components",
     "description": "Base components to web-site on BEM methodology.",
-    "version": "0.0.0",
+    "version": "0.1.0-alpha.3",
     "license": "MIT",
     "dependencies": {
         "es5-shim": "3.4.0",

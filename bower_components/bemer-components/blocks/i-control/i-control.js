@@ -2,6 +2,7 @@
  * @class i-control
  * @abstract
  * @extends i-component
+ * @bemaker i-component
  */
 BEM.DOM.decl({ block: 'i-control', baseBlock: 'i-component' }, /** @lends i-control.prototype */ {
 

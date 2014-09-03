@@ -1,0 +1,11 @@
+{
+    "module": "a",
+
+    "jsdoc": {
+        "file": "File description",
+        "copyright": "2014 Artem Kurbatov, tenorok.ru",
+        "license": "MIT license",
+        "date": true,
+        "version": "another.json"
+    }
+}

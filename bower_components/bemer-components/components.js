@@ -1,6 +1,4 @@
-bemer.match('i-block', {
-    js: true
-});
+/* before: ../../../../../blocks/i-block/i-block.js */
 /**
  * @class i-block
  * @abstract
@@ -82,13 +80,13 @@ BEM.DOM.decl('i-block', /** @lends i-block.prototype */ {}, /** @lends i-block *
     }
 
 });
-bemer.match('i-component', {
-    js: true
-});
+/* after: ../../../../../blocks/i-block/i-block.js */
+/* before: ../../../../../blocks/i-component/i-component.js */
 /**
  * @class i-component
  * @abstract
  * @extends i-block
+ * @bemaker i-block
  */
 BEM.DOM.decl({ block: 'i-component', baseBlock: 'i-block' }, /** @lends i-component.prototype */ {
 
@@ -134,13 +132,13 @@ BEM.DOM.decl({ block: 'i-component', baseBlock: 'i-block' }, /** @lends i-compon
     }
 
 });
-bemer.match('i-control', {
-    js: true
-});
+/* after: ../../../../../blocks/i-component/i-component.js */
+/* before: ../../../../../blocks/i-control/i-control.js */
 /**
  * @class i-control
  * @abstract
  * @extends i-component
+ * @bemaker i-component
  */
 BEM.DOM.decl({ block: 'i-control', baseBlock: 'i-component' }, /** @lends i-control.prototype */ {
 
@@ -266,43 +264,36 @@ BEM.DOM.decl({ block: 'i-control', baseBlock: 'i-component' }, /** @lends i-cont
     }
 
 });
-bemer.match('textarea', {
-
-    js: true,
-
-    tag: 'div',
-
-    content: function() {
-        return [
-            {
-                elem: 'control',
-                placeholder: this.bemjson.placeholder,
-                content: this.bemjson.content
-            }
-        ];
-    }
-
-});
-bemer.match('textarea__control', {
-
-    tag: 'textarea',
-
-    attrs: function() {
-        if(this.bemjson.placeholder) {
-            return { placeholder: this.bemjson.placeholder };
-        }
-    }
-
-});
+/* after: ../../../../../blocks/i-control/i-control.js */
+/* before: ../../../../../blocks/textarea/textarea.js */
 /**
  * @class textarea
  * @extends i-control
+ * @bemaker i-control
  */
 BEM.DOM.decl({ block: 'textarea', baseBlock: 'i-control' }, /** @lends textarea.prototype */ {
 
 }, /** @lends textarea */ {
 
 });
+/* after: ../../../../../blocks/textarea/textarea.js */
+
+/* before: ../../../../../blocks/i-block/i-block.bemer.js */
+bemer.match('i-block', {
+    js: true
+});
+/* after: ../../../../../blocks/i-block/i-block.bemer.js */
+/* before: ../../../../../blocks/i-component/i-component.bemer.js */
+bemer.match('i-component', {
+    js: true
+});
+/* after: ../../../../../blocks/i-component/i-component.bemer.js */
+/* before: ../../../../../blocks/i-control/i-control.bemer.js */
+bemer.match('i-control', {
+    js: true
+});
+/* after: ../../../../../blocks/i-control/i-control.bemer.js */
+/* before: ../../../../../blocks/link/link.bemer.js */
 bemer.match('link', {
 
     tag: 'a',
@@ -320,3 +311,36 @@ bemer.match('link', {
     }
 
 });
+/* after: ../../../../../blocks/link/link.bemer.js */
+/* before: ../../../../../blocks/textarea/textarea.bemer.js */
+bemer.match('textarea', {
+
+    js: true,
+
+    tag: 'div',
+
+    content: function() {
+        return [
+            {
+                elem: 'control',
+                placeholder: this.bemjson.placeholder,
+                content: this.bemjson.content
+            }
+        ];
+    }
+
+});
+/* after: ../../../../../blocks/textarea/textarea.bemer.js */
+/* before: ../../../../../blocks/textarea/__control.bemer.js */
+bemer.match('textarea__control', {
+
+    tag: 'textarea',
+
+    attrs: function() {
+        if(this.bemjson.placeholder) {
+            return { placeholder: this.bemjson.placeholder };
+        }
+    }
+
+});
+/* after: ../../../../../blocks/textarea/__control.bemer.js */

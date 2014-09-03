@@ -2,6 +2,7 @@
  * @class i-component
  * @abstract
  * @extends i-block
+ * @bemaker i-block
  */
 BEM.DOM.decl({ block: 'i-component', baseBlock: 'i-block' }, /** @lends i-component.prototype */ {
 
