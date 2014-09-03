@@ -16,7 +16,8 @@ Target.definer = function() {
             'modules'
         ],
 
-        directories = ['modules/', 'node_modules/molotok/modules/', 'test/'],
+        directories = ['modules/', 'node_modules/molotok/modules/'],
+        testDirectories = directories.concat('test/'),
         verbose = ['info', 'error'],
         clean = {
             inherit: 'node_modules/inherit/lib/inherit.js'
@@ -25,7 +26,7 @@ Target.definer = function() {
         target = {
             release: {
                 target: 'release/bemer.js',
-                directory: 'modules/',
+                directory: directories,
                 verbose: verbose,
                 clean: clean,
                 jsdoc: {
@@ -38,7 +39,7 @@ Target.definer = function() {
             },
             main: {
                 target: 'test/tmp/main.js',
-                directory: directories,
+                directory: testDirectories,
                 verbose: verbose,
                 clean: clean
             }
@@ -49,7 +50,7 @@ Target.definer = function() {
         target[moduleName] = {
             module: testName,
             target: 'test/tmp/' + testName + '.js',
-            directory: directories,
+            directory: testDirectories,
             verbose: verbose,
             clean: clean
         };
