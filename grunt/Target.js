@@ -12,16 +12,11 @@ Target.definer = function() {
             'Pool',
             'Tree',
             'Helpers',
-            'string',
-            'object',
-            'is',
-            'functions',
-            'number',
             'bemer',
             'modules'
         ],
 
-        directories = ['modules/', 'test/'],
+        directories = ['modules/', 'node_modules/molotok/modules/', 'test/'],
         verbose = ['info', 'error'],
         clean = {
             inherit: 'node_modules/inherit/lib/inherit.js'
