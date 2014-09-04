@@ -4,7 +4,7 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
      * Модуль работы с БЭМ-узлом.
      *
      * @constructor
-     * @param {Object} node БЭМ-узел
+     * @param {object} node БЭМ-узел
      */
     function Node(node) {
 
@@ -23,6 +23,10 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
          * @type {Tag}
          */
         this._tag = new Tag(node.tag).attr(node.attrs || {});
+
+        if(node.single !== undefined) {
+            this._tag.single(node.single);
+        }
 
         /**
          * Экземпляр имени БЭМ-сущности.
