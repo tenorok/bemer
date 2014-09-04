@@ -39,6 +39,20 @@ definer('TemplateTest', function(assert, Template, Helpers) {
             );
         });
 
+        it('Шаблонизировать блок с принудительным указанием одиночного тега', function() {
+            assert.equal(new Template('name', {
+                single: true
+            }).match({ block: 'name' }).toString(),
+                '<div class="name"/>'
+            );
+            assert.equal(new Template('name', {
+                tag: 'mytag',
+                single: function() { return true; }
+            }).match({ block: 'name' }).toString(),
+                '<mytag class="name"/>'
+            );
+        });
+
         it('Шаблонизировать элемент с заменой тега', function() {
             assert.equal(new Template('my__*', {
                 tag: function() { return 'img'; }
