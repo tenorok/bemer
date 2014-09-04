@@ -210,6 +210,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
                 attrs: {},
                 mix: [],
                 tag: Template.tag,
+                single: undefined,
                 cls: '',
                 content: ''
             };
