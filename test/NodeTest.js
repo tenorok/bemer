@@ -197,6 +197,14 @@ definer('NodeTest', function(assert, Node) {
                 }).toString(), '<mytag class="name"/>');
             });
 
+            it('Блок с принудительным парным тегом', function() {
+                assert.equal(new Node({
+                    block: 'name',
+                    tag: 'img',
+                    single: false
+                }).toString(), '<img class="name"></img>');
+            });
+
             it('Блок с произвольными классами', function() {
                 assert.equal(new Node({ block: 'name', cls: 'c1  c2' }).toString(), '<div class="c1 c2 name"></div>');
                 assert.equal(new Node({ block: 'my', cls: 'a  b', bem: false }).toString(), '<div class="a b"></div>');
