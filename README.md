@@ -91,6 +91,7 @@ bemer({
       - [Стандартные поля шаблона](#Стандартные-поля-шаблона)
         - [Поле `construct`](#Поле-construct)
         - [Поле `tag`](#Поле-tag)
+        - [Поле `single`](#Поле-single)
         - [Поле `attrs`](#Поле-attrs)
         - [Поле `js`](#Поле-js)
         - [Поле `bem`](#Поле-bem)
@@ -307,6 +308,26 @@ bemer({ block: 'text' });
 
 ```html
 <span class="text"></span>
+```
+
+###### Поле `single`
+
+Тип: `{boolean}`
+
+По умолчанию: `true` для [стандартных одиночных тегов](http://tenorok.github.io/bemer/jsdoc/module-Tag-Tag.html#singleTags)
+и `false` для всех остальных
+
+Поле `single` устанавливает одиночный или парный вид тега.
+
+Блок в представлении частного одиночного тега `mytag`:
+
+```js
+bemer.match('my', { tag: 'mytag', single: true });
+bemer({ block: 'my' });
+```
+
+```html
+<mytag class="my"/>
 ```
 
 ###### Поле `attrs`

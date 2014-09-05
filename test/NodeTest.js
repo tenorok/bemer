@@ -185,6 +185,18 @@ definer('NodeTest', function(assert, Node) {
                 }).toString(), '<input class="name" type="text" placeholder="example"/>');
             });
 
+            it('Блок с принудительным одиночным тегом', function() {
+                assert.equal(new Node({
+                    block: 'name',
+                    single: true
+                }).toString(), '<div class="name"/>');
+                assert.equal(new Node({
+                    block: 'name',
+                    tag: 'mytag',
+                    single: true
+                }).toString(), '<mytag class="name"/>');
+            });
+
             it('Блок с произвольными классами', function() {
                 assert.equal(new Node({ block: 'name', cls: 'c1  c2' }).toString(), '<div class="c1 c2 name"></div>');
                 assert.equal(new Node({ block: 'my', cls: 'a  b', bem: false }).toString(), '<div class="a b"></div>');
