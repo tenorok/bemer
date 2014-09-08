@@ -327,7 +327,7 @@ bemer({ block: 'my' });
 ```
 
 ```html
-<mytag class="my"/>
+<mytag class="my">
 ```
 
 ###### Поле `attrs`
@@ -346,7 +346,7 @@ bemer({ block: 'input' });
 ```
 
 ```html
-<input class="input" type="text"/>
+<input class="input" type="text">
 ```
 
 Атрибуты в шаблоне и входящем BEMJSON складываются:
@@ -357,7 +357,7 @@ bemer({ block: 'input', attrs: { placeholder: 'login' }});
 ```
 
 ```html
-<input class="input" type="text" placeholder="login"/>
+<input class="input" type="text" placeholder="login">
 ```
 
 ###### Поле `js`
@@ -727,7 +727,7 @@ bemer({ block: 'input', mods: { inactive: true }});
 Результат совмещает в себе все указанные правила:
 
 ```html
-<input class="input input_inactive" type="text"/>
+<input class="input input_inactive" type="text">
 ```
 
 Наследование производится только от шаблонов с более общими селекторами.
@@ -783,6 +783,9 @@ bemer({ block: 'text' });
   * `{object}` `[config.delimiters]` — разделители имён
     * `{string}` `[config.delimiters.mod=_]` — разделитель блока и модификатора, элемента и модификатора, модификатора и значения
     * `{string}` `[config.delimiters.elem=__]` — разделитель блока и элемента
+  * `{boolean|object}` `[config.xhtml=false]` — флаг формирования тегов в формате XHTML
+    * `{boolean}` `[config.xhtml.repeatBooleanAttr=false]` — флаг автоповтора булева атрибута
+    * `{boolean}` `[config.xhtml.closeSingleTag=false]` — флаг закрытия одиночного тега
   * `{string}` `[config.tag=div]` — стандартное имя тега
   * `{string}` `[config.bemClass=i-bem]` — имя класса для js-инициализации
   * `{string}` `[config.bemAttr=data-bem]` — имя атрибута для хранения параметров инициализации
