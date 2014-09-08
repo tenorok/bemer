@@ -43,13 +43,13 @@ definer('TemplateTest', function(assert, Template, Helpers) {
             assert.equal(new Template('name', {
                 single: true
             }).match({ block: 'name' }).toString(),
-                '<div class="name"/>'
+                '<div class="name">'
             );
             assert.equal(new Template('name', {
                 tag: 'mytag',
                 single: function() { return true; }
             }).match({ block: 'name' }).toString(),
-                '<mytag class="name"/>'
+                '<mytag class="name">'
             );
         });
 
@@ -57,7 +57,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
             assert.equal(new Template('my__*', {
                 tag: function() { return 'img'; }
             }).match({ block: 'my', elem: 'image' }).toString(),
-                '<img class="my__image"/>'
+                '<img class="my__image">'
             );
         });
 
@@ -83,7 +83,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                 tag: 'img',
                 attrs: { alt: 'image' }
             }).match({ block: 'picture', attrs: { src: '1.png' }}).toString(),
-                '<img class="picture" alt="image" src="1.png"/>'
+                '<img class="picture" alt="image" src="1.png">'
             );
         });
 
@@ -92,7 +92,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                 tag: 'img',
                 mix: [{ block: 'image', js: true }]
             }).match({ block: 'picture', mix: [{ block: 'link' }] }).toString(),
-                '<img class="picture i-bem link image" data-bem="{&quot;image&quot;:{}}"/>'
+                '<img class="picture i-bem link image" data-bem="{&quot;image&quot;:{}}">'
             );
         });
 

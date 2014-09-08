@@ -134,7 +134,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 );
                 assert.equal(tree.toString(),
                     '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">' +
-                        '<img class="b"/>' +
+                        '<img class="b">' +
                     '</div>');
             });
 
