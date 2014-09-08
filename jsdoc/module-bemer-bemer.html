@@ -291,7 +291,7 @@
         
             
 <dt>
-    <h4 class="name" id="config"><span class="type-signature">(static) </span>config<span class="signature">(config<span class="signature-attributes">opt</span>, config.delimiters<span class="signature-attributes">opt</span>, config.delimiters.mod<span class="signature-attributes">opt</span>, config.delimiters.elem<span class="signature-attributes">opt</span>, config.tag<span class="signature-attributes">opt</span>, config.bemClass<span class="signature-attributes">opt</span>, config.bemAttr<span class="signature-attributes">opt</span>, config.idPrefix<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {bemer}</span></h4>
+    <h4 class="name" id="config"><span class="type-signature">(static) </span>config<span class="signature">(config<span class="signature-attributes">opt</span>, config.delimiters<span class="signature-attributes">opt</span>, config.delimiters.mod<span class="signature-attributes">opt</span>, config.delimiters.elem<span class="signature-attributes">opt</span>, config.xhtml<span class="signature-attributes">opt</span>, config.xhtml.repeatBooleanAttr<span class="signature-attributes">opt</span>, config.xhtml.closeSingleTag<span class="signature-attributes">opt</span>, config.tag<span class="signature-attributes">opt</span>, config.bemClass<span class="signature-attributes">opt</span>, config.bemAttr<span class="signature-attributes">opt</span>, config.idPrefix<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {bemer}</span></h4>
 
     
 </dt>
@@ -537,6 +537,155 @@
 
         <tr>
             
+                <td class="name"><code>xhtml</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+|
+
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">Флаг формирования тегов в формате XHTML
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>repeatBooleanAttr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">Флаг автоповтора булева атрибута</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>closeSingleTag</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">Флаг закрытия одиночного тега</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>tag</code></td>
             
 
@@ -723,7 +872,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="bemer.js.html">bemer.js</a>, <a href="bemer.js.html#line106">line 106</a>
+        <a href="bemer.js.html">bemer.js</a>, <a href="bemer.js.html#line114">line 114</a>
     </li></ul></dd>
     
 
@@ -1212,7 +1361,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="bemer.js.html">bemer.js</a>, <a href="bemer.js.html#line139">line 139</a>
+        <a href="bemer.js.html">bemer.js</a>, <a href="bemer.js.html#line161">line 161</a>
     </li></ul></dd>
     
 
@@ -1282,7 +1431,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha8</a> on Wed Sep 03 2014 23:13:32 GMT+0400 (MSK)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha8</a> on Mon Sep 08 2014 14:29:24 GMT+0400 (MSK)
 </footer>
 
 <script> prettyPrint(); </script>
