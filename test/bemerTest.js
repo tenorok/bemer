@@ -168,7 +168,7 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                     })
                     .match('a--b=c=d', { tag: 'img' });
 
-                assert.equal(bemer({ block: 'a', elem: 'b', elemMods: { c: 'd' }}), '<img class="a--b a--b=c=d"/>');
+                assert.equal(bemer({ block: 'a', elem: 'b', elemMods: { c: 'd' }}), '<img class="a--b a--b=c=d">');
             });
 
             it('Изменение стандартного имени тега', function() {

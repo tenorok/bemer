@@ -102,6 +102,11 @@ definer('TagTest', function(assert, Tag) {
 
         describe('Изменение настроек XHTML.', function() {
 
+            afterEach(function() {
+                Tag.repeatBooleanAttr = false;
+                Tag.closeSingleTag = false;
+            });
+
             it('Повторять булевы атрибуты', function() {
                 Tag.repeatBooleanAttr = true;
                 assert.equal(new Tag().attr('checked', true).toString(), '<div checked="checked"></div>');

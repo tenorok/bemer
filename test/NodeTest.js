@@ -182,19 +182,19 @@ definer('NodeTest', function(assert, Node) {
                         type: 'text',
                         placeholder: 'example'
                     }
-                }).toString(), '<input class="name" type="text" placeholder="example"/>');
+                }).toString(), '<input class="name" type="text" placeholder="example">');
             });
 
             it('Блок с принудительным одиночным тегом', function() {
                 assert.equal(new Node({
                     block: 'name',
                     single: true
-                }).toString(), '<div class="name"/>');
+                }).toString(), '<div class="name">');
                 assert.equal(new Node({
                     block: 'name',
                     tag: 'mytag',
                     single: true
-                }).toString(), '<mytag class="name"/>');
+                }).toString(), '<mytag class="name">');
             });
 
             it('Блок с принудительным парным тегом', function() {
