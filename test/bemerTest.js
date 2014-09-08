@@ -199,6 +199,53 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                 assert.equal(bemer({ block: 'a' }), '<div class="a" id="www' + Helpers.idSalt + '0"></div>');
             });
 
+            describe('XHTML.', function() {
+
+                it('Булево значение', function() {
+                    bemer.config({ xhtml: true });
+                    assert.equal(bemer({ block: 'a', tag: 'input', attrs: { disabled: true }}),
+                        '<input class="a" disabled="disabled"/>');
+
+                    bemer.config({ xhtml: false });
+                    assert.equal(bemer({ block: 'a', tag: 'input', attrs: { disabled: true }}),
+                        '<input class="a" disabled>', 'Изменить обратно на false');
+                });
+
+                it('Отдельно repeatBooleanAttr', function() {
+                    bemer.config({ xhtml: { repeatBooleanAttr: true } });
+                    assert.equal(bemer({ block: 'a', tag: 'input', attrs: { disabled: true }}),
+                        '<input class="a" disabled="disabled">');
+
+                    bemer.config({ xhtml: { repeatBooleanAttr: false } });
+                    assert.equal(bemer({ block: 'a', tag: 'input', attrs: { disabled: true }}),
+                        '<input class="a" disabled>', 'Изменить обратно на false');
+                });
+
+                it('Отдельно closeSingleTag', function() {
+                    bemer.config({ xhtml: { closeSingleTag: true } });
+                    assert.equal(bemer({ block: 'a', tag: 'input', attrs: { disabled: true }}),
+                        '<input class="a" disabled/>');
+
+                    bemer.config({ xhtml: { closeSingleTag: false } });
+                    assert.equal(bemer({ block: 'a', tag: 'input', attrs: { disabled: true }}),
+                        '<input class="a" disabled>', 'Изменить обратно на false');
+                });
+
+                it('Вместе repeatBooleanAttr и closeSingleTag', function() {
+                    bemer.config({ xhtml: {
+                        repeatBooleanAttr: true,
+                        closeSingleTag: true
+                    }});
+                    assert.equal(bemer({ block: 'a', tag: 'input', attrs: { disabled: true }}),
+                        '<input class="a" disabled="disabled"/>');
+
+                    bemer.config({ xhtml: { closeSingleTag: false } });
+                    assert.equal(bemer({ block: 'a', tag: 'input', attrs: { disabled: true }}),
+                        '<input class="a" disabled="disabled">', 'Изменить closeSingleTag обратно на false');
+                });
+
+            });
+
         });
 
         describe('Использование функций-помощников.', function() {
