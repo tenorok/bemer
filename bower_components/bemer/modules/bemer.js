@@ -1,5 +1,5 @@
 definer.export('bemer', /** @exports bemer */ function(
-    Tree, Template, Pool, functions, Selector, Node, object, Helpers, modules
+    Tag, Tree, Template, Pool, functions, Selector, Node, object, Helpers, modules
 ) {
 
     /**
@@ -79,6 +79,10 @@ definer.export('bemer', /** @exports bemer */ function(
             mod: Selector.delimiters.mod,
             elem: Selector.delimiters.elem
         },
+        xhtml: {
+            repeatBooleanAttr: Tag.repeatBooleanAttr,
+            closeSingleTag: Tag.closeSingleTag
+        },
         tag: Template.tag,
         bemClass: Node.bemClass,
         bemAttr: Node.bemAttr,
@@ -96,6 +100,10 @@ definer.export('bemer', /** @exports bemer */ function(
      * элемента и модификатора, модификатора и значения
      * @param {string} [config.delimiters.elem=__] Разделитель блока и элемента
      *
+     * @param {boolean|object} [config.xhtml=false] Флаг формирования тегов в формате XHTML
+     * @param {boolean} [config.xhtml.repeatBooleanAttr=false] Флаг автоповтора булева атрибута
+     * @param {boolean} [config.xhtml.closeSingleTag=false] Флаг закрытия одиночного тега
+     *
      * @param {string} [config.tag=div] Стандартное имя тега
      * @param {string} [config.bemClass=i-bem] Имя класса для js-инициализации
      * @param {string} [config.bemAttr=data-bem] Имя атрибута для хранения параметров инициализации
@@ -109,6 +117,20 @@ definer.export('bemer', /** @exports bemer */ function(
 
         if(config.delimiters) {
             object.extend(Selector.delimiters, config.delimiters);
+        }
+
+        if(config.xhtml !== undefined) {
+            if(typeof config.xhtml === 'boolean') {
+                Tag.repeatBooleanAttr = config.xhtml;
+                Tag.closeSingleTag = config.xhtml;
+            } else {
+                if(typeof config.xhtml.repeatBooleanAttr === 'boolean') {
+                    Tag.repeatBooleanAttr = config.xhtml.repeatBooleanAttr;
+                }
+                if(typeof config.xhtml.closeSingleTag === 'boolean') {
+                    Tag.closeSingleTag = config.xhtml.closeSingleTag;
+                }
+            }
         }
 
         if(config.tag) {

@@ -174,8 +174,8 @@ defineAsGlobal && (global.inherit = inherit);
  * @file Template engine. BEMJSON to HTML processor.
  * @copyright 2014 Artem Kurbatov, tenorok.ru
  * @license MIT license
- * @version 0.5.0
- * @date 3 September 2014
+ * @version 0.6.0
+ * @date 8 September 2014
  */
 (function(global, undefined) {
 var definer = {
@@ -1708,6 +1708,20 @@ Tag = (function (string, is) {
     Tag.defaultName = 'div';
 
     /**
+     * Флаг автоповтора булева атрибута.
+     *
+     * @type {boolean}
+     */
+    Tag.repeatBooleanAttr = false;
+
+    /**
+     * Флаг закрытия одиночного тега.
+     *
+     * @type {boolean}
+     */
+    Tag.closeSingleTag = false;
+
+    /**
      * Список одиночных HTML-тегов.
      *
      * @type {String[]}
@@ -1894,12 +1908,12 @@ Tag = (function (string, is) {
 
             Object.keys(attrs).forEach(function(attr) {
                 attrs[attr] === true
-                    ? tag.push(' ' + attr)
+                    ? tag.push(' ' + attr + (Tag.repeatBooleanAttr ? '="' + attr + '"' : ''))
                     : tag.push(' ' + attr + '="' + attrs[attr] + '"');
             }, this);
 
             if(this.single()) {
-                tag.push('/>')
+                tag.push(Tag.closeSingleTag ? '/>' : '>');
             } else {
                 tag.push('>');
                 tag = tag.concat(this.content());
@@ -1920,7 +1934,7 @@ Node = (function (Tag, Selector, object) {
      * Модуль работы с БЭМ-узлом.
      *
      * @constructor
-     * @param {Object} node БЭМ-узел
+     * @param {object} node БЭМ-узел
      */
     function Node(node) {
 
@@ -1939,6 +1953,10 @@ Node = (function (Tag, Selector, object) {
          * @type {Tag}
          */
         this._tag = new Tag(node.tag).attr(node.attrs || {});
+
+        if(node.single !== undefined) {
+            this._tag.single(node.single);
+        }
 
         /**
          * Экземпляр имени БЭМ-сущности.
@@ -2479,6 +2497,7 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
                 attrs: {},
                 mix: [],
                 tag: Template.tag,
+                single: undefined,
                 cls: '',
                 content: ''
             };
@@ -2771,7 +2790,7 @@ modules = (function (Tag, Selector, Node, Match) {
 
 }).call(global, Tag, Selector, Node, Match),
 bemer = definer.export("bemer", (function (
-    Tree, Template, Pool, functions, Selector, Node, object, Helpers, modules
+    Tag, Tree, Template, Pool, functions, Selector, Node, object, Helpers, modules
 ) {
 
     /**
@@ -2851,6 +2870,10 @@ bemer = definer.export("bemer", (function (
             mod: Selector.delimiters.mod,
             elem: Selector.delimiters.elem
         },
+        xhtml: {
+            repeatBooleanAttr: Tag.repeatBooleanAttr,
+            closeSingleTag: Tag.closeSingleTag
+        },
         tag: Template.tag,
         bemClass: Node.bemClass,
         bemAttr: Node.bemAttr,
@@ -2868,6 +2891,10 @@ bemer = definer.export("bemer", (function (
      * элемента и модификатора, модификатора и значения
      * @param {string} [config.delimiters.elem=__] Разделитель блока и элемента
      *
+     * @param {boolean|object} [config.xhtml=false] Флаг формирования тегов в формате XHTML
+     * @param {boolean} [config.xhtml.repeatBooleanAttr=false] Флаг автоповтора булева атрибута
+     * @param {boolean} [config.xhtml.closeSingleTag=false] Флаг закрытия одиночного тега
+     *
      * @param {string} [config.tag=div] Стандартное имя тега
      * @param {string} [config.bemClass=i-bem] Имя класса для js-инициализации
      * @param {string} [config.bemAttr=data-bem] Имя атрибута для хранения параметров инициализации
@@ -2881,6 +2908,20 @@ bemer = definer.export("bemer", (function (
 
         if(config.delimiters) {
             object.extend(Selector.delimiters, config.delimiters);
+        }
+
+        if(config.xhtml !== undefined) {
+            if(typeof config.xhtml === 'boolean') {
+                Tag.repeatBooleanAttr = config.xhtml;
+                Tag.closeSingleTag = config.xhtml;
+            } else {
+                if(typeof config.xhtml.repeatBooleanAttr === 'boolean') {
+                    Tag.repeatBooleanAttr = config.xhtml.repeatBooleanAttr;
+                }
+                if(typeof config.xhtml.closeSingleTag === 'boolean') {
+                    Tag.closeSingleTag = config.xhtml.closeSingleTag;
+                }
+            }
         }
 
         if(config.tag) {
@@ -2914,7 +2955,7 @@ bemer = definer.export("bemer", (function (
 
     return bemer;
 
-}).call(global, Tree, Template, Pool, functions, Selector, Node, object, Helpers, modules)),
+}).call(global, Tag, Tree, Template, Pool, functions, Selector, Node, object, Helpers, modules)),
 molotok = definer.export("molotok", (function (
         is, string, number, object, functions
     ) {
