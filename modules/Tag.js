@@ -57,6 +57,20 @@ definer('Tag', /** @exports Tag */ function(string, is) {
     Tag.defaultName = 'div';
 
     /**
+     * Флаг автоповтора булева атрибута.
+     *
+     * @type {boolean}
+     */
+    Tag.repeatBooleanAttr = false;
+
+    /**
+     * Флаг закрытия одиночного тега.
+     *
+     * @type {boolean}
+     */
+    Tag.closeSingleTag = false;
+
+    /**
      * Список одиночных HTML-тегов.
      *
      * @type {String[]}
@@ -243,12 +257,12 @@ definer('Tag', /** @exports Tag */ function(string, is) {
 
             Object.keys(attrs).forEach(function(attr) {
                 attrs[attr] === true
-                    ? tag.push(' ' + attr)
+                    ? tag.push(' ' + attr + (Tag.repeatBooleanAttr ? '="' + attr + '"' : ''))
                     : tag.push(' ' + attr + '="' + attrs[attr] + '"');
             }, this);
 
             if(this.single()) {
-                tag.push('/>')
+                tag.push(Tag.closeSingleTag ? '/>' : '>');
             } else {
                 tag.push('>');
                 tag = tag.concat(this.content());

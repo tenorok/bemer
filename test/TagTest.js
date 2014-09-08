@@ -90,14 +90,33 @@ definer('TagTest', function(assert, Tag) {
                     '<div>Вложенный блок.</div>' +
                 '</span>'
             );
-            assert.equal(tag.single(true).toString(), '<span class="block block_mod_val" id="i100" data-info="text"/>');
+            assert.equal(tag.single(true).toString(), '<span class="block block_mod_val" id="i100" data-info="text">');
             assert.equal(tag.attr({
                 disabled: true,
                 id: false,
                 'data-info': false
             }).toString(),
-                '<span class="block block_mod_val" disabled/>'
+                '<span class="block block_mod_val" disabled>'
             );
+        });
+
+        describe('Изменение настроек XHTML.', function() {
+
+            afterEach(function() {
+                Tag.repeatBooleanAttr = false;
+                Tag.closeSingleTag = false;
+            });
+
+            it('Повторять булевы атрибуты', function() {
+                Tag.repeatBooleanAttr = true;
+                assert.equal(new Tag().attr('checked', true).toString(), '<div checked="checked"></div>');
+            });
+
+            it('Закрывать одиночные теги', function() {
+                Tag.closeSingleTag = true;
+                assert.equal(new Tag('img').toString(), '<img/>');
+            });
+
         });
 
     });
