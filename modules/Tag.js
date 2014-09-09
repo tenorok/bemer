@@ -4,7 +4,7 @@ definer('Tag', /** @exports Tag */ function(string, is) {
      * Модуль работы с тегом.
      *
      * @constructor
-     * @param {string} [name=div] Имя тега
+     * @param {string|boolean} [name=div] Имя тега или флаг отмены его строкового представления
      */
     function Tag(name) {
 
@@ -12,9 +12,9 @@ definer('Tag', /** @exports Tag */ function(string, is) {
          * Имя тега.
          *
          * @private
-         * @type {string}
+         * @type {string|boolean}
          */
-        this._name = name || Tag.defaultName;
+        this._name = typeof name === 'string' || name === false ? name : Tag.defaultName;
 
         /**
          * Список классов тега.
@@ -83,15 +83,17 @@ definer('Tag', /** @exports Tag */ function(string, is) {
     Tag.prototype = {
 
         /**
-         * Получить/установить имя тега.
+         * Получить/установить имя тега,
+         * `true` — установить имя тега по умолчанию,
+         * `false` — отменить строковое представление тега.
          *
-         * @param {string} [name] Имя тега
-         * @returns {string|Tag}
+         * @param {string|boolean} [name] Имя тега
+         * @returns {string|boolean|Tag}
          */
         name: function(name) {
-            if(!name) return this._name;
+            if(name === undefined) return this._name;
 
-            this._name = name;
+            this._name = typeof name === 'string' || name === false ? name : Tag.defaultName;
             return this;
         },
 
@@ -233,11 +235,7 @@ definer('Tag', /** @exports Tag */ function(string, is) {
          * @returns {Tag}
          */
         addContent: function(content) {
-            if(is.array(content)) {
-                this._content = this._content.concat(content);
-            } else {
-                this._content.push(content);
-            }
+            this._content = this._content.concat(content);
             return this;
         },
 
@@ -247,6 +245,8 @@ definer('Tag', /** @exports Tag */ function(string, is) {
          * @returns {string}
          */
         toString: function() {
+            if(this.name() === false) return this.content().join('');
+
             var tag = ['<' + this.name()],
                 classes = this.getClass(),
                 attrs = this.attr();
