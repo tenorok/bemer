@@ -100,6 +100,37 @@ definer('TagTest', function(assert, Tag) {
             );
         });
 
+        describe('Булево значение вместо имени тега.', function() {
+
+            it('Тег по умолчанию', function() {
+                assert.equal(new Tag(true).name(), 'div');
+                assert.equal(new Tag(false).name(true).name(), 'div');
+
+                assert.equal(new Tag(true).toString(), '<div></div>');
+                assert.equal(new Tag().name(true).toString(), '<div></div>');
+            });
+
+            it('Без содержимого', function() {
+                assert.equal(new Tag(false).toString(), '');
+                assert.equal(new Tag().name(false).toString(), '');
+            });
+
+            it('С содержимым', function() {
+                assert.equal(new Tag(false).content(new Tag('span').content('содержимое')).toString(),
+                    '<span>содержимое</span>');
+            });
+
+            it('Вложенные анонимные теги', function() {
+                assert.equal(new Tag().name(false).content(
+                    new Tag('span').content(
+                        new Tag(false).content('содержимое')
+                    )
+                ).toString(),
+                    '<span>содержимое</span>');
+            });
+
+        });
+
         describe('Изменение настроек XHTML.', function() {
 
             afterEach(function() {
