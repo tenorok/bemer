@@ -94,6 +94,9 @@
             
                 
 <span class="param-type">string</span>
+|
+
+<span class="param-type">boolean</span>
 
 
             
@@ -119,7 +122,7 @@
                 </td>
             
 
-            <td class="description last">Имя тега</td>
+            <td class="description last">Имя тега или флаг отмены его строкового представления</td>
         </tr>
 
     
@@ -560,7 +563,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line104">line 104</a>
+        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line106">line 106</a>
     </li></ul></dd>
     
 
@@ -700,7 +703,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line235">line 235</a>
+        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line237">line 237</a>
     </li></ul></dd>
     
 
@@ -893,7 +896,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line179">line 179</a>
+        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line181">line 181</a>
     </li></ul></dd>
     
 
@@ -1051,7 +1054,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line221">line 221</a>
+        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line223">line 223</a>
     </li></ul></dd>
     
 
@@ -1191,7 +1194,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line210">line 210</a>
+        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line212">line 212</a>
     </li></ul></dd>
     
 
@@ -1328,7 +1331,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line130">line 130</a>
+        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line132">line 132</a>
     </li></ul></dd>
     
 
@@ -1417,7 +1420,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line143">line 143</a>
+        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line145">line 145</a>
     </li></ul></dd>
     
 
@@ -1554,7 +1557,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line120">line 120</a>
+        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line122">line 122</a>
     </li></ul></dd>
     
 
@@ -1602,7 +1605,7 @@
         
             
 <dt>
-    <h4 class="name" id="name"><span class="type-signature"></span>name<span class="signature">(name<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string|Tag}</span></h4>
+    <h4 class="name" id="name"><span class="type-signature"></span>name<span class="signature">(name<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {string|boolean|Tag}</span></h4>
 
     
 </dt>
@@ -1610,7 +1613,9 @@
 
     
     <div class="description">
-        Получить/установить имя тега.
+        Получить/установить имя тега,
+`true` — установить имя тега по умолчанию,
+`false` — отменить строковое представление тега.
     </div>
     
 
@@ -1653,6 +1658,9 @@
             
                 
 <span class="param-type">string</span>
+|
+
+<span class="param-type">boolean</span>
 
 
             
@@ -1703,7 +1711,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line91">line 91</a>
+        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line93">line 93</a>
     </li></ul></dd>
     
 
@@ -1738,6 +1746,9 @@
     <dd>
         
 <span class="param-type">string</span>
+|
+
+<span class="param-type">boolean</span>
 |
 
 <span class="param-type">Tag</span>
@@ -1855,7 +1866,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line153">line 153</a>
+        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line155">line 155</a>
     </li></ul></dd>
     
 
@@ -1947,7 +1958,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line249">line 249</a>
+        <a href="Tag.js.html">Tag.js</a>, <a href="Tag.js.html#line247">line 247</a>
     </li></ul></dd>
     
 
@@ -2014,7 +2025,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha8</a> on Mon Sep 08 2014 14:29:25 GMT+0400 (MSK)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha8</a> on Tue Sep 09 2014 13:19:35 GMT+0400 (MSK)
 </footer>
 
 <script> prettyPrint(); </script>
