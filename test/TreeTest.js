@@ -243,6 +243,13 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     '</div>');
             });
 
+            it('Анонимный блок с вложенным блоком', function() {
+                var tree = new Tree({ block: 'a', content: { block: 'b' }},
+                    new Pool().add(new Template('a', { tag: false }))
+                );
+                assert.equal(tree.toString(), '<div class="b"></div>');
+            });
+
         });
 
         describe('Раскрытие контекста блока.', function() {
@@ -255,6 +262,17 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     }
                 }, new Pool().add(new Template('a', { js: false })));
                 assert.equal(tree.toString(), '<div class="a"><div class="a__b"></div></div>');
+            });
+
+            it('Элемент вложен в анонимный блок', function() {
+                var tree = new Tree({
+                    block: 'a',
+                    tag: false,
+                    content: {
+                        elem: 'b'
+                    }
+                }, new Pool());
+                assert.equal(tree.toString(), '<div class="a__b"></div>');
             });
 
             it('Распределённая структура вложенных элементов', function() {
@@ -349,7 +367,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 assert.equal(tree.toString(), '<div class="a">content</div>');
             });
 
-            it('Указание контекста в шаблоне и входящих данных одновременно', function() {
+            it('Указание содержимого в шаблоне и входящих данных одновременно', function() {
                 var tree = new Tree({ block: 'a', js: true, content: 'text1' },
                     new Pool().add(new Template('a', { content: 'text2' })));
                 assert.equal(tree.toString(), '<div class="a i-bem" data-bem="{&quot;a&quot;:{}}">text1</div>');
@@ -361,6 +379,14 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     '<div class="a">' +
                         '<div class="b"></div>' +
                     '</div>');
+            });
+
+            it('Анонимный блок с вложенным блоком', function() {
+                var tree = new Tree({ block: 'a' }, new Pool().add(new Template('a', {
+                    tag: false,
+                    content: { block: 'b' }
+                })));
+                assert.equal(tree.toString(), '<div class="b"></div>');
             });
 
             it('Вложенный блок с собственным шаблоном', function() {

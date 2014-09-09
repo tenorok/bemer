@@ -167,6 +167,13 @@ definer('TemplateTest', function(assert, Template, Helpers) {
             );
         });
 
+        it('Шаблонизировать анонимный блок', function() {
+            assert.equal(new Template('name', {
+                tag: false,
+                content: 'содержимое'
+            }).match({ block: 'name' }).toString(), 'содержимое');
+        });
+
         describe('Экранирование содержимого.', function() {
 
             it('Строка в содержимом', function() {
@@ -373,6 +380,11 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                 assert.equal(new Template('name', { js: true }).match({ block: 'name', js: false }).toString(),
                     '<div class="name"></div>',
                     'логический тип'
+                );
+
+                assert.equal(new Template('name', { tag: false }).match({ block: 'name', tag: true }).toString(),
+                    '<div class="name"></div>',
+                    'логический тип и тег по умолчанию'
                 );
 
             });
