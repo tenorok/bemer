@@ -18,6 +18,11 @@ definer('bemerTest', function(assert, bemer, Helpers) {
             );
         });
 
+        it('Анонимный блок', function() {
+            bemer.match('name', { tag: false, content: 'hello' });
+            assert.equal(bemer({ block: 'name' }), 'hello');
+        });
+
         it('Метод clean', function() {
             bemer.match('name', { tag: 'span' });
             bemer.clean();

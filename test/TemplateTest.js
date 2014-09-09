@@ -382,6 +382,11 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                     'логический тип'
                 );
 
+                assert.equal(new Template('name', { tag: false }).match({ block: 'name', tag: true }).toString(),
+                    '<div class="name"></div>',
+                    'логический тип и тег по умолчанию'
+                );
+
             });
 
             it('Массивы конкатенируются', function() {
