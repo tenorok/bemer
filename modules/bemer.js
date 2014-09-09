@@ -83,7 +83,7 @@ definer.export('bemer', /** @exports bemer */ function(
             repeatBooleanAttr: Tag.repeatBooleanAttr,
             closeSingleTag: Tag.closeSingleTag
         },
-        tag: Template.tag,
+        tag: Tag.defaultName,
         bemClass: Node.bemClass,
         bemAttr: Node.bemAttr,
         idPrefix: Helpers.idPrefix
@@ -134,7 +134,7 @@ definer.export('bemer', /** @exports bemer */ function(
         }
 
         if(config.tag) {
-            Template.tag = config.tag;
+            Tag.defaultName = config.tag;
         }
 
         if(config.bemClass) {
