@@ -293,7 +293,7 @@ data: {
 
 ###### Поле `tag`
 
-Тип: `{string}`
+Тип: `{string}` `{boolean}`
 
 По умолчанию: `div`
 
@@ -308,6 +308,20 @@ bemer({ block: 'text' });
 
 ```html
 <span class="text"></span>
+```
+
+Для указания стандартного тега `div` может быть использовано значение `true`.
+
+Для отмены строкового представления тега используется значение `false`.
+При этом вместо текущего тега будет представлено его содержимое:
+
+```js
+bemer.match('anonymous', { tag: false });
+bemer({ block: 'anonymous', content: { block: 'inner' }});
+```
+
+```html
+<div class="inner"></div>
 ```
 
 ###### Поле `single`
