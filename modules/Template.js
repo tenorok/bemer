@@ -54,16 +54,14 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
     }
 
     /**
-     * Получить БЭМ-узел на основе BEMJSON по базому шаблону.
+     * Получить БЭМ-узел на основе BEMJSON по базовому шаблону.
      *
      * @param {object} bemjson Входящий BEMJSON
      * @param {object} [data] Данные по сущности в дереве
      * @returns {Node}
      */
     Template.base = function(bemjson, data) {
-        return new Template(
-            new Node(bemjson).isBlock() ? '*' : '*' + Selector.delimiters.elem + '*', {}
-        ).transform(bemjson, data);
+        return Template.baseTemplate.transform(bemjson, data);
     };
 
     Template.prototype = {
@@ -282,6 +280,13 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
         }
 
     };
+
+    /**
+     * Базовый шаблон.
+     *
+     * @type {Template}
+     */
+    Template.baseTemplate = new Template('', {});
 
     return Template;
 
