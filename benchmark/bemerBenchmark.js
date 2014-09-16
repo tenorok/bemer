@@ -1,4 +1,4 @@
-definer('benchmarkRecursion', function(assert, bemer) {
+definer('bemerBenchmark', function(assert, bemer) {
     var Benchmark = require('benchmark'),
         benchmarks = require('beautify-benchmark');
 

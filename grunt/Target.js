@@ -16,8 +16,13 @@ Target.definer = function() {
             'modules'
         ],
 
+        benchmarkModules = [
+            'bemer'
+        ],
+
         directories = ['modules/', 'node_modules/molotok/modules/'],
-        testDirectories = directories.concat('test/'),
+        directoriesTest = directories.concat('test/'),
+        directoriesBenchmark = directories.concat('test/helpers/', 'benchmark/'),
         verbose = ['info', 'error'],
         clean = {
             inherit: 'node_modules/inherit/lib/inherit.js'
@@ -38,14 +43,14 @@ Target.definer = function() {
                 }
             },
             main: {
-                target: 'test/tmp/main.js',
-                directory: testDirectories,
+                target: 'test/tmp/mainTest.js',
+                directory: directoriesTest,
                 verbose: verbose,
                 clean: clean
             },
-            benchmark: {
-                target: 'test/tmp/benchmark.js',
-                directory: directories.concat('test/helpers/', 'benchmark/'),
+            mainBenchmark: {
+                target: 'test/tmp/mainBenchmark.js',
+                directory: directoriesBenchmark,
                 verbose: verbose,
                 clean: clean
             }
@@ -56,7 +61,18 @@ Target.definer = function() {
         target[moduleName] = {
             module: testName,
             target: 'test/tmp/' + testName + '.js',
-            directory: testDirectories,
+            directory: directoriesTest,
+            verbose: verbose,
+            clean: clean
+        };
+    });
+
+    benchmarkModules.forEach(function(moduleName) {
+        var benchmarkName = moduleName + 'Benchmark';
+        target[benchmarkName] = {
+            module: benchmarkName,
+            target: 'test/tmp/' + benchmarkName + '.js',
+            directory: directoriesBenchmark,
             verbose: verbose,
             clean: clean
         };
