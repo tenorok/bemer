@@ -342,6 +342,22 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     '</div>');
             });
 
+            it('На блок с модификатором и его вложенный элемент с переопределённым модификатором блока', function() {
+                var tree = new Tree({
+                    block: 'a',
+                    mods: { c: 'd' },
+                    content: {
+                        elem: 'b',
+                        mods: {c: 'g'},
+                        elemMods: { e: 'f' }
+                    }
+                }, new Pool());
+                assert.equal(tree.toString(), '' +
+                    '<div class="a a_c_d">' +
+                        '<div class="a_c_g__b a_c_g__b_e_f"></div>' +
+                    '</div>');
+            });
+
             it('Добавление модификаторов блоку с модификатором во вложенном элементе', function() {
                 var tree = new Tree({
                     block: 'a',
@@ -354,7 +370,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 }, new Pool());
                 assert.equal(tree.toString(), '' +
                     '<div class="a a_c_d">' +
-                        '<div class="a_g_h__b a_c_d__b a_g_h__b_e_f a_c_d__b_e_f"></div>' +
+                        '<div class="a_c_d__b a_g_h__b a_c_d__b_e_f a_g_h__b_e_f"></div>' +
                     '</div>');
             });
 

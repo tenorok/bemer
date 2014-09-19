@@ -119,7 +119,7 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
                 if(bemjson.elem && !bemjson.block && data.context.block) {
                     bemjson.block = data.context.block;
                     if(data.context.mods) {
-                        bemjson.mods = object.extend(bemjson.mods || {}, data.context.mods);
+                        bemjson.mods = object.extend(data.context.mods, bemjson.mods || {});
                     }
                 }
 
@@ -129,7 +129,7 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
                 if(bemjson.block) {
                     data.context = { block: bemjson.block };
                     if(bemjson.mods) {
-                        data.context.mods = bemjson.mods;
+                        data.context.mods = object.clone(bemjson.mods);
                     }
                 }
 
