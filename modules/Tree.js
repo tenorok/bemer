@@ -69,33 +69,27 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
          * @returns {*}
          */
         _getContent: function(bemjson, data) {
+            if(!is.array(bemjson)) return this._getNode(bemjson, data);
 
-            if(is.array(bemjson)) {
-                return bemjson.reduce(function(list, elem, index) {
-                    var elemData = {
+            var list = [];
+            for(var index = 0, len = bemjson.length; index < len; index++) {
+                var elem = bemjson[index],
+                    elemData = {
                         index: index,
                         length: bemjson.length
                     };
 
-                    if(elem && elem.elem) {
-                        elemData.context = data.context;
-                    }
+                if(elem && elem.elem) {
+                    elemData.context = data.context;
+                }
 
-                    var node = is.array(elem)
-                        ? this._getContent(elem, data)
-                        : this._getNode(elem, elemData);
+                var node = is.array(elem)
+                    ? this._getContent(elem, data)
+                    : this._getNode(elem, elemData);
 
-                    if(is.array(node)) {
-                        list = list.concat(node);
-                    } else {
-                        list.push(node);
-                    }
-
-                    return list;
-                }.bind(this), []);
+                list = list.concat(node);
             }
-
-            return this._getNode(bemjson, data);
+            return list;
         },
 
         /**
@@ -113,31 +107,27 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
          * @returns {Node|*}
          */
         _getNode: function(bemjson, data) {
+            if(!is.map(bemjson)) return bemjson;
 
-            if(is.map(bemjson)) {
+            data = data || {};
 
-                if(bemjson.elem && !bemjson.block && data.context.block) {
-                    bemjson.block = data.context.block;
-                    if(data.context.mods) {
-                        bemjson.mods = object.extend(data.context.mods, bemjson.mods || {});
-                    }
+            if(bemjson.elem && !bemjson.block && data.context.block) {
+                bemjson.block = data.context.block;
+                if(data.context.mods) {
+                    bemjson.mods = object.extend(data.context.mods, bemjson.mods || {});
                 }
-
-                var node = this._pool.find(bemjson, data) || Template.base(bemjson, data),
-                    data = {};
-
-                if(bemjson.block) {
-                    data.context = { block: bemjson.block };
-                    if(bemjson.mods) {
-                        data.context.mods = object.clone(bemjson.mods);
-                    }
-                }
-
-                node.content(this._getContent(bemjson.content, data));
-                return node;
             }
 
-            return bemjson;
+            var node = this._pool.find(bemjson, data) || Template.base(bemjson, data);
+
+            if(bemjson.block) {
+                data.context = { block: bemjson.block };
+                if(bemjson.mods) {
+                    data.context.mods = object.clone(bemjson.mods);
+                }
+            }
+
+            return node.content(this._getContent(bemjson.content, data));
         }
 
     };

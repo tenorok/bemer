@@ -119,6 +119,11 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 assert.equal(tree.toString(), '<div class="a">true</div>');
             });
 
+            it('Неопределённость', function() {
+                var tree = new Tree({ block: 'a', content: undefined }, new Pool().add(new Template('a', {})));
+                assert.equal(tree.toString(), '<div class="a"></div>');
+            });
+
             it('Массив примитивов', function() {
                 var tree = new Tree({ block: 'a', content: ['a', 100, true] }, new Pool().add(new Template('a', {})));
                 assert.equal(tree.toString(), '<div class="a">a100true</div>');
