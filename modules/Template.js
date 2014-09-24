@@ -94,9 +94,10 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
         transform: function(bemjson, data) {
             var modes = new this.Modes(bemjson, data);
 
-            Object.keys(this._getDefaultModes()).forEach(function(mode) {
+            for(var i = 0, len = Template._defaultModesNames.length; i < len; i++) {
+                var mode = Template._defaultModesNames[i];
                 bemjson[mode] = this._getMode(modes, bemjson, mode);
-            }, this);
+            }
 
             return new Node(bemjson);
         },
@@ -185,9 +186,6 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
 
         /**
          * Получить стандартные моды.
-         *
-         * Если среди селекторов шаблона присутствует хотя бы
-         * один блок, то будут отданы стандартные моды для блоков.
          *
          * @private
          * @returns {object}
@@ -287,6 +285,14 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
      * @type {Template}
      */
     Template.baseTemplate = new Template('', {});
+
+    /**
+     * Список имён стандартных мод.
+     *
+     * @private
+     * @type {array}
+     */
+    Template._defaultModesNames = Object.keys(Template.baseTemplate._getDefaultModes());
 
     return Template;
 
