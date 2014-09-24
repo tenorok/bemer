@@ -56,21 +56,18 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
         },
 
         /**
-         * Получить узел или примитив
-         * или список узлов и примитивов
-         * на основе контента.
+         * Получить список узлов и примитивов
+         * на основе массива контента.
          *
          * @private
-         * @param {*} bemjson BEMJSON, массив или примитив
+         * @param {array} bemjson Массив
          * @param {object} data Данные по сущности в дереве
          * @param {object} [data.context] Информация о родительском контексте (если родитель — блок)
          * @param {object} [data.context.block] Имя родительского блока
          * @param {object} [data.context.mods] Модификаторы родительского блока
-         * @returns {*}
+         * @returns {array}
          */
-        _getContent: function(bemjson, data) {
-            if(!is.array(bemjson)) return this._getNode(bemjson, data);
-
+        _getContentList: function(bemjson, data) {
             var list = [];
             for(var index = 0, len = bemjson.length; index < len; index++) {
                 var elem = bemjson[index],
@@ -84,7 +81,7 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
                 }
 
                 var node = is.array(elem)
-                    ? this._getContent(elem, data)
+                    ? this._getContentList(elem, data)
                     : this._getNode(elem, elemData);
 
                 list = list.concat(node);
@@ -127,7 +124,9 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
                 }
             }
 
-            return node.content(this._getContent(bemjson.content, data));
+            return node.content(this[
+                is.array(bemjson.content) ? '_getContentList' : '_getNode'
+            ](bemjson.content, data));
         }
 
     };
