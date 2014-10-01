@@ -570,9 +570,9 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                         }
                     }).match({
                             block: 'name',
-                            text: '\\,"\'\n\r\t\u2028\u2029'
+                            text: '\\,\n\r\t\u2028\u2029'
                         }).toString(),
-                        '<div class="name" data-escape="\\\\,\\"\\\'\\n\\r\\t\\u2028\\u2029"></div>'
+                        '<div class="name" data-escape="\\\\,\\n\\r\\t\\u2028\\u2029"></div>'
                     );
                 });
 
@@ -585,9 +585,9 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                         }
                     }).match({
                             block: 'name',
-                            text: '\\\\,\\"\\\'\\n\\r\\t\\u2028\\u2029'
+                            text: '\\\\,\\n\\r\\t\\u2028\\u2029'
                         }).toString(),
-                        '<div class="name" data-escape="\\,"\'\n\r\t\u2028\u2029"></div>'
+                        '<div class="name" data-escape="\\,\n\r\t\u2028\u2029"></div>'
                     );
                 });
 

@@ -231,33 +231,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
                 }
             }
 
-            if(name === 'content') {
-                return this._escapeContent(priorityVal);
-            }
-
             return priorityVal;
-        },
-
-        /**
-         * Заэкранировать содержимое узла.
-         *
-         * @private
-         * @param {*} content Содержимое
-         * @returns {*}
-         */
-        _escapeContent: function(content) {
-
-            if(is.string(content)) {
-                return string.htmlEscape(content);
-            }
-
-            if(is.array(content)) {
-                return content.map(function(item) {
-                    return this._escapeContent(item);
-                }, this);
-            }
-
-            return content;
         },
 
         /**
