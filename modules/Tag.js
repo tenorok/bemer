@@ -1,4 +1,4 @@
-definer('Tag', /** @exports Tag */ function(string, is) {
+definer('Tag', /** @exports Tag */ function(string, object, is) {
 
     /**
      * Модуль работы с тегом.
@@ -14,7 +14,7 @@ definer('Tag', /** @exports Tag */ function(string, is) {
          * @private
          * @type {string|boolean}
          */
-        this._name = typeof name === 'string' || name === false ? name : Tag.defaultName;
+        this._name = is.string(name) || name === false ? name : Tag.defaultName;
 
         /**
          * Список классов тега.
@@ -93,7 +93,7 @@ definer('Tag', /** @exports Tag */ function(string, is) {
         name: function(name) {
             if(name === undefined) return this._name;
 
-            this._name = typeof name === 'string' || name === false ? name : Tag.defaultName;
+            this._name = is.string(name) || name === false ? name : Tag.defaultName;
             return this;
         },
 
@@ -182,8 +182,8 @@ definer('Tag', /** @exports Tag */ function(string, is) {
             if(!arguments.length) return this._attr;
 
             if(is.map(name)) {
-                Object.keys(name).forEach(function(attr) {
-                    this.attr(attr, name[attr]);
+                object.each(name, function(key, val) {
+                    this.attr(key, val);
                 }, this);
                 return this;
             } else if(val === undefined) {
@@ -255,11 +255,11 @@ definer('Tag', /** @exports Tag */ function(string, is) {
                 tag.push(' class="' + classes.join(' ') + '"');
             }
 
-            Object.keys(attrs).forEach(function(attr) {
+            object.each(attrs, function(attr) {
                 attrs[attr] === true
                     ? tag.push(' ' + attr + (Tag.repeatBooleanAttr ? '="' + attr + '"' : ''))
                     : tag.push(' ' + attr + '="' + attrs[attr] + '"');
-            }, this);
+            });
 
             if(this.single()) {
                 tag.push(Tag.closeSingleTag ? '/>' : '>');
