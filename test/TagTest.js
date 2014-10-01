@@ -74,6 +74,10 @@ definer('TagTest', function(assert, Tag) {
             assert.deepEqual(new Tag().addContent('1').addContent(['2', '3']).content(), ['1', '2', '3']);
         });
 
+        it('Содержимое тега храниться в чистом виде', function() {
+            assert.deepEqual(new Tag().content('&<>"\'').content(), ['&<>"\'']);
+        });
+
         it('Получить строковое представление тега', function() {
             var tag = new Tag('span');
             assert.equal(tag.toString(), '<span></span>');
@@ -102,6 +106,10 @@ definer('TagTest', function(assert, Tag) {
             );
         });
 
+        it('При получении строкового представления cодержимое тега по умолчанию экранируется', function() {
+            assert.deepEqual(new Tag().content('&<>"\'').toString(), '<div>&amp;&lt;&gt;&quot;&#39;</div>');
+        });
+
         describe('Получить строковое представление тега с заданными опциями.', function() {
 
             it('Изменение стандартного имени тега', function() {
@@ -124,6 +132,12 @@ definer('TagTest', function(assert, Tag) {
                 var tag = new Tag('input');
                 assert.equal(tag.toString({ closeSingleTag: true }), '<input/>');
                 assert.equal(tag.toString(), '<input>');
+            });
+
+            it('Изменение флага автоматического экранирования', function() {
+                var tag = new Tag().content('&<>"\'');
+                assert.equal(tag.toString({ autoEscape: false }), '<div>&<>"\'</div>');
+                assert.equal(tag.toString(), '<div>&amp;&lt;&gt;&quot;&#39;</div>');
             });
 
         });

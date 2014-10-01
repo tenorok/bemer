@@ -71,6 +71,14 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
     Tag.closeSingleTag = false;
 
     /**
+     * Флаг автоматического экранирования
+     * содержимого тега и значений атрибутов.
+     *
+     * @type {boolean}
+     */
+    Tag.autoEscape = true;
+
+    /**
      * Список одиночных HTML-тегов.
      *
      * @type {String[]}
@@ -246,6 +254,7 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
          * @param {string} [options.defaultName] Имя тега по умолчанию
          * @param {string} [options.repeatBooleanAttr] Флаг автоповтора булева атрибута
          * @param {string} [options.closeSingleTag] Флаг закрытия одиночного тега
+         * @param {string} [options.autoEscape] Флаг автоматического экранирования
          * @returns {string}
          */
         toString: function(options) {
@@ -254,7 +263,8 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
             options = object.extend({
                 defaultName: Tag.defaultName,
                 repeatBooleanAttr: Tag.repeatBooleanAttr,
-                closeSingleTag: Tag.closeSingleTag
+                closeSingleTag: Tag.closeSingleTag,
+                autoEscape: Tag.autoEscape
             }, options || {});
 
             var name = this._name === true ? options.defaultName : this._name,
@@ -276,7 +286,11 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
                 tag.push(options.closeSingleTag ? '/>' : '>');
             } else {
                 tag.push('>');
-                tag = tag.concat(this.content());
+                tag = tag.concat(options.autoEscape
+                    ? this.content().reduce(function(content, chunk) {
+                        return content.concat(is.string(chunk) ? string.htmlEscape(chunk) : chunk);
+                    }, [])
+                    : this.content());
                 tag.push('</' + name + '>');
             }
 
