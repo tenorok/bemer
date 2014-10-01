@@ -149,14 +149,14 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
         /**
          * Проверить/установить одиночный тег.
          *
-         * @param {boolean} [state] Флаг одиночного тега
+         * @param {boolean|string} [state] Флаг одиночного тега или имя тега для проверки
          * @returns {boolean|Tag}
          */
         single: function(state) {
-            if(state === undefined) {
+            if(state === undefined || is.string(state)) {
                 return this._single !== undefined
                     ? this._single
-                    : !!~Tag.singleTags.indexOf(this._name);
+                    : !!~Tag.singleTags.indexOf(state || this._name);
             }
 
             this._single = state;

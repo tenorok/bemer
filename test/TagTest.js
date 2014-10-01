@@ -27,6 +27,8 @@ definer('TagTest', function(assert, Tag) {
             assert.isTrue(tag.single(true).single(), 'принудительное указание одиночного тега');
             assert.isTrue(tag.name('b').single(), 'после смены тега принудительное указание не сбрасывается');
             assert.isFalse(tag.single(false).single());
+
+            assert.isTrue(new Tag().single('br'), 'проверка указанного тега');
         });
 
         it('Добавить/удалить атрибуты, получить атрибут и список всех атрибутов', function() {
