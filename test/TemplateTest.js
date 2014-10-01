@@ -570,10 +570,24 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                         }
                     }).match({
                             block: 'name',
-                            js: false,
                             text: '\\,"\'\n\r\t\u2028\u2029'
                         }).toString(),
                         '<div class="name" data-escape="\\\\,\\"\\\'\\n\\r\\t\\u2028\\u2029"></div>'
+                    );
+                });
+
+                it('Разэкранировать строку текста', function() {
+                    assert.equal(new Template('name', {
+                        attrs: function() {
+                            return {
+                                'data-escape': this.unEscape(this.bemjson.text)
+                            };
+                        }
+                    }).match({
+                            block: 'name',
+                            text: '\\\\,\\"\\\'\\n\\r\\t\\u2028\\u2029'
+                        }).toString(),
+                        '<div class="name" data-escape="\\,"\'\n\r\t\u2028\u2029"></div>'
                     );
                 });
 
@@ -586,7 +600,6 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                         }
                     }).match({
                             block: 'name',
-                            js: false,
                             text: '&<>"\'\/'
                         }).toString(),
                         '<div class="name" data-escape="&amp;&lt;&gt;&quot;&#39;\/"></div>'
@@ -602,7 +615,6 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                         }
                     }).match({
                             block: 'name',
-                            js: false,
                             text: '&amp;&lt;&gt;&quot;&#39;\/'
                         }).toString(),
                         '<div class="name" data-escape="&<>"\'\/"></div>'
