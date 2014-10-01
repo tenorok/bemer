@@ -242,12 +242,23 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
         /**
          * Получить строковое представление тега.
          *
+         * @param {object} [options] Опции
+         * @param {string} [options.defaultName] Имя тега по умолчанию
+         * @param {string} [options.repeatBooleanAttr] Флаг автоповтора булева атрибута
+         * @param {string} [options.closeSingleTag] Флаг закрытия одиночного тега
          * @returns {string}
          */
-        toString: function() {
+        toString: function(options) {
             if(this.name() === false) return this.content().join('');
 
-            var tag = ['<' + this.name()],
+            options = object.extend({
+                defaultName: Tag.defaultName,
+                repeatBooleanAttr: Tag.repeatBooleanAttr,
+                closeSingleTag: Tag.closeSingleTag
+            }, options || {});
+
+            var name = this._name === true ? options.defaultName : this._name,
+                tag = ['<' + name],
                 classes = this.getClass(),
                 attrs = this.attr();
 
@@ -257,16 +268,16 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
 
             object.each(attrs, function(attr) {
                 attrs[attr] === true
-                    ? tag.push(' ' + attr + (Tag.repeatBooleanAttr ? '="' + attr + '"' : ''))
+                    ? tag.push(' ' + attr + (options.repeatBooleanAttr ? '="' + attr + '"' : ''))
                     : tag.push(' ' + attr + '="' + attrs[attr] + '"');
             });
 
-            if(this.single()) {
-                tag.push(Tag.closeSingleTag ? '/>' : '>');
+            if(this.single(name)) {
+                tag.push(options.closeSingleTag ? '/>' : '>');
             } else {
                 tag.push('>');
                 tag = tag.concat(this.content());
-                tag.push('</' + this.name() + '>');
+                tag.push('</' + name + '>');
             }
 
             return tag.join('');

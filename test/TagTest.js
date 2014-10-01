@@ -102,6 +102,32 @@ definer('TagTest', function(assert, Tag) {
             );
         });
 
+        describe('Получить строковое представление тега с заданными опциями.', function() {
+
+            it('Изменение стандартного имени тега', function() {
+                var tag = new Tag();
+                assert.equal(tag.toString({ defaultName: 'br' }), '<br>');
+                assert.equal(tag.toString(), '<div></div>');
+            });
+
+            it('Принудительное указание одиночного тега и изменение стандартного имени', function() {
+                assert.equal(new Tag(true).single(true).toString({ defaultName: 'span' }), '<span>');
+            });
+
+            it('Изменение флага автоповтора булева атрибута', function() {
+                var tag = new Tag().attr('checked', true);
+                assert.equal(tag.toString({ repeatBooleanAttr: true }), '<div checked="checked"></div>');
+                assert.equal(tag.toString(), '<div checked></div>');
+            });
+
+            it('Изменение флага закрытия одиночного тега', function() {
+                var tag = new Tag('input');
+                assert.equal(tag.toString({ closeSingleTag: true }), '<input/>');
+                assert.equal(tag.toString(), '<input>');
+            });
+
+        });
+
         describe('Булево значение вместо имени тега.', function() {
 
             it('Тег по умолчанию', function() {
