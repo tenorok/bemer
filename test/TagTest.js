@@ -45,11 +45,13 @@ definer('TagTest', function(assert, Tag) {
 
         it('Добавить атрибут со сложным значением', function() {
             var tag = new Tag();
-            assert.equal(tag.attr('data-bem', { myblock: { a: 100, b: 200 }}).attr('data-bem'),
-                '{&quot;myblock&quot;:{&quot;a&quot;:100,&quot;b&quot;:200}}'
-            );
-            assert.equal(tag.attr('data-list', [100, true, 'third', { b: 200 }]).attr('data-list'),
-                '[100,true,&quot;third&quot;,{&quot;b&quot;:200}]'
+
+            tag.attr('data-bem', { myblock: { a: 100, b: 200 }});
+            tag.attr('data-bem').myblock.a += 10;
+
+            assert.deepEqual(tag.attr('data-bem'), { myblock: { a: 110, b: 200 }});
+            assert.deepEqual(tag.attr('data-list', [100, true, 'third', { b: 200 }]).attr('data-list'),
+                [100, true, 'third', { b: 200 }]
             );
         });
 
@@ -62,7 +64,7 @@ definer('TagTest', function(assert, Tag) {
                 id: 100,
                 type: 'text',
                 placeholder: 'example',
-                'data-bem': '{&quot;my&quot;:{&quot;a&quot;:1}}'
+                'data-bem': { my: { a: 1 }}
             });
         });
 
@@ -74,8 +76,12 @@ definer('TagTest', function(assert, Tag) {
             assert.deepEqual(new Tag().addContent('1').addContent(['2', '3']).content(), ['1', '2', '3']);
         });
 
-        it('Содержимое тега храниться в чистом виде', function() {
+        it('Содержимое тега хранится в чистом виде', function() {
             assert.deepEqual(new Tag().content('&<>"\'').content(), ['&<>"\'']);
+        });
+
+        it('Значение атрибута хранится в чистом виде', function() {
+            assert.equal(new Tag().attr('src', '&<>"\'').attr('src'), '&<>"\'');
         });
 
         it('Получить строковое представление тега', function() {
@@ -110,6 +116,19 @@ definer('TagTest', function(assert, Tag) {
             assert.deepEqual(new Tag().content('&<>"\'').toString(), '<div>&amp;&lt;&gt;&quot;&#39;</div>');
         });
 
+        it('При получении строкового представления значение атрибута по умолчанию экранируется', function() {
+            assert.deepEqual(new Tag().attr('src', '&<>"\'').toString(), '<div src="&amp;&lt;&gt;&quot;&#39;"></div>');
+        });
+
+        it('Получить строковое представление атрибута со сложным значением', function() {
+            assert.equal(new Tag().attr('data-bem', { myblock: { a: 100, b: 200 }}).toString(),
+                '<div data-bem="{&quot;myblock&quot;:{&quot;a&quot;:100,&quot;b&quot;:200}}"></div>'
+            );
+            assert.equal(new Tag().attr('data-list', [100, true, 'third', { b: 200 }]).toString(),
+                '<div data-list="[100,true,&quot;third&quot;,{&quot;b&quot;:200}]"></div>'
+            );
+        });
+
         describe('Получить строковое представление тега с заданными опциями.', function() {
 
             it('Изменение стандартного имени тега', function() {
@@ -134,10 +153,28 @@ definer('TagTest', function(assert, Tag) {
                 assert.equal(tag.toString(), '<input>');
             });
 
-            it('Изменение флага автоматического экранирования', function() {
-                var tag = new Tag().content('&<>"\'');
-                assert.equal(tag.toString({ autoEscape: false }), '<div>&<>"\'</div>');
-                assert.equal(tag.toString(), '<div>&amp;&lt;&gt;&quot;&#39;</div>');
+            describe('Изменение флага автоматического экранирования.', function() {
+
+                it('Содержимое', function() {
+                    var tag = new Tag().content('&<>"\'');
+                    assert.equal(tag.toString({ autoEscape: false }), '<div>&<>"\'</div>');
+                    assert.equal(tag.toString(), '<div>&amp;&lt;&gt;&quot;&#39;</div>');
+                });
+
+                it('Атрибут', function() {
+                    var tag = new Tag().attr('src', '<>');
+                    assert.equal(tag.toString({ autoEscape: false }), '<div src="<>"></div>');
+                    assert.equal(tag.toString(), '<div src="&lt;&gt;"></div>');
+                });
+
+                it('Сложный атрибут всегда экранируется', function() {
+                    assert.equal(new Tag()
+                        .attr('data-bem', { myblock: { a: true, b: 200 }})
+                        .toString({ autoEscape: false }),
+                        '<div data-bem="{&quot;myblock&quot;:{&quot;a&quot;:true,&quot;b&quot;:200}}"></div>'
+                    );
+                });
+
             });
 
         });

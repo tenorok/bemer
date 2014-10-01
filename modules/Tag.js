@@ -198,10 +198,6 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
                 return this._attr[name];
             }
 
-            if(is.array(val) || is.map(val)) {
-                val = string.htmlEscape(JSON.stringify(val));
-            }
-
             if(val === false) {
                 this.delAttr(name);
             } else {
@@ -276,10 +272,19 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
                 tag.push(' class="' + classes.join(' ') + '"');
             }
 
-            object.each(attrs, function(attr) {
-                attrs[attr] === true
-                    ? tag.push(' ' + attr + (options.repeatBooleanAttr ? '="' + attr + '"' : ''))
-                    : tag.push(' ' + attr + '="' + attrs[attr] + '"');
+            object.each(attrs, function(key, val) {
+                if(val === true) {
+                    tag.push(' ' + key + (options.repeatBooleanAttr ? '="' + key + '"' : ''))
+                } else {
+
+                    if(is.array(val) || is.map(val)) {
+                        val = string.htmlEscape(JSON.stringify(val));
+                    } else if(options.autoEscape) {
+                        val = string.htmlEscape(val);
+                    }
+
+                    tag.push(' ' + key + '="' + val + '"');
+                }
             });
 
             if(this.single(name)) {
