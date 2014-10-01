@@ -14,7 +14,7 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
          * @private
          * @type {string|boolean}
          */
-        this._name = is.string(name) || name === false ? name : Tag.defaultName;
+        this._name = is.string(name) || name === false ? name : true;
 
         /**
          * Список классов тега.
@@ -91,9 +91,9 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
          * @returns {string|boolean|Tag}
          */
         name: function(name) {
-            if(name === undefined) return this._name;
+            if(name === undefined) return this._name === true ? Tag.defaultName : this._name;
 
-            this._name = is.string(name) || name === false ? name : Tag.defaultName;
+            this._name = is.string(name) || name === false ? name : true;
             return this;
         },
 
