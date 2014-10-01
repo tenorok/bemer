@@ -113,11 +113,15 @@ definer('TagTest', function(assert, Tag) {
         });
 
         it('При получении строкового представления cодержимое тега по умолчанию экранируется', function() {
-            assert.deepEqual(new Tag().content('&<>"\'').toString(), '<div>&amp;&lt;&gt;&quot;&#39;</div>');
+            assert.equal(new Tag().content('&<>"\'').toString(), '<div>&amp;&lt;&gt;&quot;&#39;</div>');
+            assert.equal(new Tag().content([100, true]).toString(), '<div>100true</div>',
+                'не должно быть проблем с любыми типами');
         });
 
         it('При получении строкового представления значение атрибута по умолчанию экранируется', function() {
-            assert.deepEqual(new Tag().attr('src', '&<>"\'').toString(), '<div src="&amp;&lt;&gt;&quot;&#39;"></div>');
+            assert.equal(new Tag().attr('src', '&<>"\'').toString(), '<div src="&amp;&lt;&gt;&quot;&#39;"></div>');
+            assert.equal(new Tag().attr({ a: 100, b: 20.5 }).toString(), '<div a="100" b="20.5"></div>',
+                'не должно быть проблем с любыми типами');
         });
 
         it('Получить строковое представление атрибута со сложным значением', function() {
