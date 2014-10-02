@@ -208,6 +208,16 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     '</div>');
             });
 
+            it('Много вложенных массивов в содержимом', function() {
+                var tree = new Tree({ block: 'name' },
+                    new Pool().add(new Template('name', {
+                        content: [1, [2, [[3, 4], 5, [6, 7, [8], 9], 0]]]
+                    }))
+                );
+
+                assert.equal(tree.toString(), '<div class="name">1234567890</div>');
+            });
+
             it('Пять вложенных друг в друга блока', function() {
                 var tree = new Tree({ block: 'a', content: [
                         { block: 'b' },

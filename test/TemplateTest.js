@@ -195,17 +195,6 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                 );
             });
 
-            it('Вложенный массив в содержимом', function() {
-                assert.equal(new Template('name', {
-                    content: [
-                        '>раз<',
-                        ['&"два"']
-                    ]
-                }).match({ block: 'name' }).toString(),
-                    '<div class="name">&gt;раз&lt;&amp;&quot;два&quot;</div>'
-                );
-            });
-
             it('Массив в содержимом шаблона и BEMJSON', function() {
                 assert.equal(new Template('name', {
                     content: [

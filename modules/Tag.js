@@ -291,33 +291,15 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
                 tag.push(options.closeSingleTag ? '/>' : '>');
             } else {
                 tag.push('>');
-                tag = tag.concat(options.autoEscape ? this._escapeContent(this.content()) : this.content());
+                tag = tag.concat(options.autoEscape
+                    ? this.content().map(function(chunk) {
+                        return is.string(chunk) ? string.htmlEscape(chunk) : chunk;
+                    })
+                    : this.content());
                 tag.push('</' + name + '>');
             }
 
             return tag.join('');
-        },
-
-        /**
-         * Заэкранировать содержимое узла.
-         *
-         * @private
-         * @param {*} content Содержимое
-         * @returns {*}
-         */
-        _escapeContent: function(content) {
-
-            if(is.string(content)) {
-                return string.htmlEscape(content);
-            }
-
-            if(is.array(content)) {
-                return content.map(function(item) {
-                    return this._escapeContent(item);
-                }, this);
-            }
-
-            return content;
         }
 
     };
