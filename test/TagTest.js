@@ -161,20 +161,28 @@ definer('TagTest', function(assert, Tag) {
 
                 it('Содержимое', function() {
                     var tag = new Tag().content('&<>"\'');
-                    assert.equal(tag.toString({ autoEscape: false }), '<div>&<>"\'</div>');
+                    assert.equal(tag.toString({ escapeContent: false }), '<div>&<>"\'</div>');
                     assert.equal(tag.toString(), '<div>&amp;&lt;&gt;&quot;&#39;</div>');
                 });
 
                 it('Атрибут', function() {
                     var tag = new Tag().attr('src', '<>');
-                    assert.equal(tag.toString({ autoEscape: false }), '<div src="<>"></div>');
+                    assert.equal(tag.toString({ escapeAttr: false }), '<div src="<>"></div>');
                     assert.equal(tag.toString(), '<div src="&lt;&gt;"></div>');
+                });
+
+                it('Содержимое и атрибут', function() {
+                    var tag = new Tag().attr('src', '<').content('&');
+                    assert.equal(tag.toString({ escapeContent: false, escapeAttr: false }), '<div src="<">&</div>');
+                    assert.equal(tag.toString({ escapeContent: true, escapeAttr: false }), '<div src="<">&amp;</div>');
+                    assert.equal(tag.toString({ escapeContent: false, escapeAttr: true }), '<div src="&lt;">&</div>');
+                    assert.equal(tag.toString(), '<div src="&lt;">&amp;</div>');
                 });
 
                 it('Сложный атрибут всегда экранируется', function() {
                     assert.equal(new Tag()
                         .attr('data-bem', { myblock: { a: true, b: 200 }})
-                        .toString({ autoEscape: false }),
+                        .toString({ escapeAttr: false }),
                         '<div data-bem="{&quot;myblock&quot;:{&quot;a&quot;:true,&quot;b&quot;:200}}"></div>'
                     );
                 });

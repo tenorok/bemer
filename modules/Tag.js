@@ -71,12 +71,18 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
     Tag.closeSingleTag = false;
 
     /**
-     * Флаг автоматического экранирования
-     * содержимого тега и значений атрибутов.
+     * Флаг экранирования содержимого тега.
      *
      * @type {boolean}
      */
-    Tag.autoEscape = true;
+    Tag.escapeContent = true;
+
+    /**
+     * Флаг экранирования значений атрибутов.
+     *
+     * @type {boolean}
+     */
+    Tag.escapeAttr = true;
 
     /**
      * Список одиночных HTML-тегов.
@@ -247,10 +253,11 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
          * Получить строковое представление тега.
          *
          * @param {object} [options] Опции
-         * @param {string} [options.defaultName] Имя тега по умолчанию
-         * @param {string} [options.repeatBooleanAttr] Флаг автоповтора булева атрибута
-         * @param {string} [options.closeSingleTag] Флаг закрытия одиночного тега
-         * @param {string} [options.autoEscape] Флаг автоматического экранирования
+         * @param {string} [options.defaultName=div] Имя тега по умолчанию
+         * @param {string} [options.repeatBooleanAttr=false] Флаг автоповтора булева атрибута
+         * @param {string} [options.closeSingleTag=false] Флаг закрытия одиночного тега
+         * @param {string} [options.escapeContent=true] Флаг экранирования содержимого тега
+         * @param {string} [options.escapeAttr=true] Флаг экранирования значений атрибутов
          * @returns {string}
          */
         toString: function(options) {
@@ -260,7 +267,8 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
                 defaultName: Tag.defaultName,
                 repeatBooleanAttr: Tag.repeatBooleanAttr,
                 closeSingleTag: Tag.closeSingleTag,
-                autoEscape: Tag.autoEscape
+                escapeContent: Tag.escapeContent,
+                escapeAttr: Tag.escapeAttr
             }, options || {});
 
             var name = this._name === true ? options.defaultName : this._name,
@@ -279,7 +287,7 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
 
                     if(is.array(val) || is.map(val)) {
                         val = string.htmlEscape(JSON.stringify(val));
-                    } else if(options.autoEscape && is.string(val)) {
+                    } else if(options.escapeAttr && is.string(val)) {
                         val = string.htmlEscape(val);
                     }
 
@@ -291,7 +299,7 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
                 tag.push(options.closeSingleTag ? '/>' : '>');
             } else {
                 tag.push('>');
-                tag = tag.concat(options.autoEscape
+                tag = tag.concat(options.escapeContent
                     ? this.content().map(function(chunk) {
                         return is.string(chunk) ? string.htmlEscape(chunk) : chunk;
                     })
