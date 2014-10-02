@@ -25,7 +25,7 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>definer('Tag', /** @exports Tag */ function(string, is) {
+            <pre class="prettyprint source linenums"><code>definer('Tag', /** @exports Tag */ function(string, object, is) {
 
     /**
      * Модуль работы с тегом.
@@ -41,7 +41,7 @@
          * @private
          * @type {string|boolean}
          */
-        this._name = typeof name === 'string' || name === false ? name : Tag.defaultName;
+        this._name = is.string(name) || name === false ? name : true;
 
         /**
          * Список классов тега.
@@ -98,6 +98,20 @@
     Tag.closeSingleTag = false;
 
     /**
+     * Флаг экранирования содержимого тега.
+     *
+     * @type {boolean}
+     */
+    Tag.escapeContent = true;
+
+    /**
+     * Флаг экранирования значений атрибутов.
+     *
+     * @type {boolean}
+     */
+    Tag.escapeAttr = true;
+
+    /**
      * Список одиночных HTML-тегов.
      *
      * @type {String[]}
@@ -118,9 +132,9 @@
          * @returns {string|boolean|Tag}
          */
         name: function(name) {
-            if(name === undefined) return this._name;
+            if(name === undefined) return this._name === true ? Tag.defaultName : this._name;
 
-            this._name = typeof name === 'string' || name === false ? name : Tag.defaultName;
+            this._name = is.string(name) || name === false ? name : true;
             return this;
         },
 
@@ -176,14 +190,14 @@
         /**
          * Проверить/установить одиночный тег.
          *
-         * @param {boolean} [state] Флаг одиночного тега
+         * @param {boolean|string} [state] Флаг одиночного тега или имя тега для проверки
          * @returns {boolean|Tag}
          */
         single: function(state) {
-            if(state === undefined) {
+            if(state === undefined || is.string(state)) {
                 return this._single !== undefined
                     ? this._single
-                    : !!~Tag.singleTags.indexOf(this._name);
+                    : !!~Tag.singleTags.indexOf(state || this._name);
             }
 
             this._single = state;
@@ -209,16 +223,12 @@
             if(!arguments.length) return this._attr;
 
             if(is.map(name)) {
-                Object.keys(name).forEach(function(attr) {
-                    this.attr(attr, name[attr]);
+                object.each(name, function(key, val) {
+                    this.attr(key, val);
                 }, this);
                 return this;
             } else if(val === undefined) {
                 return this._attr[name];
-            }
-
-            if(is.array(val) || is.map(val)) {
-                val = string.htmlEscape(JSON.stringify(val));
             }
 
             if(val === false) {
@@ -269,12 +279,27 @@
         /**
          * Получить строковое представление тега.
          *
+         * @param {object} [options] Опции
+         * @param {string} [options.defaultName=div] Имя тега по умолчанию
+         * @param {string} [options.repeatBooleanAttr=false] Флаг автоповтора булева атрибута
+         * @param {string} [options.closeSingleTag=false] Флаг закрытия одиночного тега
+         * @param {string} [options.escapeContent=true] Флаг экранирования содержимого тега
+         * @param {string} [options.escapeAttr=true] Флаг экранирования значений атрибутов
          * @returns {string}
          */
-        toString: function() {
+        toString: function(options) {
             if(this.name() === false) return this.content().join('');
 
-            var tag = ['&lt;' + this.name()],
+            options = object.extend({
+                defaultName: Tag.defaultName,
+                repeatBooleanAttr: Tag.repeatBooleanAttr,
+                closeSingleTag: Tag.closeSingleTag,
+                escapeContent: Tag.escapeContent,
+                escapeAttr: Tag.escapeAttr
+            }, options || {});
+
+            var name = this._name === true ? options.defaultName : this._name,
+                tag = ['&lt;' + name],
                 classes = this.getClass(),
                 attrs = this.attr();
 
@@ -282,18 +307,31 @@
                 tag.push(' class="' + classes.join(' ') + '"');
             }
 
-            Object.keys(attrs).forEach(function(attr) {
-                attrs[attr] === true
-                    ? tag.push(' ' + attr + (Tag.repeatBooleanAttr ? '="' + attr + '"' : ''))
-                    : tag.push(' ' + attr + '="' + attrs[attr] + '"');
-            }, this);
+            object.each(attrs, function(key, val) {
+                if(val === true) {
+                    tag.push(' ' + key + (options.repeatBooleanAttr ? '="' + key + '"' : ''))
+                } else {
 
-            if(this.single()) {
-                tag.push(Tag.closeSingleTag ? '/>' : '>');
+                    if(is.array(val) || is.map(val)) {
+                        val = string.htmlEscape(JSON.stringify(val));
+                    } else if(options.escapeAttr &amp;&amp; is.string(val)) {
+                        val = string.htmlEscape(val);
+                    }
+
+                    tag.push(' ' + key + '="' + val + '"');
+                }
+            });
+
+            if(this.single(name)) {
+                tag.push(options.closeSingleTag ? '/>' : '>');
             } else {
                 tag.push('>');
-                tag = tag.concat(this.content());
-                tag.push('&lt;/' + this.name() + '>');
+                tag = tag.concat(options.escapeContent
+                    ? this.content().map(function(chunk) {
+                        return is.string(chunk) ? string.htmlEscape(chunk) : chunk;
+                    })
+                    : this.content());
+                tag.push('&lt;/' + name + '>');
             }
 
             return tag.join('');
@@ -320,7 +358,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha8</a> on Tue Sep 09 2014 13:19:35 GMT+0400 (MSK)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha8</a> on Thu Oct 02 2014 15:26:22 GMT+0400 (MSK)
 </footer>
 
 <script> prettyPrint(); </script>
