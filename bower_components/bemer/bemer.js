@@ -174,8 +174,8 @@ defineAsGlobal && (global.inherit = inherit);
  * @file Template engine. BEMJSON to HTML processor.
  * @copyright 2014 Artem Kurbatov, tenorok.ru
  * @license MIT license
- * @version 0.6.1
- * @date 9 September 2014
+ * @version 0.6.2
+ * @date 2 October 2014
  */
 (function(global, undefined) {
 var definer = {
@@ -400,8 +400,9 @@ is = (function () {
                 }
             }
 
-            var last;
-            for(var i in this) { last = i; }
+            var keys = Object.keys(this),
+                last = keys[keys.length - 1];
+
             return is.undefined(last) || this.hasOwnProperty(last);
         });
     };
@@ -440,20 +441,19 @@ is = (function () {
      * @returns {string}
      */
     is.type = function(subject) {
-        var args = arguments,
-            firstType;
+        var firstType,
+            types = ['string', 'number', 'nan', 'boolean', 'null', 'undefined', 'array',
+                'argument', 'native', 'function', 'map', 'date', 'regexp'];
 
-        ['string', 'number', 'nan', 'boolean', 'null', 'undefined', 'array',
-         'argument', 'native', 'function', 'map', 'date', 'regexp'].some(function(type) {
-            if(is[type](args[0])) {
+        for(var i = 0, len = types.length; i < len; i++) {
+            var type = types[i];
+            if(is[type](arguments[0])) {
                 firstType = type;
-                return true;
-            } else {
-                return false;
+                break;
             }
-        });
+        }
 
-        return is._every(args, function(that) {
+        return is._every(arguments, function(that) {
             return is[firstType](that);
         }) ? firstType : 'mixed';
     };
@@ -491,9 +491,13 @@ is = (function () {
      * @returns {boolean}
      */
     is._every = function(args, callback) {
-        return Object.keys(args).every(function(arg) {
-            return callback.call(args[arg], args[arg]);
-        });
+        for(var i = 0, len = args.length; i < len; i++) {
+            var a = args[i];
+            if(!callback.call(a, a)) {
+                return false;
+            }
+        }
+        return true;
     };
 
     /**
@@ -554,6 +558,29 @@ string = (function (is) {
 
         return string.replace(/["'\n\r\t\u2028\u2029\\]/g, function(match) {
             return '\\' + stringEscapes[match];
+        });
+    };
+
+    /**
+     * Разэкранировать строку текста.
+     *
+     * @param {string} string Строка
+     * @returns {string}
+     */
+    string.unEscape = function(string) {
+        var stringEscapes = {
+            '\\\\': '\\',
+            '\\"': '"',
+            '\\\'': '\'',
+            '\\n': '\n',
+            '\\r': '\r',
+            '\\t': '\t',
+            '\\u2028': '\u2028',
+            '\\u2029': '\u2029'
+        };
+
+        return string.replace(/\\"|\\'|\\n|\\r|\\t|\\u2028|\\u2029|\\\\/g, function(match) {
+            return stringEscapes[match];
         });
     };
 
@@ -621,22 +648,24 @@ string = (function (is) {
      * Перевести строку или заданный символ в верхний регистр.
      *
      * @param {string} string Строка
-     * @param {number} [index] Порядковый номер символа
+     * @param {number} [indexA] Порядковый номер символа
+     * @param {number} [indexB] Порядковый номер символа для указания промежутка
      * @returns {string}
      */
-    string.upper = function(string, index) {
-        return this._changeCase('toUpperCase', string, index);
+    string.upper = function(string, indexA, indexB) {
+        return this._changeCase('toUpperCase', string, indexA, indexB);
     };
 
     /**
      * Перевести строку или заданный символ в нижний регистр.
      *
      * @param {string} string Строка
-     * @param {number} [index] Порядковый номер символа
+     * @param {number} [indexA] Порядковый номер символа
+     * @param {number} [indexB] Порядковый номер символа для указания промежутка
      * @returns {string}
      */
-    string.lower = function(string, index) {
-        return this._changeCase('toLowerCase', string, index);
+    string.lower = function(string, indexA, indexB) {
+        return this._changeCase('toLowerCase', string, indexA, indexB);
     };
 
     /**
@@ -645,16 +674,24 @@ string = (function (is) {
      * @private
      * @param {string} method Имя метода для смены регистра
      * @param {string} string Строка
-     * @param {number} [index] Порядковый номер символа
+     * @param {number} [indexA] Порядковый номер символа
+     * @param {number} [indexB] Порядковый номер символа для указания промежутка
      * @returns {string}
      */
-    string._changeCase = function(method, string, index) {
-        if(is.undefined(index)) {
+    string._changeCase = function(method, string, indexA, indexB) {
+        if(is.undefined(indexA)) {
             return string[method]();
         }
-        return string.slice(0, index) +
-            string.charAt(index)[method]() +
-            string.slice(index + 1);
+
+        if(is.undefined(indexB)) {
+            return string.slice(0, indexA) +
+                string.charAt(indexA)[method]() +
+                string.substring(indexA + 1);
+        }
+
+        return string.slice(0, indexA) +
+            string.substring(indexA, indexB)[method]() +
+            string.substring(indexB);
     };
 
     /**
@@ -727,56 +764,78 @@ object = (function (is) {
     function object() {}
 
     /**
+     * Проверить необходимость использования hasOwnProperty
+     * при переборе свойств объекта.
+     *
+     * @param {object} obj Объект для проверки
+     * @returns {boolean}
+     */
+    object.isNeedHasOwnProperty = function(obj) {
+        for(key in {}) return true;
+        for(var key in Object.getPrototypeOf(obj)) return true;
+        return false;
+    };
+
+    /**
      * Расширить объект.
      *
-     * @param {object} object Расширяемый объект
+     * @param {object} original Расширяемый объект
      * @param {...object} source Расширяющие объекты
      * @returns {object}
      */
-    object.extend = function(object, source) {
-        return [].slice.call(arguments, 1).reduce(function(object, source) {
-            return Object.keys(source).reduce(function(extended, key) {
-                extended[key] = source[key];
-                return extended;
-            }, object);
-        }, object);
+    object.extend = function(original, source) {
+        for(var s = 1, sLen = arguments.length; s < sLen; s++) {
+            var sourceObj = arguments[s],
+                key;
+
+            if(object.isNeedHasOwnProperty(sourceObj)) {
+                for(key in sourceObj) if(object.hasOwnProperty(sourceObj, key)) original[key] = sourceObj[key];
+            } else {
+                for(key in sourceObj) original[key] = sourceObj[key];
+            }
+        }
+        return original;
     };
 
     /**
      * Расширить объект рекурсивно.
      *
-     * @param {object} obj Расширяемый объект
+     * @param {object} original Расширяемый объект
      * @param {...object} source Расширяющие объекты
      * @returns {object}
      */
-    object.deepExtend = function(obj, source) {
-        return [].slice.call(arguments, 1).reduce(function(object, source) {
-            return Object.keys(source).reduce(function(extended, key) {
-                var extendedItem = extended[key],
-                    sourceItem = source[key],
-                    isMapSourceItem = is.map(sourceItem);
+    object.deepExtend = function(original, source) {
+        for(var s = 1, sLen = arguments.length; s < sLen; s++) {
+            object.each(arguments[s], function(key, sourceVal) {
+                var objVal = original[key],
+                    isMapSourceItem = is.map(sourceVal);
 
-                if(is.map(extendedItem) && isMapSourceItem) {
-                    extended[key] = this.deepExtend(extendedItem, sourceItem);
+                if(is.map(objVal) && isMapSourceItem) {
+                    original[key] = object.deepExtend(objVal, sourceVal);
                 } else if(isMapSourceItem) {
-                    extended[key] = object.clone(sourceItem);
+                    original[key] = object.clone(sourceVal);
                 } else {
-                    extended[key] = sourceItem;
+                    original[key] = sourceVal;
                 }
-
-                return extended;
-            }.bind(this), obj);
-        }.bind(this), object);
+            });
+        }
+        return original;
     };
 
     /**
      * Проверить объект на наличие полей.
      *
-     * @param {object} object Объект
+     * @param {object} obj Объект для проверки
      * @returns {boolean}
      */
-    object.isEmpty = function(object) {
-        return !Object.keys(object || {}).length;
+    object.isEmpty = function(obj) {
+        obj = obj || {};
+        var needHasOwnProperty = object.isNeedHasOwnProperty(obj);
+        for(var key in obj) {
+            if(needHasOwnProperty && !obj.hasOwnProperty(key)) continue;
+            return false;
+        }
+        return true;
     };
 
     /**
@@ -797,6 +856,82 @@ object = (function (is) {
      */
     object.deepClone = function(obj) {
         return object.deepExtend({}, obj);
+    };
+
+    /**
+     * Проверить принадлежность свойства
+     * объекту с помощью hasOwnProperty.
+     *
+     * @param {object} obj Объект для проверки
+     * @param {string} property Свойство
+     * @returns {boolean}
+     */
+    object.hasOwnProperty = function(obj, property) {
+        return Object.prototype.hasOwnProperty.call(obj, property);
+    };
+
+    /**
+     * Колбек вызывается для каждого ключа объекта
+     * при переборе методами `each` и `deepEach`.
+     *
+     * @callback object~eachCallback
+     * @param {string} key Ключ
+     * @param {*} val Значение
+     * @returns {undefined|*} При возвращении любого значения, кроме `undefined`,
+     * перебор останавливается и метод `each` возвращает это значение
+     */
+
+    /**
+     * Проитерироваться по ключам объекта.
+     *
+     * @param {object} obj Объект
+     * @param {object~eachCallback} callback Колбек
+     * @param {object} [context=obj] Контекст вызова колбека (По умолчанию: итерируемый объект)
+     * @returns {*}
+     */
+    object.each = function(obj, callback, context) {
+        var key,
+            result;
+
+        if(object.isNeedHasOwnProperty(obj)) {
+            for(key in obj) if(object.hasOwnProperty(obj, key)) {
+                result = callback.call(context || obj, key, obj[key]);
+                if(result !== undefined) return result;
+            }
+        } else {
+            for(key in obj) {
+                result = callback.call(context || obj, key, obj[key]);
+                if(result !== undefined) return result;
+            }
+        }
+    };
+
+    /**
+     * Проитерироваться по ключам объекта рекурсивно.
+     *
+     * @param {object} obj Объект
+     * @param {object~eachCallback} callback Колбек
+     * @param {object} [context=obj] Контекст вызова колбека (По умолчанию: итерируемый объект)
+     * @returns {*}
+     */
+    object.deepEach = function(obj, callback, context) {
+        var key,
+            val,
+            result,
+            deepResult,
+            needHasOwnProperty = object.isNeedHasOwnProperty(obj);
+
+        for(key in obj) {
+            if(needHasOwnProperty && !obj.hasOwnProperty(key)) continue;
+            val = obj[key];
+            if(is.map(val)) {
+                deepResult = object.deepEach(val, callback, context);
+                if(deepResult !== undefined) return deepResult;
+                continue;
+            }
+            result = callback.call(context || obj, key, val);
+            if(result !== undefined) return result;
+        }
     };
 
     return object;
@@ -972,7 +1107,7 @@ Helpers = (function (string, number, object, is) {
 
                 },
                 this._getHelpersFromModule(string, [
-                    'escape', 'htmlEscape', 'unHtmlEscape',
+                    'escape', 'unEscape', 'htmlEscape', 'unHtmlEscape',
                     'collapse', 'stripTags',
                     'upper', 'lower', 'repeat'
                 ]),
@@ -1649,7 +1784,7 @@ Match = (function (Selector, object, is) {
     return Match;
 
 }).call(global, Selector, object, is),
-Tag = (function (string, is) {
+Tag = (function (string, object, is) {
 
     /**
      * Модуль работы с тегом.
@@ -1665,7 +1800,7 @@ Tag = (function (string, is) {
          * @private
          * @type {string|boolean}
          */
-        this._name = typeof name === 'string' || name === false ? name : Tag.defaultName;
+        this._name = is.string(name) || name === false ? name : true;
 
         /**
          * Список классов тега.
@@ -1722,6 +1857,20 @@ Tag = (function (string, is) {
     Tag.closeSingleTag = false;
 
     /**
+     * Флаг экранирования содержимого тега.
+     *
+     * @type {boolean}
+     */
+    Tag.escapeContent = true;
+
+    /**
+     * Флаг экранирования значений атрибутов.
+     *
+     * @type {boolean}
+     */
+    Tag.escapeAttr = true;
+
+    /**
      * Список одиночных HTML-тегов.
      *
      * @type {String[]}
@@ -1742,9 +1891,9 @@ Tag = (function (string, is) {
          * @returns {string|boolean|Tag}
          */
         name: function(name) {
-            if(name === undefined) return this._name;
+            if(name === undefined) return this._name === true ? Tag.defaultName : this._name;
 
-            this._name = typeof name === 'string' || name === false ? name : Tag.defaultName;
+            this._name = is.string(name) || name === false ? name : true;
             return this;
         },
 
@@ -1800,14 +1949,14 @@ Tag = (function (string, is) {
         /**
          * Проверить/установить одиночный тег.
          *
-         * @param {boolean} [state] Флаг одиночного тега
+         * @param {boolean|string} [state] Флаг одиночного тега или имя тега для проверки
          * @returns {boolean|Tag}
          */
         single: function(state) {
-            if(state === undefined) {
+            if(state === undefined || is.string(state)) {
                 return this._single !== undefined
                     ? this._single
-                    : !!~Tag.singleTags.indexOf(this._name);
+                    : !!~Tag.singleTags.indexOf(state || this._name);
             }
 
             this._single = state;
@@ -1833,16 +1982,12 @@ Tag = (function (string, is) {
             if(!arguments.length) return this._attr;
 
             if(is.map(name)) {
-                Object.keys(name).forEach(function(attr) {
-                    this.attr(attr, name[attr]);
+                object.each(name, function(key, val) {
+                    this.attr(key, val);
                 }, this);
                 return this;
             } else if(val === undefined) {
                 return this._attr[name];
-            }
-
-            if(is.array(val) || is.map(val)) {
-                val = string.htmlEscape(JSON.stringify(val));
             }
 
             if(val === false) {
@@ -1893,12 +2038,27 @@ Tag = (function (string, is) {
         /**
          * Получить строковое представление тега.
          *
+         * @param {object} [options] Опции
+         * @param {string} [options.defaultName=div] Имя тега по умолчанию
+         * @param {string} [options.repeatBooleanAttr=false] Флаг автоповтора булева атрибута
+         * @param {string} [options.closeSingleTag=false] Флаг закрытия одиночного тега
+         * @param {string} [options.escapeContent=true] Флаг экранирования содержимого тега
+         * @param {string} [options.escapeAttr=true] Флаг экранирования значений атрибутов
          * @returns {string}
          */
-        toString: function() {
+        toString: function(options) {
             if(this.name() === false) return this.content().join('');
 
-            var tag = ['<' + this.name()],
+            options = object.extend({
+                defaultName: Tag.defaultName,
+                repeatBooleanAttr: Tag.repeatBooleanAttr,
+                closeSingleTag: Tag.closeSingleTag,
+                escapeContent: Tag.escapeContent,
+                escapeAttr: Tag.escapeAttr
+            }, options || {});
+
+            var name = this._name === true ? options.defaultName : this._name,
+                tag = ['<' + name],
                 classes = this.getClass(),
                 attrs = this.attr();
 
@@ -1906,18 +2066,31 @@ Tag = (function (string, is) {
                 tag.push(' class="' + classes.join(' ') + '"');
             }
 
-            Object.keys(attrs).forEach(function(attr) {
-                attrs[attr] === true
-                    ? tag.push(' ' + attr + (Tag.repeatBooleanAttr ? '="' + attr + '"' : ''))
-                    : tag.push(' ' + attr + '="' + attrs[attr] + '"');
-            }, this);
+            object.each(attrs, function(key, val) {
+                if(val === true) {
+                    tag.push(' ' + key + (options.repeatBooleanAttr ? '="' + key + '"' : ''))
+                } else {
 
-            if(this.single()) {
-                tag.push(Tag.closeSingleTag ? '/>' : '>');
+                    if(is.array(val) || is.map(val)) {
+                        val = string.htmlEscape(JSON.stringify(val));
+                    } else if(options.escapeAttr && is.string(val)) {
+                        val = string.htmlEscape(val);
+                    }
+
+                    tag.push(' ' + key + '="' + val + '"');
+                }
+            });
+
+            if(this.single(name)) {
+                tag.push(options.closeSingleTag ? '/>' : '>');
             } else {
                 tag.push('>');
-                tag = tag.concat(this.content());
-                tag.push('</' + this.name() + '>');
+                tag = tag.concat(options.escapeContent
+                    ? this.content().map(function(chunk) {
+                        return is.string(chunk) ? string.htmlEscape(chunk) : chunk;
+                    })
+                    : this.content());
+                tag.push('</' + name + '>');
             }
 
             return tag.join('');
@@ -1927,7 +2100,7 @@ Tag = (function (string, is) {
 
     return Tag;
 
-}).call(global, string, is),
+}).call(global, string, object, is),
 Node = (function (Tag, Selector, object) {
 
     /**
@@ -1981,6 +2154,14 @@ Node = (function (Tag, Selector, object) {
          * @type {object}
          */
         this._params = this.getParams();
+
+        /**
+         * Опции преобразования узла.
+         *
+         * @private
+         * @type {object}
+         */
+        this._options = node.options || {};
     }
 
     /**
@@ -2140,7 +2321,12 @@ Node = (function (Tag, Selector, object) {
                 this._tag.addContent(this._node.content);
             }
 
-            return this._tag.toString();
+            var escape = Node.resolveOptionEscape(this._options.escape);
+
+            return this._tag.toString({
+                escapeContent: escape.content,
+                escapeAttr: escape.attrs
+            });
         },
 
         /**
@@ -2177,6 +2363,38 @@ Node = (function (Tag, Selector, object) {
             return this._getModsClasses('elemMod');
         }
 
+    };
+
+    /**
+     * Разернуть опции экранирования.
+     *
+     * @param {boolean|object} escape Флаг экранирования спецсимволов
+     * @param {boolean} [escape.content] Флаг экранирования содержимого
+     * @param {boolean} [escape.attrs] Флаг экранирования значений атрибутов
+     * @returns {object}
+     */
+    Node.resolveOptionEscape = function(escape) {
+        var content = Tag.escapeContent,
+            attrs = Tag.escapeAttr;
+
+        if(escape !== undefined) {
+            if(is.boolean(escape)) {
+                content = escape;
+                attrs = escape;
+            } else {
+                if(is.boolean(escape.content)) {
+                    content = escape.content;
+                }
+                if(is.boolean(escape.attrs)) {
+                    attrs = escape.attrs;
+                }
+            }
+        }
+
+        return {
+            content: content,
+            attrs: attrs
+        };
     };
 
     return Node;
@@ -2341,16 +2559,14 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
     }
 
     /**
-     * Получить БЭМ-узел на основе BEMJSON по базому шаблону.
+     * Получить БЭМ-узел на основе BEMJSON по базовому шаблону.
      *
      * @param {object} bemjson Входящий BEMJSON
      * @param {object} [data] Данные по сущности в дереве
      * @returns {Node}
      */
     Template.base = function(bemjson, data) {
-        return new Template(
-            new Node(bemjson).isBlock() ? '*' : '*' + Selector.delimiters.elem + '*', {}
-        ).transform(bemjson, data);
+        return Template.baseTemplate.transform(bemjson, data);
     };
 
     Template.prototype = {
@@ -2383,9 +2599,10 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
         transform: function(bemjson, data) {
             var modes = new this.Modes(bemjson, data);
 
-            Object.keys(this._getDefaultModes()).forEach(function(mode) {
+            for(var i = 0, len = Template._defaultModesNames.length; i < len; i++) {
+                var mode = Template._defaultModesNames[i];
                 bemjson[mode] = this._getMode(modes, bemjson, mode);
-            }, this);
+            }
 
             return new Node(bemjson);
         },
@@ -2443,8 +2660,8 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
             if(is.string(nameOrList)) {
                 this._helpers.add(nameOrList, callback);
             } else {
-                Object.keys(nameOrList).forEach(function(name) {
-                    this._helpers.add(name, nameOrList[name]);
+                object.each(nameOrList, function(name, callback) {
+                    this._helpers.add(name, callback);
                 }, this);
             }
 
@@ -2475,9 +2692,6 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
         /**
          * Получить стандартные моды.
          *
-         * Если среди селекторов шаблона присутствует хотя бы
-         * один блок, то будут отданы стандартные моды для блоков.
-         *
          * @private
          * @returns {object}
          */
@@ -2492,7 +2706,8 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
                 tag: true,
                 single: undefined,
                 cls: '',
-                content: ''
+                content: '',
+                options: {}
             };
         },
 
@@ -2522,33 +2737,7 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
                 }
             }
 
-            if(name === 'content') {
-                return this._escapeContent(priorityVal);
-            }
-
             return priorityVal;
-        },
-
-        /**
-         * Заэкранировать содержимое узла.
-         *
-         * @private
-         * @param {*} content Содержимое
-         * @returns {*}
-         */
-        _escapeContent: function(content) {
-
-            if(is.string(content)) {
-                return string.htmlEscape(content);
-            }
-
-            if(is.array(content)) {
-                return content.map(function(item) {
-                    return this._escapeContent(item);
-                }, this);
-            }
-
-            return content;
         },
 
         /**
@@ -2569,6 +2758,21 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
         }
 
     };
+
+    /**
+     * Базовый шаблон.
+     *
+     * @type {Template}
+     */
+    Template.baseTemplate = new Template('', {});
+
+    /**
+     * Список имён стандартных мод.
+     *
+     * @private
+     * @type {array}
+     */
+    Template._defaultModesNames = Object.keys(Template.baseTemplate._getDefaultModes());
 
     return Template;
 
@@ -2631,46 +2835,37 @@ Tree = (function (Template, is, object) {
         },
 
         /**
-         * Получить узел или примитив
-         * или список узлов и примитивов
-         * на основе контента.
+         * Получить список узлов и примитивов
+         * на основе массива контента.
          *
          * @private
-         * @param {*} bemjson BEMJSON, массив или примитив
+         * @param {array} bemjson Массив
          * @param {object} data Данные по сущности в дереве
          * @param {object} [data.context] Информация о родительском контексте (если родитель — блок)
          * @param {object} [data.context.block] Имя родительского блока
          * @param {object} [data.context.mods] Модификаторы родительского блока
-         * @returns {*}
+         * @returns {array}
          */
-        _getContent: function(bemjson, data) {
-
-            if(is.array(bemjson)) {
-                return bemjson.reduce(function(list, elem, index) {
-                    var elemData = {
+        _getContentList: function(bemjson, data) {
+            var list = [];
+            for(var index = 0, len = bemjson.length; index < len; index++) {
+                var elem = bemjson[index],
+                    elemData = {
                         index: index,
                         length: bemjson.length
                     };
 
-                    if(elem && elem.elem) {
-                        elemData.context = data.context;
-                    }
+                if(elem && elem.elem) {
+                    elemData.context = data.context;
+                }
 
-                    var node = is.array(elem)
-                        ? this._getContent(elem, data)
-                        : this._getNode(elem, elemData);
+                var node = is.array(elem)
+                    ? this._getContentList(elem, data)
+                    : this._getNode(elem, elemData);
 
-                    if(is.array(node)) {
-                        list = list.concat(node);
-                    } else {
-                        list.push(node);
-                    }
-
-                    return list;
-                }.bind(this), []);
+                list = list.concat(node);
             }
-
-            return this._getNode(bemjson, data);
+            return list;
         },
 
         /**
@@ -2688,31 +2883,29 @@ Tree = (function (Template, is, object) {
          * @returns {Node|*}
          */
         _getNode: function(bemjson, data) {
+            if(!is.map(bemjson)) return bemjson;
 
-            if(is.map(bemjson)) {
+            data = data || {};
 
-                if(bemjson.elem && !bemjson.block && data.context.block) {
-                    bemjson.block = data.context.block;
-                    if(data.context.mods) {
-                        bemjson.mods = object.extend(bemjson.mods || {}, data.context.mods);
-                    }
+            if(bemjson.elem && !bemjson.block && data.context.block) {
+                bemjson.block = data.context.block;
+                if(data.context.mods) {
+                    bemjson.mods = object.extend(data.context.mods, bemjson.mods || {});
                 }
-
-                var node = this._pool.find(bemjson, data) || Template.base(bemjson, data),
-                    data = {};
-
-                if(bemjson.block) {
-                    data.context = { block: bemjson.block };
-                    if(bemjson.mods) {
-                        data.context.mods = bemjson.mods;
-                    }
-                }
-
-                node.content(this._getContent(bemjson.content, data));
-                return node;
             }
 
-            return bemjson;
+            var node = this._pool.find(bemjson, data) || Template.base(bemjson, data);
+
+            if(bemjson.block) {
+                data.context = { block: bemjson.block };
+                if(bemjson.mods) {
+                    data.context.mods = object.clone(bemjson.mods);
+                }
+            }
+
+            return node.content(this[
+                is.array(bemjson.content) ? '_getContentList' : '_getNode'
+            ](bemjson.content, data));
         }
 
     };
@@ -2783,7 +2976,7 @@ modules = (function (Tag, Selector, Node, Match) {
 
 }).call(global, Tag, Selector, Node, Match),
 bemer = definer.export("bemer", (function (
-    Tag, Tree, Template, Pool, functions, Selector, Node, object, Helpers, modules
+    Tag, Tree, Template, Pool, Selector, Node, Helpers, functions, object, is, modules
 ) {
 
     /**
@@ -2867,6 +3060,10 @@ bemer = definer.export("bemer", (function (
             repeatBooleanAttr: Tag.repeatBooleanAttr,
             closeSingleTag: Tag.closeSingleTag
         },
+        escape: {
+            content: Tag.escapeContent,
+            attr: Tag.escapeAttr
+        },
         tag: Tag.defaultName,
         bemClass: Node.bemClass,
         bemAttr: Node.bemAttr,
@@ -2888,6 +3085,10 @@ bemer = definer.export("bemer", (function (
      * @param {boolean} [config.xhtml.repeatBooleanAttr=false] Флаг автоповтора булева атрибута
      * @param {boolean} [config.xhtml.closeSingleTag=false] Флаг закрытия одиночного тега
      *
+     * @param {boolean|object} [config.escape=true] Флаг экранирования спецсимволов
+     * @param {boolean} [config.escape.content=true] Флаг экранирования содержимого
+     * @param {boolean} [config.escape.attr=true] Флаг экранирования значений атрибутов
+     *
      * @param {string} [config.tag=div] Стандартное имя тега
      * @param {string} [config.bemClass=i-bem] Имя класса для js-инициализации
      * @param {string} [config.bemAttr=data-bem] Имя атрибута для хранения параметров инициализации
@@ -2904,18 +3105,22 @@ bemer = definer.export("bemer", (function (
         }
 
         if(config.xhtml !== undefined) {
-            if(typeof config.xhtml === 'boolean') {
+            if(is.boolean(config.xhtml)) {
                 Tag.repeatBooleanAttr = config.xhtml;
                 Tag.closeSingleTag = config.xhtml;
             } else {
-                if(typeof config.xhtml.repeatBooleanAttr === 'boolean') {
+                if(is.boolean(config.xhtml.repeatBooleanAttr)) {
                     Tag.repeatBooleanAttr = config.xhtml.repeatBooleanAttr;
                 }
-                if(typeof config.xhtml.closeSingleTag === 'boolean') {
+                if(is.boolean(config.xhtml.closeSingleTag)) {
                     Tag.closeSingleTag = config.xhtml.closeSingleTag;
                 }
             }
         }
+
+        var escape = Node.resolveOptionEscape(config.escape);
+        Tag.escapeContent = escape.content;
+        Tag.escapeAttr = escape.attrs;
 
         if(config.tag) {
             Tag.defaultName = config.tag;
@@ -2948,7 +3153,7 @@ bemer = definer.export("bemer", (function (
 
     return bemer;
 
-}).call(global, Tag, Tree, Template, Pool, functions, Selector, Node, object, Helpers, modules)),
+}).call(global, Tag, Tree, Template, Pool, Selector, Node, Helpers, functions, object, is, modules)),
 molotok = definer.export("molotok", (function (
         is, string, number, object, functions
     ) {

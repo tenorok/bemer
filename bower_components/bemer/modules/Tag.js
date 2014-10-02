@@ -1,4 +1,4 @@
-definer('Tag', /** @exports Tag */ function(string, is) {
+definer('Tag', /** @exports Tag */ function(string, object, is) {
 
     /**
      * Модуль работы с тегом.
@@ -14,7 +14,7 @@ definer('Tag', /** @exports Tag */ function(string, is) {
          * @private
          * @type {string|boolean}
          */
-        this._name = typeof name === 'string' || name === false ? name : Tag.defaultName;
+        this._name = is.string(name) || name === false ? name : true;
 
         /**
          * Список классов тега.
@@ -71,6 +71,20 @@ definer('Tag', /** @exports Tag */ function(string, is) {
     Tag.closeSingleTag = false;
 
     /**
+     * Флаг экранирования содержимого тега.
+     *
+     * @type {boolean}
+     */
+    Tag.escapeContent = true;
+
+    /**
+     * Флаг экранирования значений атрибутов.
+     *
+     * @type {boolean}
+     */
+    Tag.escapeAttr = true;
+
+    /**
      * Список одиночных HTML-тегов.
      *
      * @type {String[]}
@@ -91,9 +105,9 @@ definer('Tag', /** @exports Tag */ function(string, is) {
          * @returns {string|boolean|Tag}
          */
         name: function(name) {
-            if(name === undefined) return this._name;
+            if(name === undefined) return this._name === true ? Tag.defaultName : this._name;
 
-            this._name = typeof name === 'string' || name === false ? name : Tag.defaultName;
+            this._name = is.string(name) || name === false ? name : true;
             return this;
         },
 
@@ -149,14 +163,14 @@ definer('Tag', /** @exports Tag */ function(string, is) {
         /**
          * Проверить/установить одиночный тег.
          *
-         * @param {boolean} [state] Флаг одиночного тега
+         * @param {boolean|string} [state] Флаг одиночного тега или имя тега для проверки
          * @returns {boolean|Tag}
          */
         single: function(state) {
-            if(state === undefined) {
+            if(state === undefined || is.string(state)) {
                 return this._single !== undefined
                     ? this._single
-                    : !!~Tag.singleTags.indexOf(this._name);
+                    : !!~Tag.singleTags.indexOf(state || this._name);
             }
 
             this._single = state;
@@ -182,16 +196,12 @@ definer('Tag', /** @exports Tag */ function(string, is) {
             if(!arguments.length) return this._attr;
 
             if(is.map(name)) {
-                Object.keys(name).forEach(function(attr) {
-                    this.attr(attr, name[attr]);
+                object.each(name, function(key, val) {
+                    this.attr(key, val);
                 }, this);
                 return this;
             } else if(val === undefined) {
                 return this._attr[name];
-            }
-
-            if(is.array(val) || is.map(val)) {
-                val = string.htmlEscape(JSON.stringify(val));
             }
 
             if(val === false) {
@@ -242,12 +252,27 @@ definer('Tag', /** @exports Tag */ function(string, is) {
         /**
          * Получить строковое представление тега.
          *
+         * @param {object} [options] Опции
+         * @param {string} [options.defaultName=div] Имя тега по умолчанию
+         * @param {string} [options.repeatBooleanAttr=false] Флаг автоповтора булева атрибута
+         * @param {string} [options.closeSingleTag=false] Флаг закрытия одиночного тега
+         * @param {string} [options.escapeContent=true] Флаг экранирования содержимого тега
+         * @param {string} [options.escapeAttr=true] Флаг экранирования значений атрибутов
          * @returns {string}
          */
-        toString: function() {
+        toString: function(options) {
             if(this.name() === false) return this.content().join('');
 
-            var tag = ['<' + this.name()],
+            options = object.extend({
+                defaultName: Tag.defaultName,
+                repeatBooleanAttr: Tag.repeatBooleanAttr,
+                closeSingleTag: Tag.closeSingleTag,
+                escapeContent: Tag.escapeContent,
+                escapeAttr: Tag.escapeAttr
+            }, options || {});
+
+            var name = this._name === true ? options.defaultName : this._name,
+                tag = ['<' + name],
                 classes = this.getClass(),
                 attrs = this.attr();
 
@@ -255,18 +280,31 @@ definer('Tag', /** @exports Tag */ function(string, is) {
                 tag.push(' class="' + classes.join(' ') + '"');
             }
 
-            Object.keys(attrs).forEach(function(attr) {
-                attrs[attr] === true
-                    ? tag.push(' ' + attr + (Tag.repeatBooleanAttr ? '="' + attr + '"' : ''))
-                    : tag.push(' ' + attr + '="' + attrs[attr] + '"');
-            }, this);
+            object.each(attrs, function(key, val) {
+                if(val === true) {
+                    tag.push(' ' + key + (options.repeatBooleanAttr ? '="' + key + '"' : ''))
+                } else {
 
-            if(this.single()) {
-                tag.push(Tag.closeSingleTag ? '/>' : '>');
+                    if(is.array(val) || is.map(val)) {
+                        val = string.htmlEscape(JSON.stringify(val));
+                    } else if(options.escapeAttr && is.string(val)) {
+                        val = string.htmlEscape(val);
+                    }
+
+                    tag.push(' ' + key + '="' + val + '"');
+                }
+            });
+
+            if(this.single(name)) {
+                tag.push(options.closeSingleTag ? '/>' : '>');
             } else {
                 tag.push('>');
-                tag = tag.concat(this.content());
-                tag.push('</' + this.name() + '>');
+                tag = tag.concat(options.escapeContent
+                    ? this.content().map(function(chunk) {
+                        return is.string(chunk) ? string.htmlEscape(chunk) : chunk;
+                    })
+                    : this.content());
+                tag.push('</' + name + '>');
             }
 
             return tag.join('');

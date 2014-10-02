@@ -54,16 +54,14 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
     }
 
     /**
-     * Получить БЭМ-узел на основе BEMJSON по базому шаблону.
+     * Получить БЭМ-узел на основе BEMJSON по базовому шаблону.
      *
      * @param {object} bemjson Входящий BEMJSON
      * @param {object} [data] Данные по сущности в дереве
      * @returns {Node}
      */
     Template.base = function(bemjson, data) {
-        return new Template(
-            new Node(bemjson).isBlock() ? '*' : '*' + Selector.delimiters.elem + '*', {}
-        ).transform(bemjson, data);
+        return Template.baseTemplate.transform(bemjson, data);
     };
 
     Template.prototype = {
@@ -96,9 +94,10 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
         transform: function(bemjson, data) {
             var modes = new this.Modes(bemjson, data);
 
-            Object.keys(this._getDefaultModes()).forEach(function(mode) {
+            for(var i = 0, len = Template._defaultModesNames.length; i < len; i++) {
+                var mode = Template._defaultModesNames[i];
                 bemjson[mode] = this._getMode(modes, bemjson, mode);
-            }, this);
+            }
 
             return new Node(bemjson);
         },
@@ -156,8 +155,8 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
             if(is.string(nameOrList)) {
                 this._helpers.add(nameOrList, callback);
             } else {
-                Object.keys(nameOrList).forEach(function(name) {
-                    this._helpers.add(name, nameOrList[name]);
+                object.each(nameOrList, function(name, callback) {
+                    this._helpers.add(name, callback);
                 }, this);
             }
 
@@ -188,9 +187,6 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
         /**
          * Получить стандартные моды.
          *
-         * Если среди селекторов шаблона присутствует хотя бы
-         * один блок, то будут отданы стандартные моды для блоков.
-         *
          * @private
          * @returns {object}
          */
@@ -205,7 +201,8 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
                 tag: true,
                 single: undefined,
                 cls: '',
-                content: ''
+                content: '',
+                options: {}
             };
         },
 
@@ -235,33 +232,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
                 }
             }
 
-            if(name === 'content') {
-                return this._escapeContent(priorityVal);
-            }
-
             return priorityVal;
-        },
-
-        /**
-         * Заэкранировать содержимое узла.
-         *
-         * @private
-         * @param {*} content Содержимое
-         * @returns {*}
-         */
-        _escapeContent: function(content) {
-
-            if(is.string(content)) {
-                return string.htmlEscape(content);
-            }
-
-            if(is.array(content)) {
-                return content.map(function(item) {
-                    return this._escapeContent(item);
-                }, this);
-            }
-
-            return content;
         },
 
         /**
@@ -282,6 +253,21 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
         }
 
     };
+
+    /**
+     * Базовый шаблон.
+     *
+     * @type {Template}
+     */
+    Template.baseTemplate = new Template('', {});
+
+    /**
+     * Список имён стандартных мод.
+     *
+     * @private
+     * @type {array}
+     */
+    Template._defaultModesNames = Object.keys(Template.baseTemplate._getDefaultModes());
 
     return Template;
 
