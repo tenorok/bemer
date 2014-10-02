@@ -141,19 +141,9 @@ definer.export('bemer', /** @exports bemer */ function(
             }
         }
 
-        if(config.escape !== undefined) {
-            if(is.boolean(config.escape)) {
-                Tag.escapeContent = config.escape;
-                Tag.escapeAttr = config.escape;
-            } else {
-                if(is.boolean(config.escape.content)) {
-                    Tag.escapeContent = config.escape.content;
-                }
-                if(is.boolean(config.escape.attr)) {
-                    Tag.escapeAttr = config.escape.attr;
-                }
-            }
-        }
+        var escape = Node.resolveOptionEscape(config.escape);
+        Tag.escapeContent = escape.content;
+        Tag.escapeAttr = escape.attr;
 
         if(config.tag) {
             Tag.defaultName = config.tag;
