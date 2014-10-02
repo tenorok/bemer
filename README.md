@@ -801,6 +801,9 @@ bemer({ block: 'text' });
   * `{boolean|object}` `[config.xhtml=false]` — флаг формирования тегов в формате XHTML
     * `{boolean}` `[config.xhtml.repeatBooleanAttr=false]` — флаг автоповтора булева атрибута
     * `{boolean}` `[config.xhtml.closeSingleTag=false]` — флаг закрытия одиночного тега
+  * `{boolean|object}` `[config.escape=true]` — флаг экранирования спецсимволов
+    * `{boolean}` `[config.escape.content=true]` — флаг экранирования содержимого
+    * `{boolean}` `[config.escape.attr=true]` — флаг экранирования значений атрибутов
   * `{string}` `[config.tag=div]` — стандартное имя тега
   * `{string}` `[config.bemClass=i-bem]` — имя класса для js-инициализации
   * `{string}` `[config.bemAttr=data-bem]` — имя атрибута для хранения параметров инициализации
