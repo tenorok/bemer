@@ -222,7 +222,7 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
 
             return this._tag.toString({
                 escapeContent: escape.content,
-                escapeAttr: escape.attr
+                escapeAttr: escape.attrs
             });
         },
 
@@ -267,30 +267,30 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
      *
      * @param {boolean|object} escape Флаг экранирования спецсимволов
      * @param {boolean} [escape.content] Флаг экранирования содержимого
-     * @param {boolean} [escape.attr] Флаг экранирования значений атрибутов
+     * @param {boolean} [escape.attrs] Флаг экранирования значений атрибутов
      * @returns {object}
      */
     Node.resolveOptionEscape = function(escape) {
         var content = Tag.escapeContent,
-            attr = Tag.escapeAttr;
+            attrs = Tag.escapeAttr;
 
         if(escape !== undefined) {
             if(is.boolean(escape)) {
                 content = escape;
-                attr = escape;
+                attrs = escape;
             } else {
                 if(is.boolean(escape.content)) {
                     content = escape.content;
                 }
-                if(is.boolean(escape.attr)) {
-                    attr = escape.attr;
+                if(is.boolean(escape.attrs)) {
+                    attrs = escape.attrs;
                 }
             }
         }
 
         return {
             content: content,
-            attr: attr
+            attrs: attrs
         };
     };
 

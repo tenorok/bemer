@@ -340,7 +340,7 @@ definer('NodeTest', function(assert, Node) {
                     block: 'name',
                     attrs: { a: '&' },
                     content: '&',
-                    options: { escape: { attr: false }}
+                    options: { escape: { attrs: false }}
                 }).toString(),
                     '<div class="name" a="&">&amp;</div>'
                 );

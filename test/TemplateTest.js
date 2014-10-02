@@ -274,7 +274,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
 
             it('Изменение настроек экранирования через наследование', function() {
                 assert.equal(new Template('parent', { options: { escape: false }})
-                    .extend(new Template('child', { options: { escape: { content: true, attr: false }}}))
+                    .extend(new Template('child', { options: { escape: { content: true, attrs: false }}}))
                     .match({ block: 'child', attrs: { a: '&' }, content: '&' }).toString(),
                     '<div class="child" a="&">&amp;</div>'
                 );
@@ -606,7 +606,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
 
                 it('Разэкранировать html-строку', function() {
                     assert.equal(new Template('name', {
-                        options: { escape: { attr: false }},
+                        options: { escape: { attrs: false }},
                         attrs: function() {
                             return {
                                 'data-escape': this.unHtmlEscape(this.bemjson.text)

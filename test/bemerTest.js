@@ -274,11 +274,11 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                 });
 
                 it('Отдельно attr', function() {
-                    bemer.config({ escape: { attr: false }});
+                    bemer.config({ escape: { attrs: false }});
                     assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
                         '<div class="a" type="&">&#39;</div>');
 
-                    bemer.config({ escape: { attr: true }});
+                    bemer.config({ escape: { attrs: true }});
                     assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
                         '<div class="a" type="&amp;">&#39;</div>');
                 });
@@ -286,7 +286,7 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                 it('Вместе content и attr', function() {
                     bemer.config({ escape: {
                         content: false,
-                        attr: false
+                        attrs: false
                     }});
                     assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
                         '<div class="a" type="&">\'</div>');

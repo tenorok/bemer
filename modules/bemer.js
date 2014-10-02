@@ -143,7 +143,7 @@ definer.export('bemer', /** @exports bemer */ function(
 
         var escape = Node.resolveOptionEscape(config.escape);
         Tag.escapeContent = escape.content;
-        Tag.escapeAttr = escape.attr;
+        Tag.escapeAttr = escape.attrs;
 
         if(config.tag) {
             Tag.defaultName = config.tag;
