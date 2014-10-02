@@ -316,12 +316,33 @@ definer('NodeTest', function(assert, Node) {
                 );
             });
 
-            it('Блок с содержимым', function() {
+            it('Блок с заэкранированным содержимым', function() {
                 assert.equal(new Node({
                     block: 'name',
-                    content: 'Параграф текста'
+                    content: '<Параграф текста>'
                 }).toString(),
-                    '<div class="name">Параграф текста</div>'
+                    '<div class="name">&lt;Параграф текста&gt;</div>'
+                );
+            });
+
+            it('Блок с отменой экранирования содержимого', function() {
+                assert.equal(new Node({
+                    block: 'name',
+                    content: '<&>',
+                    options: { escape: false }
+                }).toString(),
+                    '<div class="name"><&></div>'
+                );
+            });
+
+            it('Блок с отменой экранирования значений атрибутов', function() {
+                assert.equal(new Node({
+                    block: 'name',
+                    attrs: { a: '&' },
+                    content: '&',
+                    options: { escape: { attrs: false }}
+                }).toString(),
+                    '<div class="name" a="&">&amp;</div>'
                 );
             });
 
