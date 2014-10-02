@@ -1,5 +1,5 @@
 definer.export('bemer', /** @exports bemer */ function(
-    Tag, Tree, Template, Pool, functions, Selector, Node, object, Helpers, modules
+    Tag, Tree, Template, Pool, Selector, Node, Helpers, functions, object, is, modules
 ) {
 
     /**
@@ -83,6 +83,10 @@ definer.export('bemer', /** @exports bemer */ function(
             repeatBooleanAttr: Tag.repeatBooleanAttr,
             closeSingleTag: Tag.closeSingleTag
         },
+        escape: {
+            content: Tag.escapeContent,
+            attr: Tag.escapeAttr
+        },
         tag: Tag.defaultName,
         bemClass: Node.bemClass,
         bemAttr: Node.bemAttr,
@@ -104,6 +108,10 @@ definer.export('bemer', /** @exports bemer */ function(
      * @param {boolean} [config.xhtml.repeatBooleanAttr=false] Флаг автоповтора булева атрибута
      * @param {boolean} [config.xhtml.closeSingleTag=false] Флаг закрытия одиночного тега
      *
+     * @param {boolean|object} [config.escape=true] Флаг экранирования спецсимволов
+     * @param {boolean} [config.escape.content=true] Флаг экранирования содержимого
+     * @param {boolean} [config.escape.attr=true] Флаг экранирования значений атрибутов
+     *
      * @param {string} [config.tag=div] Стандартное имя тега
      * @param {string} [config.bemClass=i-bem] Имя класса для js-инициализации
      * @param {string} [config.bemAttr=data-bem] Имя атрибута для хранения параметров инициализации
@@ -120,15 +128,29 @@ definer.export('bemer', /** @exports bemer */ function(
         }
 
         if(config.xhtml !== undefined) {
-            if(typeof config.xhtml === 'boolean') {
+            if(is.boolean(config.xhtml)) {
                 Tag.repeatBooleanAttr = config.xhtml;
                 Tag.closeSingleTag = config.xhtml;
             } else {
-                if(typeof config.xhtml.repeatBooleanAttr === 'boolean') {
+                if(is.boolean(config.xhtml.repeatBooleanAttr)) {
                     Tag.repeatBooleanAttr = config.xhtml.repeatBooleanAttr;
                 }
-                if(typeof config.xhtml.closeSingleTag === 'boolean') {
+                if(is.boolean(config.xhtml.closeSingleTag)) {
                     Tag.closeSingleTag = config.xhtml.closeSingleTag;
+                }
+            }
+        }
+
+        if(config.escape !== undefined) {
+            if(is.boolean(config.escape)) {
+                Tag.escapeContent = config.escape;
+                Tag.escapeAttr = config.escape;
+            } else {
+                if(is.boolean(config.escape.content)) {
+                    Tag.escapeContent = config.escape.content;
+                }
+                if(is.boolean(config.escape.attr)) {
+                    Tag.escapeAttr = config.escape.attr;
                 }
             }
         }

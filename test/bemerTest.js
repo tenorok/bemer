@@ -251,6 +251,53 @@ definer('bemerTest', function(assert, bemer, Helpers) {
 
             });
 
+            describe('Экранирование спецсимволов.', function() {
+
+                it('Булево значение', function() {
+                    bemer.config({ escape: false });
+                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
+                        '<div class="a" type="&">\'</div>');
+
+                    bemer.config({ escape: true });
+                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
+                        '<div class="a" type="&amp;">&#39;</div>');
+                });
+
+                it('Отдельно content', function() {
+                    bemer.config({ escape: { content: false } });
+                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
+                        '<div class="a" type="&amp;">\'</div>');
+
+                    bemer.config({ escape: { content: true } });
+                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
+                        '<div class="a" type="&amp;">&#39;</div>');
+                });
+
+                it('Отдельно attr', function() {
+                    bemer.config({ escape: { attr: false } });
+                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
+                        '<div class="a" type="&">&#39;</div>');
+
+                    bemer.config({ escape: { attr: true } });
+                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
+                        '<div class="a" type="&amp;">&#39;</div>');
+                });
+
+                it('Вместе content и attr', function() {
+                    bemer.config({ escape: {
+                        content: false,
+                        attr: false
+                    }});
+                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
+                        '<div class="a" type="&">\'</div>');
+
+                    bemer.config({ escape: { content: true } });
+                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
+                        '<div class="a" type="&">&#39;</div>');
+                });
+
+            });
+
         });
 
         describe('Использование функций-помощников.', function() {
