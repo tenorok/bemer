@@ -168,7 +168,7 @@ definer('Helpers', /** @exports Helpers */ function(string, number, object, is) 
 
                 },
                 this._getHelpersFromModule(string, [
-                    'escape', 'htmlEscape', 'unHtmlEscape',
+                    'escape', 'unEscape', 'htmlEscape', 'unHtmlEscape',
                     'collapse', 'stripTags',
                     'upper', 'lower', 'repeat'
                 ]),

@@ -195,17 +195,6 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                 );
             });
 
-            it('Вложенный массив в содержимом', function() {
-                assert.equal(new Template('name', {
-                    content: [
-                        '>раз<',
-                        ['&"два"']
-                    ]
-                }).match({ block: 'name' }).toString(),
-                    '<div class="name">&gt;раз&lt;&amp;&quot;два&quot;</div>'
-                );
-            });
-
             it('Массив в содержимом шаблона и BEMJSON', function() {
                 assert.equal(new Template('name', {
                     content: [
@@ -280,6 +269,14 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                     .extend(new Template('child', { mods: function() { return { a: this.__base().a + 1 }; }}))
                     .match({ block: 'child' }).toString(),
                     '<div class="child child_a_4"></div>'
+                );
+            });
+
+            it('Изменение настроек экранирования через наследование', function() {
+                assert.equal(new Template('parent', { options: { escape: false }})
+                    .extend(new Template('child', { options: { escape: { content: true, attrs: false }}}))
+                    .match({ block: 'child', attrs: { a: '&' }, content: '&' }).toString(),
+                    '<div class="child" a="&">&amp;</div>'
                 );
             });
 
@@ -570,15 +567,30 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                         }
                     }).match({
                             block: 'name',
-                            js: false,
-                            text: '\\,"\'\n\r\t\u2028\u2029'
+                            text: '\\,\n\r\t\u2028\u2029'
                         }).toString(),
-                        '<div class="name" data-escape="\\\\,\\"\\\'\\n\\r\\t\\u2028\\u2029"></div>'
+                        '<div class="name" data-escape="\\\\,\\n\\r\\t\\u2028\\u2029"></div>'
+                    );
+                });
+
+                it('Разэкранировать строку текста', function() {
+                    assert.equal(new Template('name', {
+                        attrs: function() {
+                            return {
+                                'data-escape': this.unEscape(this.bemjson.text)
+                            };
+                        }
+                    }).match({
+                            block: 'name',
+                            text: '\\\\,\\n\\r\\t\\u2028\\u2029'
+                        }).toString(),
+                        '<div class="name" data-escape="\\,\n\r\t\u2028\u2029"></div>'
                     );
                 });
 
                 it('Экранировать html-строку', function() {
                     assert.equal(new Template('name', {
+                        options: { escape: false },
                         attrs: function() {
                             return {
                                 'data-escape': this.htmlEscape(this.bemjson.text)
@@ -586,7 +598,6 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                         }
                     }).match({
                             block: 'name',
-                            js: false,
                             text: '&<>"\'\/'
                         }).toString(),
                         '<div class="name" data-escape="&amp;&lt;&gt;&quot;&#39;\/"></div>'
@@ -595,17 +606,18 @@ definer('TemplateTest', function(assert, Template, Helpers) {
 
                 it('Разэкранировать html-строку', function() {
                     assert.equal(new Template('name', {
+                        options: { escape: { attrs: false }},
                         attrs: function() {
                             return {
                                 'data-escape': this.unHtmlEscape(this.bemjson.text)
                             };
-                        }
+                        },
+                        content: '&'
                     }).match({
                             block: 'name',
-                            js: false,
                             text: '&amp;&lt;&gt;&quot;&#39;\/'
                         }).toString(),
-                        '<div class="name" data-escape="&<>"\'\/"></div>'
+                        '<div class="name" data-escape="&<>"\'\/">&amp;</div>'
                     );
                 });
 

@@ -51,6 +51,14 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
          * @type {object}
          */
         this._params = this.getParams();
+
+        /**
+         * Опции преобразования узла.
+         *
+         * @private
+         * @type {object}
+         */
+        this._options = node.options || {};
     }
 
     /**
@@ -210,7 +218,12 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
                 this._tag.addContent(this._node.content);
             }
 
-            return this._tag.toString();
+            var escape = Node.resolveOptionEscape(this._options.escape);
+
+            return this._tag.toString({
+                escapeContent: escape.content,
+                escapeAttr: escape.attrs
+            });
         },
 
         /**
@@ -247,6 +260,38 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
             return this._getModsClasses('elemMod');
         }
 
+    };
+
+    /**
+     * Разернуть опции экранирования.
+     *
+     * @param {boolean|object} escape Флаг экранирования спецсимволов
+     * @param {boolean} [escape.content] Флаг экранирования содержимого
+     * @param {boolean} [escape.attrs] Флаг экранирования значений атрибутов
+     * @returns {object}
+     */
+    Node.resolveOptionEscape = function(escape) {
+        var content = Tag.escapeContent,
+            attrs = Tag.escapeAttr;
+
+        if(escape !== undefined) {
+            if(is.boolean(escape)) {
+                content = escape;
+                attrs = escape;
+            } else {
+                if(is.boolean(escape.content)) {
+                    content = escape.content;
+                }
+                if(is.boolean(escape.attrs)) {
+                    attrs = escape.attrs;
+                }
+            }
+        }
+
+        return {
+            content: content,
+            attrs: attrs
+        };
     };
 
     return Node;
