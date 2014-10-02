@@ -272,6 +272,14 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                 );
             });
 
+            it('Изменение настроек экранирования через наследование', function() {
+                assert.equal(new Template('parent', { options: { escape: false }})
+                    .extend(new Template('child', { options: { escape: { content: true, attr: false }}}))
+                    .match({ block: 'child', attrs: { a: '&' }, content: '&' }).toString(),
+                    '<div class="child" a="&">&amp;</div>'
+                );
+            });
+
         });
 
         it('Разбивка на шаблоны с единичными селекторами', function() {
@@ -582,6 +590,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
 
                 it('Экранировать html-строку', function() {
                     assert.equal(new Template('name', {
+                        options: { escape: false },
                         attrs: function() {
                             return {
                                 'data-escape': this.htmlEscape(this.bemjson.text)
@@ -597,16 +606,18 @@ definer('TemplateTest', function(assert, Template, Helpers) {
 
                 it('Разэкранировать html-строку', function() {
                     assert.equal(new Template('name', {
+                        options: { escape: { attr: false }},
                         attrs: function() {
                             return {
                                 'data-escape': this.unHtmlEscape(this.bemjson.text)
                             };
-                        }
+                        },
+                        content: '&'
                     }).match({
                             block: 'name',
                             text: '&amp;&lt;&gt;&quot;&#39;\/'
                         }).toString(),
-                        '<div class="name" data-escape="&<>"\'\/"></div>'
+                        '<div class="name" data-escape="&<>"\'\/">&amp;</div>'
                     );
                 });
 

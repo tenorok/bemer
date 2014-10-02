@@ -155,8 +155,8 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
             if(is.string(nameOrList)) {
                 this._helpers.add(nameOrList, callback);
             } else {
-                Object.keys(nameOrList).forEach(function(name) {
-                    this._helpers.add(name, nameOrList[name]);
+                object.each(nameOrList, function(name, callback) {
+                    this._helpers.add(name, callback);
                 }, this);
             }
 
@@ -201,7 +201,8 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
                 tag: true,
                 single: undefined,
                 cls: '',
-                content: ''
+                content: '',
+                options: {}
             };
         },
 
