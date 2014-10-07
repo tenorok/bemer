@@ -174,8 +174,8 @@ defineAsGlobal && (global.inherit = inherit);
  * @file Template engine. BEMJSON to HTML processor.
  * @copyright 2014 Artem Kurbatov, tenorok.ru
  * @license MIT license
- * @version 0.6.2
- * @date 2 October 2014
+ * @version 0.6.3
+ * @date 7 October 2014
  */
 (function(global, undefined) {
 var definer = {
@@ -2676,7 +2676,7 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
          * @returns {Function}
          */
         _classifyModes: function() {
-            return classify(classify(this._getBaseProps()), this._modes);
+            return classify(classify(this._getBaseModes()), this._functionifyModes(this._modes));
         },
 
         /**
@@ -2685,8 +2685,31 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
          * @private
          * @returns {object}
          */
-        _getBaseProps: function() {
-            return object.extend(this._getDefaultModes(), this._helpers.get());
+        _getBaseModes: function() {
+            return object.extend(this._functionifyModes(this._getDefaultModes()), this._helpers.get());
+        },
+
+        /**
+         * Обернуть все поля в функции.
+         *
+         * Все поля должны являться функциями для
+         * возможности вызова `__base` в любой ситуации.
+         *
+         * Поля, не являющиеся функциями, оборачиваются
+         * в анонимную функцию со свойством `__wrapped__`.
+         *
+         * @private
+         * @param {object} mods Поля
+         * @returns {object}
+         */
+        _functionifyModes: function(mods) {
+            object.each(mods, function(name, val) {
+                if(!is.function(val)) {
+                    mods[name] = function() { return val; };
+                    mods[name].__wrapped__ = true;
+                }
+            });
+            return mods;
         },
 
         /**
@@ -2724,9 +2747,9 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
          * @returns {*}
          */
         _getMode: function(modes, bemjson, name) {
-            var isValFunc = is.function(modes[name]),
+            var isValFunc = !modes[name].__wrapped__,
                 bemjsonVal = bemjson[name],
-                val = isValFunc ? modes[name].call(modes, bemjsonVal) : modes[name],
+                val = modes[name].call(modes, bemjsonVal),
                 priorityVal = this._getPriorityValue(isValFunc, val, bemjsonVal);
 
             if(!isValFunc) {
