@@ -280,6 +280,25 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                 );
             });
 
+            it('Получение предыдущего значения моды без функции', function() {
+                assert.equal(new Template('parent', { tag: 'head' })
+                    .extend(new Template('child', { tag: function() { return this.__base() + 'er'; }}))
+                    .match({ block: 'child' }).toString(),
+                    '<header class="child"></header>'
+                );
+            });
+
+            it('Получение предыдущего значения кастомного поля', function() {
+                assert.equal(new Template('parent', { custom: 100 })
+                    .extend(new Template('child', {
+                        custom: function() { return this.__base() + 200; },
+                        content: function() { return this.custom(); }
+                    }))
+                    .match({ block: 'child' }).toString(),
+                    '<div class="child">300</div>'
+                );
+            });
+
         });
 
         it('Разбивка на шаблоны с единичными селекторами', function() {
