@@ -49,8 +49,8 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                 .match('user', {
                     content: function() {
                         return [
-                            {elem: 'name', content: 'I'},
-                            {elem: 'mail', content: 7}
+                            { elem: 'name', content: 'I' },
+                            { elem: 'mail', content: 7 }
                         ];
                     }
                 })
@@ -85,6 +85,27 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                 '<footer class="header i-bem header_color_red" data-bem="{&quot;header&quot;:{}}">' +
                     '<head class="header_color_red__logo"></head>' +
                 '</footer>'
+            );
+        });
+
+        it('Наследование шаблонов с базовым вызовом без функции', function() {
+            bemer
+                .match('button', {
+                    js: true,
+                    tag: 'button'
+                })
+                .match('button_type_pseudo', {
+                    js: false,
+                    tag: function() {
+                        return 'my-' + this.__base();
+                    }
+                });
+
+            assert.equal(bemer({
+                block: 'button',
+                mods: { type: 'pseudo' }
+            }),
+                '<my-button class="button button_type_pseudo"></my-button>'
             );
         });
 
@@ -217,21 +238,21 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                 });
 
                 it('Отдельно repeatBooleanAttr', function() {
-                    bemer.config({ xhtml: { repeatBooleanAttr: true } });
+                    bemer.config({ xhtml: { repeatBooleanAttr: true }});
                     assert.equal(bemer({ block: 'a', tag: 'input', attrs: { disabled: true }}),
                         '<input class="a" disabled="disabled">');
 
-                    bemer.config({ xhtml: { repeatBooleanAttr: false } });
+                    bemer.config({ xhtml: { repeatBooleanAttr: false }});
                     assert.equal(bemer({ block: 'a', tag: 'input', attrs: { disabled: true }}),
                         '<input class="a" disabled>', 'Изменить обратно на false');
                 });
 
                 it('Отдельно closeSingleTag', function() {
-                    bemer.config({ xhtml: { closeSingleTag: true } });
+                    bemer.config({ xhtml: { closeSingleTag: true }});
                     assert.equal(bemer({ block: 'a', tag: 'input', attrs: { disabled: true }}),
                         '<input class="a" disabled/>');
 
-                    bemer.config({ xhtml: { closeSingleTag: false } });
+                    bemer.config({ xhtml: { closeSingleTag: false }});
                     assert.equal(bemer({ block: 'a', tag: 'input', attrs: { disabled: true }}),
                         '<input class="a" disabled>', 'Изменить обратно на false');
                 });
@@ -244,7 +265,7 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                     assert.equal(bemer({ block: 'a', tag: 'input', attrs: { disabled: true }}),
                         '<input class="a" disabled="disabled"/>');
 
-                    bemer.config({ xhtml: { closeSingleTag: false } });
+                    bemer.config({ xhtml: { closeSingleTag: false }});
                     assert.equal(bemer({ block: 'a', tag: 'input', attrs: { disabled: true }}),
                         '<input class="a" disabled="disabled">', 'Изменить closeSingleTag обратно на false');
                 });
@@ -255,31 +276,31 @@ definer('bemerTest', function(assert, bemer, Helpers) {
 
                 it('Булево значение', function() {
                     bemer.config({ escape: false });
-                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
+                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\'' }),
                         '<div class="a" type="&">\'</div>');
 
                     bemer.config({ escape: true });
-                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
+                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\'' }),
                         '<div class="a" type="&amp;">&#39;</div>');
                 });
 
                 it('Отдельно content', function() {
                     bemer.config({ escape: { content: false }});
-                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
+                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\'' }),
                         '<div class="a" type="&amp;">\'</div>');
 
                     bemer.config({ escape: { content: true }});
-                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
+                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\'' }),
                         '<div class="a" type="&amp;">&#39;</div>');
                 });
 
                 it('Отдельно attr', function() {
                     bemer.config({ escape: { attrs: false }});
-                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
+                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\'' }),
                         '<div class="a" type="&">&#39;</div>');
 
                     bemer.config({ escape: { attrs: true }});
-                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
+                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\'' }),
                         '<div class="a" type="&amp;">&#39;</div>');
                 });
 
@@ -288,11 +309,11 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                         content: false,
                         attrs: false
                     }});
-                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
+                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\'' }),
                         '<div class="a" type="&">\'</div>');
 
                     bemer.config({ escape: { content: true }});
-                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\''}),
+                    assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\'' }),
                         '<div class="a" type="&">&#39;</div>');
                 });
 
@@ -394,9 +415,9 @@ definer('bemerTest', function(assert, bemer, Helpers) {
         describe('Получение внутренних модулей.', function() {
 
             it('Получить заданный модуль', function() {
-                var selector = bemer.modules('Selector');
-                assert.isTrue(is.function(selector));
-                assert.isTrue(new selector instanceof Selector);
+                var Selector = bemer.modules('Selector');
+                assert.isTrue(is.function(Selector));
+                assert.isTrue(new Selector instanceof Selector);
             });
 
         });
