@@ -71,7 +71,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('test', [
         'clean:test',
-        'definer:' + module,
+        'definer:' + module + 'Test',
         'mochaTest'
     ]);
 

@@ -42,7 +42,7 @@ Target.definer = function() {
                     date: true
                 }
             },
-            main: {
+            mainTest: {
                 target: 'test/tmp/mainTest.js',
                 directory: directoriesTest,
                 verbose: verbose,
@@ -58,7 +58,7 @@ Target.definer = function() {
 
     modules.forEach(function(moduleName) {
         var testName = moduleName + 'Test';
-        target[moduleName] = {
+        target[testName] = {
             module: testName,
             target: 'test/tmp/' + testName + '.js',
             directory: directoriesTest,
