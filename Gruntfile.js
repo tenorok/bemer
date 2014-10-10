@@ -64,6 +64,16 @@ module.exports = function(grunt) {
                     ]
                 }
             }
+        },
+        mocha_istanbul: {
+            coverage: {
+                src: 'test/tmp/*.js',
+                options: {
+                    reporter: 'dot',
+                    print: 'both',
+                    root: 'test/tmp/'
+                }
+            }
         }
     });
 
@@ -71,7 +81,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('test', [
         'clean:test',
-        'definer:' + module,
+        'definer:' + module + 'Test',
         'mochaTest'
     ]);
 
@@ -97,6 +107,17 @@ module.exports = function(grunt) {
 
         grunt.task.run('prompt:release');
         grunt.task.run('shell:release');
+    });
+
+    grunt.registerTask('coverage', function() {
+
+        grunt.task.run('clean:test');
+
+        Target.modules.forEach(function(module) {
+            grunt.task.run('definer:' + module + 'Test');
+        });
+
+        grunt.task.run('mocha_istanbul:coverage');
     });
 
 };
