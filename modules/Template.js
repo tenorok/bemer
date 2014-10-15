@@ -41,10 +41,9 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
          * @private
          * @type {Match[]}
          */
-        this._matches = Object.keys(this._patterns).reduce(function(matches, key) {
-            matches.push(new Match(this._patterns[key]));
-            return matches;
-        }.bind(this), []);
+        this._matches = Object.keys(this._patterns).map(function(key) {
+            return new Match(this._patterns[key]);
+        }, this);
 
         /**
          * Класс по модам.
@@ -121,10 +120,9 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
          * @returns {Template[]}
          */
         split: function() {
-            return Object.keys(this._patterns).reduce(function(templates, key) {
-                templates.push(new Template(this._patterns[key], this._modes).helper(this._helpers.get()));
-                return templates;
-            }.bind(this), []);
+            return Object.keys(this._patterns).map(function(key) {
+                return new Template(this._patterns[key], this._modes).helper(this._helpers.get());
+            }, this);
         },
 
         /**
