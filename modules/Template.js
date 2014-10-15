@@ -1,4 +1,6 @@
-definer('Template', /** @exports Template */ function(Match, classify, Node, Selector, Helpers, object, string, is) {
+definer('Template', /** @exports Template */ function( /* jshint maxparams: false */
+    Match, classify, Node, Selector, Helpers, object, string, is
+) {
 
     /**
      * Модуль шаблонизации BEMJSON-узла.
@@ -7,7 +9,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
      * @param {...string} pattern Шаблоны для матчинга
      * @param {object} modes Моды для преобразования узла
      */
-    function Template(pattern, modes) {
+    function Template(pattern, modes) { /* jshint unused: false */
 
         /**
          * Шаблоны для матчинга.

@@ -324,9 +324,10 @@ definer('Selector', /** @exports Selector */ function() {
          * @returns {array}
          */
         _getMod: function(name, val) {
-            var mod = [],
-                name = this[name],
-                val = this[val];
+            var mod = [];
+
+            name = this[name];
+            val = this[val];
 
             if(name && val !== false) {
                 mod.push(Selector.delimiters.mod, name);
