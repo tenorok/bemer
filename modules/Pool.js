@@ -23,7 +23,7 @@ definer('Pool', /** @exports Pool */ function() {
          * @param {...Template} template Шаблон к добавлению
          * @returns {Pool}
          */
-        add: function(template) {
+        add: function(template) { /* jshint unused: false */
             var args = arguments,
                 templates = Object.keys(args).reduce(function(templates, key) {
                     return templates.concat(args[key].split());

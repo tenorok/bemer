@@ -1,0 +1,18 @@
+{
+    "eqeqeq": true,
+    "freeze": true,
+    "immed": true,
+    "indent": 4,
+    "latedef": "nofunc",
+    "newcap": true,
+    "noarg": true,
+    "noempty": true,
+    "nonbsp": true,
+    "quotmark": "single",
+    "unused": true,
+    "maxparams": 5,
+    "maxlen": 120,
+
+    "expr": true,
+    "laxbreak": true
+}

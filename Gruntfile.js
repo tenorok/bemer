@@ -47,7 +47,9 @@ module.exports = function(grunt) {
                         ? release.getShellRelease()
                         : '';
                 }
-            }
+            },
+            jscs: { command: './node_modules/.bin/jscs modules/' },
+            jshint: { command: './node_modules/.bin/jshint modules/' }
         },
         definer: Target.definer(),
         mochaTest: Target.mocha(module),
@@ -91,24 +93,6 @@ module.exports = function(grunt) {
         'mochaTest'
     ]);
 
-    grunt.registerTask('update:jsdoc', [
-        'jsdoc',
-        'shell:updatejsdoc'
-    ]);
-
-    grunt.registerTask('release', function() {
-        release.changeJsonFilesVersion();
-
-        grunt.task.run('test', 'clean:test');
-        grunt.task.run('clean:jsdoc', 'jsdoc');
-        grunt.task.run('clean:release', 'mkdir:release', 'definer:release', 'uglify:release');
-
-        grunt.task.run('shell:prerelease');
-
-        grunt.task.run('prompt:release');
-        grunt.task.run('shell:release');
-    });
-
     grunt.registerTask('coverage', function() {
 
         grunt.task.run('clean:test');
@@ -118,6 +102,30 @@ module.exports = function(grunt) {
         });
 
         grunt.task.run('mocha_istanbul:coverage');
+    });
+
+    grunt.registerTask('lint', [
+        'shell:jscs',
+        'shell:jshint'
+    ]);
+
+    grunt.registerTask('update:jsdoc', [
+        'jsdoc',
+        'shell:updatejsdoc'
+    ]);
+
+    grunt.registerTask('release', function() {
+        release.changeJsonFilesVersion();
+
+        grunt.task.run('test', 'clean:test');
+        grunt.task.run('lint');
+        grunt.task.run('clean:jsdoc', 'jsdoc');
+        grunt.task.run('clean:release', 'mkdir:release', 'definer:release', 'uglify:release');
+
+        grunt.task.run('shell:prerelease');
+
+        grunt.task.run('prompt:release');
+        grunt.task.run('shell:release');
     });
 
 };

@@ -1,4 +1,6 @@
-definer('Template', /** @exports Template */ function(Match, classify, Node, Selector, Helpers, object, string, is) {
+definer('Template', /** @exports Template */ function( /* jshint maxparams: false */
+    Match, classify, Node, Selector, Helpers, object, string, is
+) {
 
     /**
      * Модуль шаблонизации BEMJSON-узла.
@@ -7,7 +9,7 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
      * @param {...string} pattern Шаблоны для матчинга
      * @param {object} modes Моды для преобразования узла
      */
-    function Template(pattern, modes) {
+    function Template(pattern, modes) { /* jshint unused: false */
 
         /**
          * Шаблоны для матчинга.
@@ -39,10 +41,9 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
          * @private
          * @type {Match[]}
          */
-        this._matches = Object.keys(this._patterns).reduce(function(matches, key) {
-            matches.push(new Match(this._patterns[key]));
-            return matches;
-        }.bind(this), []);
+        this._matches = Object.keys(this._patterns).map(function(key) {
+            return new Match(this._patterns[key]);
+        }, this);
 
         /**
          * Класс по модам.
@@ -119,10 +120,9 @@ definer('Template', /** @exports Template */ function(Match, classify, Node, Sel
          * @returns {Template[]}
          */
         split: function() {
-            return Object.keys(this._patterns).reduce(function(templates, key) {
-                templates.push(new Template(this._patterns[key], this._modes).helper(this._helpers.get()));
-                return templates;
-            }.bind(this), []);
+            return Object.keys(this._patterns).map(function(key) {
+                return new Template(this._patterns[key], this._modes).helper(this._helpers.get());
+            }, this);
         },
 
         /**
