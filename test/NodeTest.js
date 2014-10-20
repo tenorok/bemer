@@ -151,6 +151,7 @@ definer('NodeTest', function(assert, Node) {
         });
 
         it('Получить информацию о примиксованных сущностях', function() {
+            assert.deepEqual(new Node({ block: 'a', mix: [undefined] }).getMix(), []);
             assert.deepEqual(new Node({ block: 'a', mix: [{ block: 'b' }] }).getMix(), [
                 { name: 'b', classes: ['b'], params: {}}
             ]);
