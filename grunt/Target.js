@@ -78,6 +78,19 @@ Target.definer = function() {
         };
     });
 
+    modules.forEach(function(moduleName) {
+        var coverageName = moduleName + 'Coverage',
+            testName = moduleName + 'Test';
+        target[coverageName] = {
+            module: testName,
+            istanbul: [moduleName, testName],
+            target: 'test/tmp/' + coverageName + '.js',
+            directory: directoriesTest,
+            verbose: verbose,
+            clean: clean
+        };
+    });
+
     return target;
 };
 
