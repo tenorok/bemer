@@ -24,14 +24,6 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
          * @type {Pool}
          */
         this._pool = pool;
-
-        /**
-         * Контекст блока в дереве.
-         *
-         * @private
-         * @type {string}
-         */
-        this._block = tree.block || '';
     }
 
     Tree.prototype = {
