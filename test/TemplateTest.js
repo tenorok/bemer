@@ -254,7 +254,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
             });
 
             it('Цепочка наследований', function() {
-                assert.equal(new Template('grand', { js: false, mods: function() { return { a: 1 }; }})
+                assert.equal(new Template('grand', { js: false, mods: { a: 1 }})
                     .extend(new Template('parent', { mods: function() { return { a: 2 }; }}))
                     .extend(new Template('child', { mods: function() { return { a: this.__base().a, b: 2 }; }}))
                     .match({ block: 'child' }).toString(),
@@ -500,7 +500,7 @@ definer('TemplateTest', function(assert, Template, Helpers) {
 
                 it('Добавить внешний конструктор', function() {
                     assert.equal(new Template('name', {
-                        construct: function(bemjson, data) {
+                        construct: function(bemjson, data) { /* jshint unused: false */
                             this.blockName = bemjson.block;
                         },
                         content: function() {
