@@ -324,6 +324,17 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     '</div>');
             });
 
+            it('Вложенный элемент другого блока', function() {
+                var tree = new Tree({
+                    block: 'a',
+                    content: {
+                        block: 'b',
+                        elem: 'c'
+                    }
+                }, new Pool());
+                assert.equal(tree.toString(), '<div class="a"><div class="b__c"></div></div>');
+            });
+
         });
 
         describe('Модификаторы.', function() {
@@ -581,7 +592,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                             { elem: 'b' }
                         ]
                     }, new Pool()
-                    .add(new Template('a__b', {
+                    .add(new Template('a_c_d__b', {
                         construct: function(bemjson, data) {
                             assert.equal(data.context.block, 'a');
                             assert.deepEqual(data.context.mods, { c: 'd' });

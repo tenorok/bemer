@@ -100,20 +100,18 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
 
             data = data || {};
 
-            if(bemjson.elem && !bemjson.block && data.context.block) {
+            if(!bemjson.block && bemjson.elem) {
                 bemjson.block = data.context.block;
-                if(data.context.mods) {
-                    bemjson.mods = object.extend(data.context.mods, bemjson.mods || {});
-                }
+                bemjson.mods = object.extend(data.context.mods, bemjson.mods || {});
             }
 
             var node = this._pool.find(bemjson, data) || Template.base(bemjson, data);
 
             if(bemjson.block) {
-                data.context = { block: bemjson.block };
-                if(bemjson.mods) {
-                    data.context.mods = object.clone(bemjson.mods);
-                }
+                data.context = {
+                    block: bemjson.block,
+                    mods: object.clone(bemjson.mods)
+                };
             }
 
             return node.content(this[
