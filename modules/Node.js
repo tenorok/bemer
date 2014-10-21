@@ -263,7 +263,7 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
     };
 
     /**
-     * Разернуть опции экранирования.
+     * Получить/установить опции экранирования.
      *
      * @param {boolean|object} escape Флаг экранирования спецсимволов
      * @param {boolean} [escape.content] Флаг экранирования содержимого

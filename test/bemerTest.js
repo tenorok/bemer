@@ -294,7 +294,7 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                         '<div class="a" type="&amp;">&#39;</div>');
                 });
 
-                it('Отдельно attr', function() {
+                it('Отдельно attrs', function() {
                     bemer.config({ escape: { attrs: false }});
                     assert.equal(bemer({ block: 'a', attrs: { type: '&' }, content: '\'' }),
                         '<div class="a" type="&">&#39;</div>');
@@ -417,7 +417,7 @@ definer('bemerTest', function(assert, bemer, Helpers) {
             it('Получить заданный модуль', function() {
                 var Selector = bemer.modules('Selector');
                 assert.isTrue(is.function(Selector));
-                assert.isTrue(new Selector instanceof Selector);
+                assert.isTrue(new Selector() instanceof Selector);
             });
 
         });

@@ -98,7 +98,7 @@ module.exports = function(grunt) {
         grunt.task.run('clean:test');
 
         Target.modules.forEach(function(module) {
-            grunt.task.run('definer:' + module + 'Test');
+            grunt.task.run('definer:' + module + 'Coverage');
         });
 
         grunt.task.run('mocha_istanbul:coverage');

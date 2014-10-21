@@ -324,6 +324,17 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     '</div>');
             });
 
+            it('Вложенный элемент другого блока', function() {
+                var tree = new Tree({
+                    block: 'a',
+                    content: {
+                        block: 'b',
+                        elem: 'c'
+                    }
+                }, new Pool());
+                assert.equal(tree.toString(), '<div class="a"><div class="b__c"></div></div>');
+            });
+
         });
 
         describe('Модификаторы.', function() {
@@ -363,7 +374,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     mods: { c: 'd' },
                     content: {
                         elem: 'b',
-                        mods: {c: 'g'},
+                        mods: { c: 'g' },
                         elemMods: { e: 'f' }
                     }
                 }, new Pool());
@@ -418,6 +429,14 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     content: { block: 'b' }
                 })));
                 assert.equal(tree.toString(), '<div class="b"></div>');
+            });
+
+            it('Анонимный блок с вложенным блоком, у которого есть шаблон', function() {
+                var tree = new Tree({ block: 'a' }, new Pool()
+                    .add(new Template('a', { tag: false, content: { block: 'b' }}))
+                    .add(new Template('b', { tag: 'span', content: 'text' }))
+                );
+                assert.equal(tree.toString(), '<span class="b">text</span>');
             });
 
             it('Вложенный блок с собственным шаблоном', function() {
@@ -515,7 +534,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     ]
                 }, new Pool()
                     .add(new Template('b', 'd', {
-                        construct: function(bemjson, data) {
+                        construct: function(bemjson) {
                             if(bemjson.block === 'b') {
                                 assert.isTrue(this.isFirst());
                             }
@@ -538,7 +557,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                         ]
                     }, new Pool()
                     .add(new Template('e', 'c', {
-                        construct: function(bemjson, data) {
+                        construct: function(bemjson) {
                             if(bemjson.block === 'e') {
                                 assert.isTrue(this.isLast());
                             }
@@ -573,7 +592,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                             { elem: 'b' }
                         ]
                     }, new Pool()
-                    .add(new Template('a__b', {
+                    .add(new Template('a_c_d__b', {
                         construct: function(bemjson, data) {
                             assert.equal(data.context.block, 'a');
                             assert.deepEqual(data.context.mods, { c: 'd' });
