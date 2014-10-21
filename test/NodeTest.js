@@ -425,5 +425,49 @@ definer('NodeTest', function(assert, Node) {
 
         });
 
+        describe('Метод resolveOptionEscape.', function() {
+
+            it('Булево значение', function() {
+                assert.deepEqual(Node.resolveOptionEscape(true), {
+                    content: true,
+                    attrs: true
+                });
+                assert.deepEqual(Node.resolveOptionEscape(false), {
+                    content: false,
+                    attrs: false
+                });
+            });
+
+            it('Отдельно content', function() {
+                assert.deepEqual(Node.resolveOptionEscape({ content: true }), {
+                    content: true,
+                    attrs: Tag.escapeAttr
+                });
+                assert.deepEqual(Node.resolveOptionEscape({ content: false }), {
+                    content: false,
+                    attrs: Tag.escapeAttr
+                });
+            });
+
+            it('Отдельно attrs', function() {
+                assert.deepEqual(Node.resolveOptionEscape({ attrs: true }), {
+                    content: Tag.escapeContent,
+                    attrs: true
+                });
+                assert.deepEqual(Node.resolveOptionEscape({ attrs: false }), {
+                    content: Tag.escapeContent,
+                    attrs: false
+                });
+            });
+
+            it('Вместе content и attr', function() {
+                assert.deepEqual(Node.resolveOptionEscape({ content: true, attrs: false }), {
+                    content: true,
+                    attrs: false
+                });
+            });
+
+        });
+
     });
 });
