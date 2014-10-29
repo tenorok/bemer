@@ -100,6 +100,19 @@ definer('PoolTest', function(assert, Pool, Template) {
                 );
             });
 
+            it('Несколько подходящих шаблонов под несколько модификаторов', function() {
+                assert.equal(new Pool()
+                    .add(new Template('input_a_foo', { tag: 'input' }))
+                    .add(new Template('input_b_bar', { attrs: { type: 'text' }}))
+                    .find({ block: 'input', mods: {
+                        a: 'foo',
+                        b: 'bar'
+                    }})
+                    .toString(),
+                    '<input class="input input_a_foo input_b_bar" type="text"/>'
+                );
+            });
+
         });
 
         describe('Очистка списка шаблонов.', function() {
