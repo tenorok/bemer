@@ -1,6 +1,11 @@
 definer('NodeTest', function(assert, Node) {
     describe('Модуль Node.', function() {
 
+        it('Получить/установить BEMJSON узла', function() {
+            assert.deepEqual(new Node({ block: 'a' }).bemjson(), { block: 'a' });
+            assert.deepEqual(new Node({ block: 'a' }).bemjson({ block: 'b' }).bemjson(), { block: 'b' });
+        });
+
         it('Проверить узел на блок', function() {
             assert.isFalse(new Node({}).isBlock());
             assert.isTrue(new Node({ block: 'name' }).isBlock());

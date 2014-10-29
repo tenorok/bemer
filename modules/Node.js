@@ -78,6 +78,21 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
     Node.prototype = {
 
         /**
+         * Получить/установить BEMJSON узла.
+         *
+         * @param {object} [bemjson] BEMJSON
+         * @returns {object|Node}
+         */
+        bemjson: function(bemjson) {
+            if(bemjson === undefined) {
+                return this._bemjson;
+            }
+
+            this._bemjson = bemjson;
+            return this;
+        },
+
+        /**
          * Проверить узел на блок.
          *
          * @returns {boolean}
