@@ -105,18 +105,19 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
                 bemjson.mods = object.extend(data.context.mods, bemjson.mods || {});
             }
 
-            var node = this._pool.find(bemjson, data) || Template.base(bemjson, data);
+            var node = this._pool.find(bemjson, data) || Template.base(bemjson, data),
+                nodeBemjson = node.bemjson();
 
-            if(bemjson.block) {
+            if(nodeBemjson.block) {
                 data.context = {
-                    block: bemjson.block,
-                    mods: object.clone(bemjson.mods)
+                    block: nodeBemjson.block,
+                    mods: object.clone(nodeBemjson.mods)
                 };
             }
 
             return node.content(this[
-                is.array(bemjson.content) ? '_getContentList' : '_getNode'
-            ](bemjson.content, data));
+                is.array(nodeBemjson.content) ? '_getContentList' : '_getNode'
+            ](nodeBemjson.content, data));
         }
 
     };
