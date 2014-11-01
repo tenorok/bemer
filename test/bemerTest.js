@@ -44,6 +44,17 @@ definer('bemerTest', function(assert, bemer, Helpers) {
             );
         });
 
+        it('Использование шаблонов на несколько модификаторов одновременно', function() {
+            bemer
+                .match('button', { tag: 'button' })
+                .match('button_disabled', { attrs: { disabled: true }})
+                .match('button_theme_normal', { content: 'Кнопка' });
+
+            assert.equal(bemer({ block: 'button', mods: { disabled: true, theme: 'normal' }}),
+                '<button class="button button_disabled button_theme_normal" disabled>Кнопка</button>'
+            );
+        });
+
         it('Нестрогий шаблон на элементы, добавляемые в функции шаблона блока', function() {
             bemer
                 .match('user', {
