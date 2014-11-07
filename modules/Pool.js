@@ -1,4 +1,4 @@
-definer('Pool', /** @exports Pool */ function() {
+definer('Pool', /** @exports Pool */ function(array) {
 
     /**
      * Модуль хранения списка шаблонов.
@@ -67,20 +67,31 @@ definer('Pool', /** @exports Pool */ function() {
         },
 
         /**
-         * Найти шаблон для BEMJSON.
+         * Найти и применить шаблон для BEMJSON.
          *
          * @param {object} bemjson BEMJSON
          * @param {object} [data] Данные по сущности в дереве
          * @returns {Node|null} Экземпляр БЭМ-узла или null при отсутствии подходящего шаблона
          */
         find: function(bemjson, data) {
+            var node = null,
+                nextNode = null,
+                currentBemjson = bemjson,
+                processedMods = [],
+                modesFromTemplates = [];
+
             for(var index = this.pool.length - 1; index >= 0; index--) {
-                var node = this.pool[index].match(bemjson, data);
                 if(node) {
-                    return node;
+                    currentBemjson = node.bemjson();
+                }
+
+                nextNode = this.pool[index].match(currentBemjson, data, processedMods, bemjson, modesFromTemplates);
+                if(nextNode) {
+                    node = nextNode;
+                    modesFromTemplates = array.concatOnce(modesFromTemplates, Object.keys(this.pool[index].modes));
                 }
             }
-            return null;
+            return node;
         },
 
         /**
