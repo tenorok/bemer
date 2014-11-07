@@ -146,13 +146,32 @@ definer('PoolTest', function(assert, Pool, Template) {
                 );
             });
 
+            it('Четыре подходящих шаблона под четыре модификатора', function() {
+                assert.equal(new Pool()
+                        .add(new Template('text_a_foo', { tag: 'span', attrs: { value: 100 }}))
+                        .add(new Template('text_b_bar', { attrs: { type: 200 }}))
+                        .add(new Template('text_c_faz', { cls: 'faz' }))
+                        .add(new Template('text_d_baz', { content: 'hello' }))
+                        .find({ block: 'text', mods: {
+                            a: 'foo',
+                            b: 'bar',
+                            c: 'faz',
+                            d: 'baz'
+                        }})
+                        .toString(),
+                    '<span class="faz text text_a_foo text_b_bar text_c_faz text_d_baz" value="100" type="200">' +
+                        'hello' +
+                    '</span>'
+                );
+            });
+
             describe('Элементы.', function() {
 
                 it('Простой элемент', function() {
                     assert.equal(new Pool()
                         .add(new Template('text__paragraph', { tag: 'p' }))
                         .add(new Template('header__logo', { tag: 'h1' }))
-                        .add(new Template('footer__logo', { tag: 'h6' }))
+                        .add(new Template('footer__logo', { cls: 'h6' }))
                         .find({ block: 'header', elem: 'logo' })
                         .toString(),
                         '<h1 class="header__logo"></h1>'
