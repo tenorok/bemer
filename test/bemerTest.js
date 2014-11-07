@@ -184,6 +184,19 @@ definer('bemerTest', function(assert, bemer, Helpers) {
             });
         });
 
+        it('При добавлении модификатора из шаблона должен выполниться шаблон на этот модификатор', function() {
+            bemer
+                .match('header', {
+                    mods: {
+                        a: 'foo'
+                    }
+                })
+                .match('header_a_foo', {
+                    tag: 'header'
+                });
+            assert.equal(bemer({ block: 'header' }), '<header class="header header_a_foo"></header>');
+        });
+
         describe('Изменить стандартные настройки шаблонизатора.', function() {
 
             it('Изменение разделителя блока и элемента', function() {
