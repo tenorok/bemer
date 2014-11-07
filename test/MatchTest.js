@@ -1,6 +1,11 @@
 definer('MatchTest', function(assert, Match) {
     describe('Модуль Match.', function() {
 
+        it('Получить/установить шаблон', function() {
+            assert.deepEqual(new Match('header_theme_dark').pattern(), new Selector('header_theme_dark'));
+            assert.deepEqual(new Match('footer').pattern('footer_size_big').pattern(), new Selector('footer_size_big'));
+        });
+
         describe('Проверить на соответствие блоку.', function() {
 
             it('По имени', function() {

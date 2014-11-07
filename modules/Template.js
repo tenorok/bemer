@@ -22,10 +22,9 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
         /**
          * Моды для преобразования узла.
          *
-         * @private
          * @type {object}
          */
-        this._modes = [].slice.call(arguments, -1)[0];
+        this.modes = [].slice.call(arguments, -1)[0];
 
         /**
          * Функции-помощники.
@@ -72,13 +71,37 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
          *
          * @param {object} bemjson Входящий BEMJSON
          * @param {object} [data] Данные по сущности в дереве
+         * @param {object[]} [processedMods] Список модификаторов, для которых уже были выполнены шаблоны
+         * @param {object} [baseBemjson] Базовый BEMJSON из входящих данных
+         * @param {string[]} [modesFromAnotherTemplates] Список полей, которые были установлены из других шаблонов
          * @returns {Node|null} Экземпляр БЭМ-узла или null при несоответствии BEMJSON шаблону
          */
-        match: function(bemjson, data) {
+        match: function(bemjson, data, processedMods, baseBemjson, modesFromAnotherTemplates) {
+            function blockModsFilter(e) { return e.modName === mods.modName; }
+            function elemModsFilter(e) { return e.modName === mods.modName && e.elemModName === mods.elemModName; }
 
             for(var i = 0; i < this._matches.length; i++) {
-                if(this._matches[i].is(bemjson)) {
-                    return this.transform(bemjson, data);
+                var pattern = this._matches[i].pattern(),
+                    mods = {
+                        modName: pattern.modName(),
+                        elemModName: pattern.elemModName()
+                    },
+                    isBlock = pattern.isBlock();
+
+                processedMods = processedMods || [];
+
+                // Не нужно выполнять шаблон без модификатора,
+                // если уже был выполнен хотя бы один шаблон с модификатором.
+                if(!mods[isBlock ? 'modName' : 'elemModName'] && processedMods.length) {
+                    continue;
+                }
+
+                if(!processedMods.some(isBlock ? blockModsFilter : elemModsFilter) && this._matches[i].is(bemjson)) {
+                    processedMods.push({
+                        modName: mods.modName,
+                        elemModName: mods.elemModName
+                    });
+                    return this.transform(object.clone(bemjson), data, baseBemjson, modesFromAnotherTemplates);
                 }
             }
 
@@ -90,14 +113,22 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
          *
          * @param {object} bemjson Входящий BEMJSON
          * @param {object} [data] Данные по сущности в дереве
+         * @param {object} [baseBemjson] Базовый BEMJSON из входящих данных
+         * @param {string[]} [modesFromAnotherTemplates] Список полей, которые были установлены из других шаблонов
          * @returns {Node}
          */
-        transform: function(bemjson, data) {
+        transform: function(bemjson, data, baseBemjson, modesFromAnotherTemplates) {
             var modes = new this.Modes(bemjson, data);
 
             for(var i = 0, len = Template._defaultModesNames.length; i < len; i++) {
                 var mode = Template._defaultModesNames[i];
-                bemjson[mode] = this._getMode(modes, bemjson, mode);
+                bemjson[mode] = this._getMode(
+                    modes,
+                    bemjson,
+                    mode,
+                    baseBemjson || bemjson,
+                    modesFromAnotherTemplates || []
+                );
             }
 
             return new Node(bemjson);
@@ -110,7 +141,7 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
          * @returns {Template}
          */
         extend: function(template) {
-            template.Modes = classify(this.Modes, template._modes);
+            template.Modes = classify(this.Modes, template.modes);
             return template;
         },
 
@@ -121,7 +152,7 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
          */
         split: function() {
             return Object.keys(this._patterns).map(function(key) {
-                return new Template(this._patterns[key], this._modes).helper(this._helpers.get());
+                return new Template(this._patterns[key], this.modes).helper(this._helpers.get());
             }, this);
         },
 
@@ -171,7 +202,7 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
          * @returns {Function}
          */
         _classifyModes: function() {
-            return classify(classify(this._getBaseModes()), this._functionifyModes(this._modes));
+            return classify(classify(this._getBaseModes()), this._functionifyModes(this.modes));
         },
 
         /**
@@ -194,17 +225,17 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
          * в анонимную функцию со свойством `__wrapped__`.
          *
          * @private
-         * @param {object} mods Поля
+         * @param {object} modes Поля
          * @returns {object}
          */
-        _functionifyModes: function(mods) {
-            object.each(mods, function(name, val) {
+        _functionifyModes: function(modes) {
+            object.each(modes, function(name, val) {
                 if(!is.function(val)) {
-                    mods[name] = function() { return val; };
-                    mods[name].__wrapped__ = true;
+                    modes[name] = function() { return val; };
+                    modes[name].__wrapped__ = true;
                 }
-            });
-            return mods;
+            }, this);
+            return modes;
         },
 
         /**
@@ -239,13 +270,22 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
          * @param {Object} modes Экземпляр класса по модам
          * @param {object} bemjson Входящий BEMJSON
          * @param {string} name Имя требуемой моды
+         * @param {object} [baseBemjson] Базовый BEMJSON из входящих данных
+         * @param {string[]} [modesFromAnotherTemplates] Список полей, которые были установлены из других шаблонов
          * @returns {*}
          */
-        _getMode: function(modes, bemjson, name) {
+        _getMode: function(modes, bemjson, name, baseBemjson, modesFromAnotherTemplates) {
             var isValFunc = !modes[name].__wrapped__,
                 bemjsonVal = bemjson[name],
+                baseBemjsonVal = baseBemjson[name],
                 val = modes[name].call(modes, bemjsonVal),
-                priorityVal = this._getPriorityValue(isValFunc, val, bemjsonVal);
+                priorityVal = this._getPriorityValue(
+                    isValFunc,
+                    val,
+                    bemjsonVal,
+                    baseBemjsonVal,
+                    !!~modesFromAnotherTemplates.indexOf(name)
+                );
 
             if(!isValFunc) {
                 if(is.array(val, bemjsonVal)) {
@@ -268,11 +308,18 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
          * @param {boolean} isValFunc Значение моды в шаблоне может быть задано функцией
          * @param {*} val Значение моды в шаблоне
          * @param {*} bemjsonVal Значение моды в BEMJSON
+         * @param {*} [baseBemjsonVal] Значение моды базового BEMJSON из входящих данных
+         * @param {boolean} [wasSetInAnotherTemplate] Флаг установки поля из другого шаблона
          * @returns {*}
          */
-        _getPriorityValue: function(isValFunc, val, bemjsonVal) {
+        _getPriorityValue: function(isValFunc, val, bemjsonVal, baseBemjsonVal, wasSetInAnotherTemplate) {
             if(isValFunc) return val;
-            return is.undefined(bemjsonVal) ? val : bemjsonVal;
+            if(is.undefined(baseBemjsonVal)) {
+                if(wasSetInAnotherTemplate) return bemjsonVal;
+                return is.undefined(val) ? bemjsonVal : val;
+            } else {
+                return baseBemjsonVal;
+            }
         }
 
     };
@@ -285,12 +332,20 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
     Template.baseTemplate = new Template('', {});
 
     /**
+     * Стандартные моды базового шаблона.
+     *
+     * @private
+     * @type {object}
+     */
+    Template._defaultModes = Template.baseTemplate._getDefaultModes();
+
+    /**
      * Список имён стандартных мод.
      *
      * @private
      * @type {array}
      */
-    Template._defaultModesNames = Object.keys(Template.baseTemplate._getDefaultModes());
+    Template._defaultModesNames = Object.keys(Template._defaultModes);
 
     return Template;
 

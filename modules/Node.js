@@ -4,17 +4,17 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
      * Модуль работы с БЭМ-узлом.
      *
      * @constructor
-     * @param {object} node БЭМ-узел
+     * @param {object} bemjson BEMJSON узла
      */
-    function Node(node) {
+    function Node(bemjson) {
 
         /**
-         * БЭМ-узел.
+         * BEMJSON узла.
          *
          * @private
          * @type {object}
          */
-        this._node = node;
+        this._bemjson = bemjson;
 
         /**
          * Экземпляр тега.
@@ -22,10 +22,10 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
          * @private
          * @type {Tag}
          */
-        this._tag = new Tag(node.tag).attr(node.attrs || {});
+        this._tag = new Tag(bemjson.tag).attr(bemjson.attrs || {});
 
-        if(node.single !== undefined) {
-            this._tag.single(node.single);
+        if(bemjson.single !== undefined) {
+            this._tag.single(bemjson.single);
         }
 
         /**
@@ -58,7 +58,7 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
          * @private
          * @type {object}
          */
-        this._options = node.options || {};
+        this._options = bemjson.options || {};
     }
 
     /**
@@ -78,12 +78,27 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
     Node.prototype = {
 
         /**
+         * Получить/установить BEMJSON узла.
+         *
+         * @param {object} [bemjson] BEMJSON
+         * @returns {object|Node}
+         */
+        bemjson: function(bemjson) {
+            if(bemjson === undefined) {
+                return this._bemjson;
+            }
+
+            this._bemjson = bemjson;
+            return this;
+        },
+
+        /**
          * Проверить узел на блок.
          *
          * @returns {boolean}
          */
         isBlock: function() {
-            return !!this._node.block && !this.isElem();
+            return !!this._bemjson.block && !this.isElem();
         },
 
         /**
@@ -92,7 +107,7 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
          * @returns {boolean}
          */
         isElem: function() {
-            return !!this._node.elem;
+            return !!this._bemjson.elem;
         },
 
         /**
@@ -104,10 +119,10 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
          */
         getName: function() {
 
-            var name = new Selector(this._node.block);
+            var name = new Selector(this._bemjson.block);
 
             if(this.isElem()) {
-                name.elem(this._node.elem);
+                name.elem(this._bemjson.elem);
             }
 
             return name;
@@ -121,8 +136,8 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
         getParams: function() {
             var params = {};
 
-            if(this._node.js) {
-                params[this._name.toString()] = this._node.js === true ? {} : this._node.js;
+            if(this._bemjson.js) {
+                params[this._name.toString()] = this._bemjson.js === true ? {} : this._bemjson.js;
             }
 
             return this._mix.reduce(function(params, mixNode) {
@@ -136,9 +151,9 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
          * @returns {array}
          */
         getMix: function() {
-            if(!this._node.mix) return [];
+            if(!this._bemjson.mix) return [];
 
-            return this._node.mix.reduce(function(mix, mixNode) {
+            return this._bemjson.mix.reduce(function(mix, mixNode) {
                 if(!mixNode) return mix;
 
                 var node = new Node(mixNode);
@@ -157,7 +172,7 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
          * @returns {string[]}
          */
         getClass: function() {
-            var node = this._node;
+            var node = this._bemjson;
 
             if(node.cls) {
                 this._tag.addClass(node.cls.split(' ').filter(function(cls) { return cls; }));
@@ -196,9 +211,9 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
          * @returns {*|Node}
          */
         content: function(content) {
-            if(content === undefined) return this._node.content || '';
+            if(content === undefined) return this._bemjson.content || '';
 
-            this._node.content = content;
+            this._bemjson.content = content;
             return this;
         },
 
@@ -214,8 +229,8 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
                 this._tag.attr(Node.bemAttr, this._params);
             }
 
-            if(this._node.content) {
-                this._tag.addContent(this._node.content);
+            if(this._bemjson.content) {
+                this._tag.addContent(this._bemjson.content);
             }
 
             var escape = Node.resolveOptionEscape(this._options.escape);
@@ -234,7 +249,7 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
          * @returns {string[]}
          */
         _getModsClasses: function(method) {
-            var mods = this._node[method + 's'];
+            var mods = this._bemjson[method + 's'];
             return Object.keys(mods).reduce(function(classes, key) {
                 if(mods[key]) {
                     classes.push(this._name[method](key, mods[key]).toString());
@@ -250,9 +265,9 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
          * @returns {string[]}
          */
         _getElemModsClasses: function() {
-            if(!object.isEmpty(this._node.mods)) {
-                return Object.keys(this._node.mods).reduce(function(classes, key) {
-                    this._name.mod(key, this._node.mods[key]);
+            if(!object.isEmpty(this._bemjson.mods)) {
+                return Object.keys(this._bemjson.mods).reduce(function(classes, key) {
+                    this._name.mod(key, this._bemjson.mods[key]);
                     return classes.concat(this._getModsClasses('elemMod'));
                 }.bind(this), []);
             }
