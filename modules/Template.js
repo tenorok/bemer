@@ -27,6 +27,18 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
         this.modes = [].slice.call(arguments, -1)[0];
 
         /**
+         * Вес шаблона.
+         *
+         * Рассчитать вес шаблона возможно при наличии только одного селектора.
+         * При наличии в шаблоне нескольких селекторов его вес устанавливается как `null`.
+         *
+         * @type {number|null}
+         */
+        this.weight = this._patterns.length === 1
+            ? new Selector(this._patterns[0]).weight()
+            : null;
+
+        /**
          * Функции-помощники.
          *
          * @private

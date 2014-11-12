@@ -1,4 +1,4 @@
-definer('TemplateTest', function(assert, Template, Helpers) {
+definer('TemplateTest', function(assert, Template, Helpers, Selector) {
     describe('Модуль Template.', function() {
 
         it('Шаблонизировать простой блок', function() {
@@ -851,6 +851,18 @@ definer('TemplateTest', function(assert, Template, Helpers) {
                     }).match({ block: 'name' }).toString(),
                         '<undefined class="name"></undefined>'
                     );
+                });
+
+            });
+
+            describe('Вес шаблона.', function() {
+
+                it('Получить вес шаблона с одним селектором', function() {
+                    assert.equal(new Template('name', {}).weight, new Selector('name').weight());
+                });
+
+                it('Получить вес шаблона с несколькими селекторами', function() {
+                    assert.equal(new Template('name1', 'name2', {}).weight, null);
                 });
 
             });
