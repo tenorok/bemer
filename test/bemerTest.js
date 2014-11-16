@@ -184,17 +184,228 @@ definer('bemerTest', function(assert, bemer, Helpers) {
             });
         });
 
-        it('При добавлении модификатора из шаблона должен выполниться шаблон на этот модификатор', function() {
-            bemer
-                .match('header', {
-                    mods: {
-                        a: 'foo'
-                    }
-                })
-                .match('header_a_foo', {
-                    tag: 'header'
+        describe('Приоритеты шаблонов.', function() {
+
+            it('При равном весе селекторов приоритет у более позднего', function() {
+                bemer
+                    .match('name_a_b', {
+                        tag: 'p'
+                    })
+                    .match('name_c_d', {
+                        tag: 'span'
+                    });
+                assert.equal(bemer({ block: 'name', mods: { a: 'b', c: 'd' }}),
+                    '<span class="name name_a_b name_c_d"></span>'
+                );
+            });
+
+            it('Несмотря на последовательность шаблонов, приоритет у селектора с большим весом', function() {
+                bemer
+                    .match('name_a_b', {
+                        tag: 'p'
+                    })
+                    .match('name_a_*', {
+                        tag: 'span'
+                    });
+                assert.equal(bemer({ block: 'name', mods: { a: 'b' }}),
+                    '<p class="name name_a_b"></p>'
+                );
+            });
+
+            it('Приоритет у селектора с большим весом для нескольких модификаторов', function() {
+                bemer
+                    .match('name_a_b', {
+                        tag: 'p'
+                    })
+                    .match('name_c_*', {
+                        tag: 'span'
+                    });
+                assert.equal(bemer({ block: 'name', mods: { a: 'b', c: 'd' }}),
+                    '<p class="name name_a_b name_c_d"></p>'
+                );
+            });
+
+            it('Шаблоны с несколькими селекторами', function() {
+                bemer
+                    .match('name', 'name_a_b', {
+                        tag: 'span',
+                        mods: { c: 'd' }
+                    })
+                    .match('name_a_*', 'name_c_d', {
+                        tag: 'p'
+                    });
+                assert.equal(bemer({ block: 'name', mods: { a: 'b', c: 'd' }}),
+                    '<p class="name name_c_d name_a_b"></p>'
+                );
+            });
+
+            it('Три селектора: точный, неточный и снова точный', function() {
+                bemer
+                    .match('name_a_b', {
+                        tag: 'h1',
+                        attrs: { b: 2 }
+                    })
+                    .match('name_a_*', {
+                        tag: 'h2',
+                        attrs: { b: 1 }
+                    })
+                    .match('name_a_b', {
+                        tag: 'h3'
+                    });
+                assert.equal(bemer({ block: 'name', mods: { a: 'b' }}),
+                    '<h3 class="name name_a_b" b="2"></h3>'
+                );
+            });
+
+            it('Три модификатора и большое количество селекторов', function() {
+                bemer
+                    .match('name', 'name_c_d', {
+                        tag: 'h1'
+                    })
+                    .match('name_a_*', {
+                        attrs: { a: 1 }
+                    })
+                    .match('name_a_b', 'name_e_f', {
+                        tag: 'h2'
+                    })
+                    .match('name_e_f', {
+                        tag: 'h3',
+                        mods: { g: 'h' }
+                    })
+                    .match('name', {
+                        tag: 'h4'
+                    })
+                    .match('name_a_b', {
+                        attrs: { b: 2 }
+                    });
+                assert.equal(bemer({ block: 'name', mods: { a: 'b', c: 'd', e: 'f' }}),
+                    '<h3 class="name name_g_h name_a_b name_c_d name_e_f" a="1" b="2"></h3>'
+                );
+            });
+
+            describe('Изменение модификаторов в шаблонах.', function() {
+
+                it('Добавление нового модификатора', function() {
+                    bemer
+                        .match('header', {
+                            mods: { a: 'foo' }
+                        })
+                        .match('header_a_foo', {
+                            tag: 'header'
+                        });
+                    assert.equal(bemer({ block: 'header' }), '<header class="header header_a_foo"></header>');
                 });
-            assert.equal(bemer({ block: 'header' }), '<header class="header header_a_foo"></header>');
+
+                it('Добавление нового модификатора из шаблонов в обратном порядке декларации', function() {
+                    bemer
+                        .match('header_a_foo', {
+                            tag: 'header'
+                        })
+                        .match('header', {
+                            mods: { a: 'foo' }
+                        });
+                    assert.equal(bemer({ block: 'header' }), '<header class="header header_a_foo"></header>');
+                });
+
+                it('Удаление существующего модификатора', function() {
+                    bemer
+                        .match('header_a_foo', {
+                            tag: 'header',
+                            mods: { b: 'bar' }
+                        })
+                        .match('header_b_bar', {
+                            mods: function(bemjson) { return this.extend(bemjson, { a: false }); }
+                        });
+                    assert.equal(bemer({ block: 'header', mods: { a: 'foo' }}),
+                        '<header class="header header_b_bar"></header>'
+                    );
+                });
+
+                it('Изменение имеющегося модификатора', function() {
+                    bemer
+                        .match('header', {
+                            mods: { a: 'foo' }
+                        })
+                        .match('header_a_foo', {
+                            tag: 'header',
+                            mods: { a: false }
+                        });
+                    assert.equal(bemer({ block: 'header' }), '<header class="header"></header>');
+                });
+
+                it('При равном весе селекторов хеши объединяются с приоритетом у более позднего шаблона', function() {
+                    bemer
+                        .match('header_a_foo', {
+                            attrs: { c: 1 },
+                            mods: { b: 'bar' }
+                        })
+                        .match('header_b_bar', {
+                            attrs: { c: 2 }
+                        });
+                    assert.equal(bemer({ block: 'header', mods: { a: 'foo' }}),
+                        '<div class="header header_b_bar header_a_foo" c="2"></div>'
+                    );
+                });
+
+                it('Шаблоны не должны выполняться более одного раза', function() {
+                    var i = 0;
+                    bemer
+                        .match('header_a_foo', {
+                            attrs: function() {
+                                var attrs = {};
+                                attrs['a' + i] = i++;
+                                return attrs;
+                            },
+                            mods: { b: 'bar' }
+                        })
+                        .match('header_b_bar', {
+                            tag: 'header'
+                        });
+                    assert.equal(bemer({ block: 'header', mods: { a: 'foo' }}),
+                        '<header class="header header_b_bar header_a_foo" a0="0"></header>'
+                    );
+                });
+
+                it('Унаследованные моды не должны затирать предыдущий результат', function() {
+                    var i = 0;
+                    bemer
+                        .match('header', {
+                            attrs: function() {
+                                var attrs = {};
+                                attrs['a' + i] = i++;
+                                return attrs;
+                            },
+                            tag: 'footer',
+                            mods: { a: 'foo' }
+                        })
+                        .match('header_a_foo', {
+                            tag: 'header'
+                        });
+                    assert.equal(bemer({ block: 'header' }),
+                        '<header class="header header_a_foo" a0="0"></header>'
+                    );
+                });
+
+                it('Функция в значении поля шаблона должна принимать актуальный BEMJSON', function() {
+                    bemer
+                        .match('header_a_foo', {
+                            attrs: { a: 1 },
+                            mods: { b: 'bar' }
+                        })
+                        .match('header_b_bar', {
+                            attrs: function(bemjson) {
+                                bemjson.a++;
+                                bemjson.b = 2;
+                                return bemjson;
+                            }
+                        });
+                    assert.equal(bemer({ block: 'header', mods: { a: 'foo' }}),
+                        '<div class="header header_b_bar header_a_foo" a="2" b="2"></div>'
+                    );
+                });
+
+            });
+
         });
 
         describe('Изменить стандартные настройки шаблонизатора.', function() {

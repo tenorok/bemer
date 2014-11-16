@@ -110,7 +110,7 @@ definer('PoolTest', function(assert, Pool, Template) {
                 );
             });
 
-            it('Конечное значение поля шаблона определяет более поздний модификатор', function() {
+            it('Конечное значение поля шаблона определяет модификатор с большим весом', function() {
                 assert.equal(new Pool()
                     .add(new Template('any_b_*', { tag: 'header' }))
                     .add(new Template('any_b_bar', { tag: 'footer' }))
@@ -133,7 +133,7 @@ definer('PoolTest', function(assert, Pool, Template) {
                 );
             });
 
-            it('Переопределение тега в разных модификаторах', function() {
+            it('Конечное значение поля шаблона определяет более поздний модификатор', function() {
                 assert.equal(new Pool()
                     .add(new Template('input_a_foo', { tag: 'footer' }))
                     .add(new Template('input_b_bar', { tag: 'header' }))
@@ -143,6 +143,19 @@ definer('PoolTest', function(assert, Pool, Template) {
                     }})
                     .toString(),
                     '<header class="input input_a_foo input_b_bar"></header>'
+                );
+            });
+
+            it('Переопределение атрибутов в разных модификаторах', function() {
+                assert.equal(new Pool()
+                        .add(new Template('input_a_foo', { attrs: { c: 1 }}))
+                        .add(new Template('input_b_bar', { attrs: { c: 2 }}))
+                        .find({ block: 'input', mods: {
+                            a: 'foo',
+                            b: 'bar'
+                        }})
+                        .toString(),
+                    '<div class="input input_a_foo input_b_bar" c="2"></div>'
                 );
             });
 
