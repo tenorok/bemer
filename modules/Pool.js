@@ -1,4 +1,4 @@
-definer('Pool', /** @exports Pool */ function(array) {
+definer('Pool', /** @exports Pool */ function(array, object) {
 
     /**
      * Модуль хранения списка шаблонов.
@@ -77,20 +77,60 @@ definer('Pool', /** @exports Pool */ function(array) {
             var node = null,
                 nextNode = null,
                 currentBemjson = bemjson,
+
+                /**
+                 * Обработанные шаблоны.
+                 *
+                 * @type {Template[]}
+                 */
+                processedTemplates = [],
+
+                /**
+                 * Обработанные модификаторы.
+                 *
+                 * @type {object[]}
+                 * @property {string} object.modName Имя модификатора блока
+                 * @property {string} object.elemModName Имя модификатора элемента
+                 */
                 processedMods = [],
-                modesFromTemplates = [];
+
+                /**
+                 * Установленные из шаблонов моды.
+                 *
+                 * @type {object}
+                 * @property {object} * Имя моды
+                 * @property {number} *.weight Вес шаблона
+                 * @property {number} *.index Порядковый номер шаблона в общем списке
+                 */
+                modesFromTemplates = {};
 
             for(var index = this.pool.length - 1; index >= 0; index--) {
+                if(~processedTemplates.indexOf(this.pool[index])) continue;
+
                 if(node) {
                     currentBemjson = node.bemjson();
                 }
 
-                nextNode = this.pool[index].match(currentBemjson, data, processedMods, bemjson, modesFromTemplates);
+                nextNode = this.pool[index].match(
+                    currentBemjson,
+                    data,
+                    processedMods,
+                    bemjson,
+                    modesFromTemplates,
+                    index
+                );
+
                 if(nextNode) {
                     node = nextNode;
-                    modesFromTemplates = array.concatOnce(modesFromTemplates, Object.keys(this.pool[index].modes));
+                    processedTemplates.push(this.pool[index]);
+
+                    // Если изменился набор модификаторов, шаблоны нужно прогонять заново.
+                    if(!object.isEqual(currentBemjson.mods || {}, node.bemjson().mods || {})) {
+                        index = this.pool.length;
+                    }
                 }
             }
+
             return node;
         },
 
