@@ -349,8 +349,8 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
 
             if(!is.undefined(baseBemjsonVal)) return baseBemjsonVal;
 
-            if(is.undefined(val) || modesFromAnotherTemplates[name] &&
-                    (modesFromAnotherTemplates[name].weight >= this.weight || !isOwn)) return bemjsonVal;
+            if(is.undefined(val) || modesFromAnotherTemplates[name] && (!isOwn ||
+                !this._isThisTemplatePriority(info.index, modesFromAnotherTemplates[name]))) return bemjsonVal;
 
             if(isOwn) {
                 modesFromAnotherTemplates[name] = info;

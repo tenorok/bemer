@@ -155,7 +155,7 @@ definer('PoolTest', function(assert, Pool, Template) {
                             b: 'bar'
                         }})
                         .toString(),
-                    '<div class="input input_a_foo input_b_bar" c="2"></div>'
+                        '<div class="input input_a_foo input_b_bar" c="2"></div>'
                 );
             });
 
@@ -172,9 +172,22 @@ definer('PoolTest', function(assert, Pool, Template) {
                             d: 'baz'
                         }})
                         .toString(),
-                    '<span class="faz text text_a_foo text_b_bar text_c_faz text_d_baz" value="100" type="200">' +
-                        'hello' +
-                    '</span>'
+                        '<span class="faz text text_a_foo text_b_bar text_c_faz text_d_baz" value="100" type="200">' +
+                            'hello' +
+                        '</span>'
+                );
+            });
+
+            it('При равном весе приоритет у более позднего шаблона', function() {
+                assert.equal(new Pool()
+                        .add(new Template('text_a_foo', { mods: { b: 'bar' }}))
+                        .add(new Template('text_a_foo', { tag: 'p' }))
+                        .add(new Template('text_b_bar', { tag: 'span' }))
+                        .find({ block: 'text', mods: {
+                            a: 'foo'
+                        }})
+                        .toString(),
+                    '<span class="text text_b_bar text_a_foo"></span>'
                 );
             });
 

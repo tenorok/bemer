@@ -333,6 +333,16 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                     assert.equal(bemer({ block: 'header' }), '<header class="header"></header>');
                 });
 
+                it('При равном весе приоритет у более позднего шаблона', function() {
+                    bemer
+                        .match('name_a_foo', { mods: { b: 'bar' }})
+                        .match('name_a_foo', { tag: 'p' })
+                        .match('name_b_bar', { tag: 'span' });
+                    assert.equal(bemer({ block: 'name', mods: { a: 'foo' }}),
+                        '<span class="name name_b_bar name_a_foo"></span>'
+                    );
+                });
+
                 it('При равном весе селекторов хеши объединяются с приоритетом у более позднего шаблона', function() {
                     bemer
                         .match('header_a_foo', {
