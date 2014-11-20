@@ -115,10 +115,12 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
                 }
 
                 if(this._matches[i].is(bemjson)) {
-                    processedMods.push({
-                        modName: mods.modName,
-                        elemModName: mods.elemModName
-                    });
+                    if(mods.modName !== '' || mods.elemModName !== '') {
+                        processedMods.push({
+                            modName: mods.modName,
+                            elemModName: mods.elemModName
+                        });
+                    }
                     return this.transform(object.clone(bemjson), data, baseBemjson, modesFromAnotherTemplates, index);
                 }
             }
