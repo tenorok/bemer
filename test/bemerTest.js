@@ -414,6 +414,92 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                     );
                 });
 
+                describe('Изменение модификатора блока элемента.', function() {
+
+                    it('Добавление нового модификатора блоку', function() {
+                        bemer
+                            .match('header__logo', {
+                                mods: { a: 'foo' }
+                            })
+                            .match('header_a_foo__logo', {
+                                tag: 'header'
+                            });
+                        assert.equal(bemer({ block: 'header', elem: 'logo' }),
+                            '<header class="header_a_foo__logo"></header>'
+                        );
+                    });
+
+                    it('Не нужно выполнять шаблон без модификатора после шаблона с модификатором', function() {
+                        var i = 0;
+                        bemer
+                            .match('header__logo', {
+                                construct: /* istanbul ignore next */ function() {
+                                    throw new Error('Excessively execute template');
+                                },
+                                tag: 'footer'
+                            })
+                            .match('header__logo', {
+                                construct: function() {},
+                                attrs: function() {
+                                    var attrs = {};
+                                    attrs['a' + i] = i++;
+                                    return attrs;
+                                },
+                                mods: { a: 'foo' }
+                            })
+                            .match('header_a_foo__logo', {
+                                tag: 'header'
+                            });
+                        assert.equal(bemer({ block: 'header', elem: 'logo' }),
+                            '<header class="header_a_foo__logo" a0="0"></header>'
+                        );
+                    });
+
+                });
+
+                describe('Изменение модификаторов элементов.', function() {
+
+                    it('Добавление нового модификатора', function() {
+                        bemer
+                            .match('header__logo', {
+                                elemMods: { a: 'foo' }
+                            })
+                            .match('header__logo_a_foo', {
+                                tag: 'header'
+                            });
+                        assert.equal(bemer({ block: 'header', elem: 'logo' }),
+                            '<header class="header__logo header__logo_a_foo"></header>'
+                        );
+                    });
+
+                    it('Не нужно выполнять шаблон без модификатора после шаблона с модификатором', function() {
+                        var i = 0;
+                        bemer
+                            .match('header__logo', {
+                                construct: /* istanbul ignore next */ function() {
+                                    throw new Error('Excessively execute template');
+                                },
+                                tag: 'footer'
+                            })
+                            .match('header__logo', {
+                                construct: function() {},
+                                attrs: function() {
+                                    var attrs = {};
+                                    attrs['a' + i] = i++;
+                                    return attrs;
+                                },
+                                elemMods: { a: 'foo' }
+                            })
+                            .match('header__logo_a_foo', {
+                                tag: 'header'
+                            });
+                        assert.equal(bemer({ block: 'header', elem: 'logo' }),
+                            '<header class="header__logo header__logo_a_foo" a0="0"></header>'
+                        );
+                    });
+
+                });
+
             });
 
         });
