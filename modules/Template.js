@@ -370,11 +370,9 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
             // Мода не была установлена в другом шаблоне, значит приоритет имеет BEMJSON.
             if(!modeFromAnotherTemplate) return false;
 
-            if(modeFromAnotherTemplate) {
-                if(modeFromAnotherTemplate.weight > this.weight) return false;
-                if(modeFromAnotherTemplate.weight === this.weight) {
-                    return modeFromAnotherTemplate.index <= index;
-                }
+            if(modeFromAnotherTemplate.weight > this.weight) return false;
+            if(modeFromAnotherTemplate.weight === this.weight) {
+                return modeFromAnotherTemplate.index <= index;
             }
 
             return true;

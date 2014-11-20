@@ -174,6 +174,34 @@ definer('TemplateTest', function(assert, Template, Helpers, Selector) {
             }).match({ block: 'name' }).toString(), 'содержимое');
         });
 
+        it('Шаблон без модификатора не должен выполняться после шаблона с модификатором', function() {
+            var processedMods = [];
+            assert.equal(new Template('name_a_b', { tag: 'span' })
+                    .match({ block: 'name', mods: { a: 'b' }}, {}, processedMods).toString(),
+                '<span class="name name_a_b"></span>'
+            );
+            assert.isNull(new Template('name', { tag: 'p' }).match({ block: 'name' }, {}, processedMods));
+        });
+
+        it('Корректно устанавливаются моды шаблонов с разным весом', function() {
+            var bemjson = { block: 'name', mods: { a: 'b' }},
+                processedMods = [],
+                modesFromAnotherTemplates = [],
+
+                firstNode = new Template('name_a_*', { tag: 'span', attrs: { a: 1 }})
+                    .match(bemjson, {}, processedMods, bemjson, modesFromAnotherTemplates, 0),
+
+                secondNode = new Template('name_a_b', { tag: 'p', attrs: { a: 2 }})
+                    .match(firstNode.bemjson(), {}, processedMods, bemjson, modesFromAnotherTemplates, 1),
+
+                thirdNode = new Template('name_*_b', { tag: 'footer', single: true })
+                    .match(secondNode.bemjson(), {}, processedMods, bemjson, modesFromAnotherTemplates, 1);
+
+            assert.equal(firstNode.toString(), '<span class="name name_a_b" a="1"></span>');
+            assert.equal(secondNode.toString(), '<p class="name name_a_b" a="2"></p>');
+            assert.equal(thirdNode.toString(), '<p class="name name_a_b" a="2">');
+        });
+
         describe('Экранирование содержимого.', function() {
 
             it('Строка в содержимом', function() {
