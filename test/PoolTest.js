@@ -110,7 +110,7 @@ definer('PoolTest', function(assert, Pool, Template) {
                 );
             });
 
-            it('Конечное значение поля шаблона определяет более поздний модификатор', function() {
+            it('Конечное значение поля шаблона определяет модификатор с большим весом', function() {
                 assert.equal(new Pool()
                     .add(new Template('any_b_*', { tag: 'header' }))
                     .add(new Template('any_b_bar', { tag: 'footer' }))
@@ -133,7 +133,7 @@ definer('PoolTest', function(assert, Pool, Template) {
                 );
             });
 
-            it('Переопределение тега в разных модификаторах', function() {
+            it('Конечное значение поля шаблона определяет более поздний модификатор', function() {
                 assert.equal(new Pool()
                     .add(new Template('input_a_foo', { tag: 'footer' }))
                     .add(new Template('input_b_bar', { tag: 'header' }))
@@ -143,6 +143,19 @@ definer('PoolTest', function(assert, Pool, Template) {
                     }})
                     .toString(),
                     '<header class="input input_a_foo input_b_bar"></header>'
+                );
+            });
+
+            it('Переопределение атрибутов в разных модификаторах', function() {
+                assert.equal(new Pool()
+                        .add(new Template('input_a_foo', { attrs: { c: 1 }}))
+                        .add(new Template('input_b_bar', { attrs: { c: 2 }}))
+                        .find({ block: 'input', mods: {
+                            a: 'foo',
+                            b: 'bar'
+                        }})
+                        .toString(),
+                        '<div class="input input_a_foo input_b_bar" c="2"></div>'
                 );
             });
 
@@ -159,9 +172,22 @@ definer('PoolTest', function(assert, Pool, Template) {
                             d: 'baz'
                         }})
                         .toString(),
-                    '<span class="faz text text_a_foo text_b_bar text_c_faz text_d_baz" value="100" type="200">' +
-                        'hello' +
-                    '</span>'
+                        '<span class="faz text text_a_foo text_b_bar text_c_faz text_d_baz" value="100" type="200">' +
+                            'hello' +
+                        '</span>'
+                );
+            });
+
+            it('При равном весе приоритет у более позднего шаблона', function() {
+                assert.equal(new Pool()
+                        .add(new Template('text_a_foo', { mods: { b: 'bar' }}))
+                        .add(new Template('text_a_foo', { tag: 'p' }))
+                        .add(new Template('text_b_bar', { tag: 'span' }))
+                        .find({ block: 'text', mods: {
+                            a: 'foo'
+                        }})
+                        .toString(),
+                    '<span class="text text_b_bar text_a_foo"></span>'
                 );
             });
 
