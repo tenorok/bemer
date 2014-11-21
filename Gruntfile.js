@@ -76,6 +76,9 @@ module.exports = function(grunt) {
                     root: 'test/tmp/'
                 }
             }
+        },
+        coveralls: {
+            src: 'coverage/lcov.info'
         }
     });
 
