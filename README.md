@@ -1,4 +1,7 @@
 # Bemer — БЭМ-шаблонизатор
+[![npm version](https://badge.fury.io/js/bemer.svg)](http://badge.fury.io/js/bemer)
+[![Build Status](https://travis-ci.org/tenorok/bemer.svg?branch=master)](https://travis-ci.org/tenorok/bemer)
+[![Coverage Status](https://img.shields.io/coveralls/tenorok/bemer/master.svg)](https://coveralls.io/r/tenorok/bemer)
 
 БЭМ — это методология эффективной разработки веб-приложений.
 Большое количество информации размещено на официальном сайте [http://ru.bem.info](http://ru.bem.info).
@@ -501,6 +504,18 @@ bemer({ block: 'header', elem: 'logo' });
 <div class="header_theme_blue__logo"></div>
 ```
 
+При изменении списка модификаторов автоматически накладываются подходящие шаблоны:
+```js
+bemer
+  .match('button', { mods: { theme: 'normal' }})
+  .match('button_theme_normal', { tag: 'span' });
+bemer({ block: 'button' });
+```
+
+```html
+<span class="button button_theme_normal"></span>
+```
+
 ###### Поле `elemMods`
 
 Тип: `{object}`
@@ -519,6 +534,18 @@ bemer({ block: 'header', elem: 'logo' });
 
 ```html
 <div class="header__logo header__logo_size_s"></div>
+```
+
+При изменении списка модификаторов автоматически накладываются подходящие шаблоны:
+```js
+bemer
+  .match('button__label', { elemMods: { size: 'm' }})
+  .match('button__label_size_m', { tag: 'label' });
+bemer({ block: 'button', elem: 'label' });
+```
+
+```html
+<label class="button__label button__label_size_m"></label>
 ```
 
 ###### Поле `mix`

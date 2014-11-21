@@ -125,7 +125,8 @@ definer('Pool', /** @exports Pool */ function(array, object) {
                     processedTemplates.push(this.pool[index]);
 
                     // Если изменился набор модификаторов, шаблоны нужно прогонять заново.
-                    if(!object.isEqual(currentBemjson.mods || {}, node.bemjson().mods || {})) {
+                    if(!object.isEqual(currentBemjson.mods || {}, node.bemjson().mods) ||
+                        !object.isEqual(currentBemjson.elemMods || {}, node.bemjson().elemMods)) {
                         index = this.pool.length;
                     }
                 }
