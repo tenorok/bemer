@@ -282,7 +282,7 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
 
             object.each(attrs, function(key, val) {
                 if(val === true) {
-                    tag.push(' ' + key + (options.repeatBooleanAttr ? '="' + key + '"' : ''))
+                    tag.push(' ' + key + (options.repeatBooleanAttr ? '="' + key + '"' : ''));
                 } else {
 
                     if(is.array(val) || is.map(val)) {

@@ -1,4 +1,4 @@
-definer.export('bemer', /** @exports bemer */ function(
+definer.export('bemer', /** @exports bemer */ function( /* jshint maxparams: false */
     Tag, Tree, Template, Pool, Selector, Node, Helpers, functions, object, is, modules
 ) {
 
@@ -39,7 +39,7 @@ definer.export('bemer', /** @exports bemer */ function(
      * @param {object} modes Моды для преобразования узла
      * @returns {bemer}
      */
-    bemer.match = function(pattern, modes) {
+    bemer.match = function(pattern, modes) { /* jshint unused: false */
         pool.add(functions.apply(Template, arguments).helper(helpers));
         return this;
     };

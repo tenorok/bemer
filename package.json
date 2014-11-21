@@ -1,7 +1,7 @@
 {
     "name": "bemer",
     "description": "Template engine. BEMJSON to HTML processor.",
-    "version": "0.6.3",
+    "version": "0.7.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/tenorok/bemer.git"
@@ -14,24 +14,27 @@
     "license": "MIT",
     "dependencies": {
         "inherit": "2.1.0",
-        "molotok": "~0.1.0"
+        "molotok": "~0.1.2"
     },
     "devDependencies": {
         "git-hooks": "~0.0.6",
         "jsdoc": "v3.3.0-alpha8",
         "chai": "~1.8.1",
         "jscs": "~1.2.4",
+        "jshint": "~2.5.6",
         "grunt-prompt": "~1.1.0",
         "grunt": "~0.4.2",
         "load-grunt-tasks": "~0.4.0",
         "grunt-cli": "~0.1.13",
-        "grunt-definer": "~0.1.0",
+        "grunt-definer": "~0.1.2",
         "grunt-mocha-test": "~0.9.1",
         "grunt-shell": "~0.7.0",
         "grunt-contrib-clean": "~0.5.0",
         "grunt-mkdir": "~0.1.1",
         "grunt-contrib-uglify": "~0.4.0",
+        "grunt-mocha-istanbul": "~2.1.0",
         "benchmark": "~1.0.0",
-        "beautify-benchmark": "~0.2.4"
+        "beautify-benchmark": "~0.2.4",
+        "grunt-coveralls": "~1.0.0"
     }
 }

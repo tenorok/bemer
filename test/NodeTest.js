@@ -1,6 +1,11 @@
 definer('NodeTest', function(assert, Node) {
     describe('Модуль Node.', function() {
 
+        it('Получить/установить BEMJSON узла', function() {
+            assert.deepEqual(new Node({ block: 'a' }).bemjson(), { block: 'a' });
+            assert.deepEqual(new Node({ block: 'a' }).bemjson({ block: 'b' }).bemjson(), { block: 'b' });
+        });
+
         it('Проверить узел на блок', function() {
             assert.isFalse(new Node({}).isBlock());
             assert.isTrue(new Node({ block: 'name' }).isBlock());
@@ -151,6 +156,7 @@ definer('NodeTest', function(assert, Node) {
         });
 
         it('Получить информацию о примиксованных сущностях', function() {
+            assert.deepEqual(new Node({ block: 'a', mix: [undefined] }).getMix(), []);
             assert.deepEqual(new Node({ block: 'a', mix: [{ block: 'b' }] }).getMix(), [
                 { name: 'b', classes: ['b'], params: {}}
             ]);
@@ -420,6 +426,50 @@ definer('NodeTest', function(assert, Node) {
                     );
                 });
 
+            });
+
+        });
+
+        describe('Метод resolveOptionEscape.', function() {
+
+            it('Булево значение', function() {
+                assert.deepEqual(Node.resolveOptionEscape(true), {
+                    content: true,
+                    attrs: true
+                });
+                assert.deepEqual(Node.resolveOptionEscape(false), {
+                    content: false,
+                    attrs: false
+                });
+            });
+
+            it('Отдельно content', function() {
+                assert.deepEqual(Node.resolveOptionEscape({ content: true }), {
+                    content: true,
+                    attrs: Tag.escapeAttr
+                });
+                assert.deepEqual(Node.resolveOptionEscape({ content: false }), {
+                    content: false,
+                    attrs: Tag.escapeAttr
+                });
+            });
+
+            it('Отдельно attrs', function() {
+                assert.deepEqual(Node.resolveOptionEscape({ attrs: true }), {
+                    content: Tag.escapeContent,
+                    attrs: true
+                });
+                assert.deepEqual(Node.resolveOptionEscape({ attrs: false }), {
+                    content: Tag.escapeContent,
+                    attrs: false
+                });
+            });
+
+            it('Вместе content и attr', function() {
+                assert.deepEqual(Node.resolveOptionEscape({ content: true, attrs: false }), {
+                    content: true,
+                    attrs: false
+                });
             });
 
         });

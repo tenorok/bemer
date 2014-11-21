@@ -7,7 +7,7 @@ definer('bemerBenchmark', function(assert, format, bemer) {
         this.timeout(15000);
 
         name = 'recursion';
-        ops[name] = 36;
+        ops[name] = 50;
         it('Глубокая вложенность / ' + format(ops[name]), function(done) {
             function construct(obj, depth) {
                 if(depth < 5) {

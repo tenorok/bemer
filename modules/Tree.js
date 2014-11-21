@@ -24,14 +24,6 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
          * @type {Pool}
          */
         this._pool = pool;
-
-        /**
-         * Контекст блока в дереве.
-         *
-         * @private
-         * @type {string}
-         */
-        this._block = tree.block || '';
     }
 
     Tree.prototype = {
@@ -108,25 +100,24 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
 
             data = data || {};
 
-            if(bemjson.elem && !bemjson.block && data.context.block) {
+            if(!bemjson.block && bemjson.elem) {
                 bemjson.block = data.context.block;
-                if(data.context.mods) {
-                    bemjson.mods = object.extend(data.context.mods, bemjson.mods || {});
-                }
+                bemjson.mods = object.extend(data.context.mods, bemjson.mods || {});
             }
 
-            var node = this._pool.find(bemjson, data) || Template.base(bemjson, data);
+            var node = this._pool.find(bemjson, data) || Template.base(bemjson, data),
+                nodeBemjson = node.bemjson();
 
-            if(bemjson.block) {
-                data.context = { block: bemjson.block };
-                if(bemjson.mods) {
-                    data.context.mods = object.clone(bemjson.mods);
-                }
+            if(nodeBemjson.block) {
+                data.context = {
+                    block: nodeBemjson.block,
+                    mods: object.clone(nodeBemjson.mods)
+                };
             }
 
             return node.content(this[
-                is.array(bemjson.content) ? '_getContentList' : '_getNode'
-            ](bemjson.content, data));
+                is.array(nodeBemjson.content) ? '_getContentList' : '_getNode'
+            ](nodeBemjson.content, data));
         }
 
     };

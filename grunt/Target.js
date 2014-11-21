@@ -2,7 +2,7 @@ function Target() {}
 
 Target.definer = function() {
 
-    var modules = [
+    var modules = Target.modules = [
             'Selector',
             'Tag',
             'Node',
@@ -42,7 +42,7 @@ Target.definer = function() {
                     date: true
                 }
             },
-            main: {
+            mainTest: {
                 target: 'test/tmp/mainTest.js',
                 directory: directoriesTest,
                 verbose: verbose,
@@ -58,7 +58,7 @@ Target.definer = function() {
 
     modules.forEach(function(moduleName) {
         var testName = moduleName + 'Test';
-        target[moduleName] = {
+        target[testName] = {
             module: testName,
             target: 'test/tmp/' + testName + '.js',
             directory: directoriesTest,
@@ -73,6 +73,19 @@ Target.definer = function() {
             module: benchmarkName,
             target: 'test/tmp/' + benchmarkName + '.js',
             directory: directoriesBenchmark,
+            verbose: verbose,
+            clean: clean
+        };
+    });
+
+    modules.forEach(function(moduleName) {
+        var coverageName = moduleName + 'Coverage',
+            testName = moduleName + 'Test';
+        target[coverageName] = {
+            module: testName,
+            istanbul: [moduleName, testName],
+            target: 'test/tmp/' + coverageName + '.js',
+            directory: directoriesTest,
             verbose: verbose,
             clean: clean
         };

@@ -47,7 +47,9 @@ module.exports = function(grunt) {
                         ? release.getShellRelease()
                         : '';
                 }
-            }
+            },
+            jscs: { command: './node_modules/.bin/jscs modules/' },
+            jshint: { command: './node_modules/.bin/jshint modules/' }
         },
         definer: Target.definer(),
         mochaTest: Target.mocha(module),
@@ -64,6 +66,19 @@ module.exports = function(grunt) {
                     ]
                 }
             }
+        },
+        mocha_istanbul: {
+            coverage: {
+                src: 'test/tmp/*.js',
+                options: {
+                    reporter: 'dot',
+                    print: 'both',
+                    root: 'test/tmp/'
+                }
+            }
+        },
+        coveralls: {
+            src: 'coverage/lcov.info'
         }
     });
 
@@ -71,7 +86,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('test', [
         'clean:test',
-        'definer:' + module,
+        'definer:' + module + 'Test',
         'mochaTest'
     ]);
 
@@ -79,6 +94,22 @@ module.exports = function(grunt) {
         'clean:test',
         'definer:' + module + 'Benchmark',
         'mochaTest'
+    ]);
+
+    grunt.registerTask('coverage', function() {
+
+        grunt.task.run('clean:test');
+
+        Target.modules.forEach(function(module) {
+            grunt.task.run('definer:' + module + 'Coverage');
+        });
+
+        grunt.task.run('mocha_istanbul:coverage');
+    });
+
+    grunt.registerTask('lint', [
+        'shell:jscs',
+        'shell:jshint'
     ]);
 
     grunt.registerTask('update:jsdoc', [
@@ -90,6 +121,7 @@ module.exports = function(grunt) {
         release.changeJsonFilesVersion();
 
         grunt.task.run('test', 'clean:test');
+        grunt.task.run('lint');
         grunt.task.run('clean:jsdoc', 'jsdoc');
         grunt.task.run('clean:release', 'mkdir:release', 'definer:release', 'uglify:release');
 

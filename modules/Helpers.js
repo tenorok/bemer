@@ -107,7 +107,7 @@ definer('Helpers', /** @exports Helpers */ function(string, number, object, is) 
                  * @param {object} bemjson BEMJSON заматченной сущности
                  * @param {object} [data] Данные по сущности в дереве
                  */
-                construct: function(bemjson, data) {}
+                construct: function(bemjson, data) { /* jshint unused: false */ }
             };
         },
 
