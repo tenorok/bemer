@@ -20,17 +20,18 @@
 
 .example__templates,
 .example__bemjson {
-    width: 440px;
     min-height: 300px;
 
     margin-bottom: 20px;
 }
 
 .example__templates {
+    width: 520px;
     margin-right: 10px;
 }
 
 .example__bemjson {
+    width: 362px;
     margin-left: 10px;
 }
 
