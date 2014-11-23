@@ -174,8 +174,8 @@ defineAsGlobal && (global.inherit = inherit);
  * @file Template engine. BEMJSON to HTML processor.
  * @copyright 2014 Artem Kurbatov, tenorok.ru
  * @license MIT license
- * @version 0.6.3
- * @date 7 October 2014
+ * @version 0.7.0
+ * @date 21 November 2014
  */
 (function(global, undefined) {
 var definer = {
@@ -788,8 +788,8 @@ object = (function (is) {
             var sourceObj = arguments[s],
                 key;
 
-            if(object.isNeedHasOwnProperty(sourceObj)) {
-                for(key in sourceObj) if(object.hasOwnProperty(sourceObj, key)) original[key] = sourceObj[key];
+            if(this.isNeedHasOwnProperty(sourceObj)) {
+                for(key in sourceObj) if(this.hasOwnProperty(sourceObj, key)) original[key] = sourceObj[key];
             } else {
                 for(key in sourceObj) original[key] = sourceObj[key];
             }
@@ -806,18 +806,18 @@ object = (function (is) {
      */
     object.deepExtend = function(original, source) {
         for(var s = 1, sLen = arguments.length; s < sLen; s++) {
-            object.each(arguments[s], function(key, sourceVal) {
+            this.each(arguments[s], function(key, sourceVal) {
                 var objVal = original[key],
                     isMapSourceItem = is.map(sourceVal);
 
                 if(is.map(objVal) && isMapSourceItem) {
-                    original[key] = object.deepExtend(objVal, sourceVal);
+                    original[key] = this.deepExtend(objVal, sourceVal);
                 } else if(isMapSourceItem) {
-                    original[key] = object.clone(sourceVal);
+                    original[key] = this.deepClone(sourceVal);
                 } else {
                     original[key] = sourceVal;
                 }
-            });
+            }, this);
         }
         return original;
     };
@@ -830,12 +830,71 @@ object = (function (is) {
      */
     object.isEmpty = function(obj) {
         obj = obj || {};
-        var needHasOwnProperty = object.isNeedHasOwnProperty(obj);
+        var needHasOwnProperty = this.isNeedHasOwnProperty(obj);
         for(var key in obj) {
             if(needHasOwnProperty && !obj.hasOwnProperty(key)) continue;
             return false;
         }
         return true;
+    };
+
+    /**
+     * Проверить объекты на идентичность.
+     *
+     * @param {...object} obj Объекты для проверки
+     * @returns {boolean}
+     */
+    object.isEqual = function(obj) {
+        var compareObjects = [].slice.call(arguments, 1),
+            objLen = this.size(obj);
+
+        for(var i = 0; i < compareObjects.length; i++) {
+            if(objLen !== this.size(compareObjects[i])) return false;
+            if(this.each(obj, function(key, val) {
+                if(val !== compareObjects[i][key]) return true;
+            })) return false;
+        }
+        return true;
+    };
+
+    /**
+     * Проверить объекты на идентичность рекурсивно.
+     *
+     * @param {...object} obj Объекты для проверки
+     * @returns {boolean}
+     */
+    object.isDeepEqual = function(obj) {
+        var compareObjects = [].slice.call(arguments, 1);
+
+        for(var i = 0; i < compareObjects.length; i++) {
+            var compareObj = compareObjects[i];
+            if(is.map(obj, compareObj)) {
+                if(this.size(obj) !== this.size(compareObj)) return false;
+                if(this.each(obj, function(key, val) {
+                    if(!this.isDeepEqual(val, compareObj[key])) return true;
+                }, this)) return false;
+            } else if(is.array(obj, compareObj)) {
+                if(obj.length !== compareObj.length) return false;
+                for(var j = 0; j < obj.length; j++) {
+                    if(!this.isDeepEqual(obj[j], compareObj[j])) return false;
+                }
+            } else if(obj !== compareObj) return false;
+        }
+        return true;
+    };
+
+    /**
+     * Получить количество собственных полей объекта.
+     *
+     * @param {object} obj Объект
+     * @returns {number}
+     */
+    object.size = function(obj) {
+        var size = 0;
+        object.each(obj, function() {
+            size++;
+        });
+        return size;
     };
 
     /**
@@ -845,7 +904,7 @@ object = (function (is) {
      * @returns {object}
      */
     object.clone = function(obj) {
-        return object.extend({}, obj);
+        return this.extend({}, obj);
     };
 
     /**
@@ -855,7 +914,7 @@ object = (function (is) {
      * @returns {object}
      */
     object.deepClone = function(obj) {
-        return object.deepExtend({}, obj);
+        return this.deepExtend({}, obj);
     };
 
     /**
@@ -877,6 +936,7 @@ object = (function (is) {
      * @callback object~eachCallback
      * @param {string} key Ключ
      * @param {*} val Значение
+     * @param {object} Перебираемый объект
      * @returns {undefined|*} При возвращении любого значения, кроме `undefined`,
      * перебор останавливается и метод `each` возвращает это значение
      */
@@ -893,14 +953,14 @@ object = (function (is) {
         var key,
             result;
 
-        if(object.isNeedHasOwnProperty(obj)) {
-            for(key in obj) if(object.hasOwnProperty(obj, key)) {
-                result = callback.call(context || obj, key, obj[key]);
+        if(this.isNeedHasOwnProperty(obj)) {
+            for(key in obj) if(this.hasOwnProperty(obj, key)) {
+                result = callback.call(context || obj, key, obj[key], obj);
                 if(result !== undefined) return result;
             }
         } else {
             for(key in obj) {
-                result = callback.call(context || obj, key, obj[key]);
+                result = callback.call(context || obj, key, obj[key], obj);
                 if(result !== undefined) return result;
             }
         }
@@ -919,19 +979,60 @@ object = (function (is) {
             val,
             result,
             deepResult,
-            needHasOwnProperty = object.isNeedHasOwnProperty(obj);
+            needHasOwnProperty = this.isNeedHasOwnProperty(obj);
 
         for(key in obj) {
             if(needHasOwnProperty && !obj.hasOwnProperty(key)) continue;
             val = obj[key];
             if(is.map(val)) {
-                deepResult = object.deepEach(val, callback, context);
+                deepResult = this.deepEach(val, callback, context);
                 if(deepResult !== undefined) return deepResult;
                 continue;
             }
-            result = callback.call(context || obj, key, val);
+            result = callback.call(context || obj, key, val, obj);
             if(result !== undefined) return result;
         }
+    };
+
+    /**
+     * Колбек вызывается для каждого ключа объекта
+     * при переборе методами `map` и `deepMap`.
+     *
+     * @callback object~mapCallback
+     * @param {string} key Ключ
+     * @param {*} val Значение
+     * @param {object} obj Перебираемый объект
+     * @returns {*} Значение поля
+     */
+
+    /**
+     * Модифицировать значения каждого ключа заданного объекта.
+     *
+     * @param {object} obj Объект
+     * @param {object~mapCallback} callback Колбек
+     * @param {object} [context=obj] Контекст вызова колбека (По умолчанию: итерируемый объект)
+     * @returns {object} Модифицированный объект
+     */
+    object.map = function(obj, callback, context) {
+        this.each(obj, function(key) {
+            obj[key] = callback.apply(this, arguments);
+        }, context);
+        return obj;
+    };
+
+    /**
+     * Модифицировать значения каждого ключа заданного объекта рекурсивно.
+     *
+     * @param {object} obj Объект
+     * @param {object~mapCallback} callback Колбек
+     * @param {object} [context=obj] Контекст вызова колбека (По умолчанию: итерируемый объект)
+     * @returns {object} Модифицированный объект
+     */
+    object.deepMap = function(obj, callback, context) {
+        this.deepEach(obj, function(key, val, curObj) {
+            curObj[key] = callback.apply(this, arguments);
+        }, context);
+        return obj;
     };
 
     return object;
@@ -1046,7 +1147,7 @@ Helpers = (function (string, number, object, is) {
                  * @param {object} bemjson BEMJSON заматченной сущности
                  * @param {object} [data] Данные по сущности в дереве
                  */
-                construct: function(bemjson, data) {}
+                construct: function(bemjson, data) { /* jshint unused: false */ }
             };
         },
 
@@ -1479,9 +1580,10 @@ Selector = (function () {
          * @returns {array}
          */
         _getMod: function(name, val) {
-            var mod = [],
-                name = this[name],
-                val = this[val];
+            var mod = [];
+
+            name = this[name];
+            val = this[val];
 
             if(name && val !== false) {
                 mod.push(Selector.delimiters.mod, name);
@@ -1534,6 +1636,21 @@ Match = (function (Selector, object, is) {
     }
 
     Match.prototype = {
+
+        /**
+         * Получить/установить шаблон.
+         *
+         * @param {string} [pattern] Шаблон
+         * @returns {Selector|Match}
+         */
+        pattern: function(pattern) {
+            if(pattern === undefined) {
+                return this._pattern;
+            }
+
+            this._pattern = new Selector(pattern);
+            return this;
+        },
 
         /**
          * Проверить узел или имя на соответствие шаблону.
@@ -2068,7 +2185,7 @@ Tag = (function (string, object, is) {
 
             object.each(attrs, function(key, val) {
                 if(val === true) {
-                    tag.push(' ' + key + (options.repeatBooleanAttr ? '="' + key + '"' : ''))
+                    tag.push(' ' + key + (options.repeatBooleanAttr ? '="' + key + '"' : ''));
                 } else {
 
                     if(is.array(val) || is.map(val)) {
@@ -2107,17 +2224,17 @@ Node = (function (Tag, Selector, object) {
      * Модуль работы с БЭМ-узлом.
      *
      * @constructor
-     * @param {object} node БЭМ-узел
+     * @param {object} bemjson BEMJSON узла
      */
-    function Node(node) {
+    function Node(bemjson) {
 
         /**
-         * БЭМ-узел.
+         * BEMJSON узла.
          *
          * @private
          * @type {object}
          */
-        this._node = node;
+        this._bemjson = bemjson;
 
         /**
          * Экземпляр тега.
@@ -2125,10 +2242,10 @@ Node = (function (Tag, Selector, object) {
          * @private
          * @type {Tag}
          */
-        this._tag = new Tag(node.tag).attr(node.attrs || {});
+        this._tag = new Tag(bemjson.tag).attr(bemjson.attrs || {});
 
-        if(node.single !== undefined) {
-            this._tag.single(node.single);
+        if(bemjson.single !== undefined) {
+            this._tag.single(bemjson.single);
         }
 
         /**
@@ -2161,7 +2278,7 @@ Node = (function (Tag, Selector, object) {
          * @private
          * @type {object}
          */
-        this._options = node.options || {};
+        this._options = bemjson.options || {};
     }
 
     /**
@@ -2181,12 +2298,27 @@ Node = (function (Tag, Selector, object) {
     Node.prototype = {
 
         /**
+         * Получить/установить BEMJSON узла.
+         *
+         * @param {object} [bemjson] BEMJSON
+         * @returns {object|Node}
+         */
+        bemjson: function(bemjson) {
+            if(bemjson === undefined) {
+                return this._bemjson;
+            }
+
+            this._bemjson = bemjson;
+            return this;
+        },
+
+        /**
          * Проверить узел на блок.
          *
          * @returns {boolean}
          */
         isBlock: function() {
-            return !!this._node.block && !this.isElem();
+            return !!this._bemjson.block && !this.isElem();
         },
 
         /**
@@ -2195,7 +2327,7 @@ Node = (function (Tag, Selector, object) {
          * @returns {boolean}
          */
         isElem: function() {
-            return !!this._node.elem;
+            return !!this._bemjson.elem;
         },
 
         /**
@@ -2207,10 +2339,10 @@ Node = (function (Tag, Selector, object) {
          */
         getName: function() {
 
-            var name = new Selector(this._node.block);
+            var name = new Selector(this._bemjson.block);
 
             if(this.isElem()) {
-                name.elem(this._node.elem);
+                name.elem(this._bemjson.elem);
             }
 
             return name;
@@ -2224,8 +2356,8 @@ Node = (function (Tag, Selector, object) {
         getParams: function() {
             var params = {};
 
-            if(this._node.js) {
-                params[this._name.toString()] = this._node.js === true ? {} : this._node.js;
+            if(this._bemjson.js) {
+                params[this._name.toString()] = this._bemjson.js === true ? {} : this._bemjson.js;
             }
 
             return this._mix.reduce(function(params, mixNode) {
@@ -2239,9 +2371,9 @@ Node = (function (Tag, Selector, object) {
          * @returns {array}
          */
         getMix: function() {
-            if(!this._node.mix) return [];
+            if(!this._bemjson.mix) return [];
 
-            return this._node.mix.reduce(function(mix, mixNode) {
+            return this._bemjson.mix.reduce(function(mix, mixNode) {
                 if(!mixNode) return mix;
 
                 var node = new Node(mixNode);
@@ -2260,7 +2392,7 @@ Node = (function (Tag, Selector, object) {
          * @returns {string[]}
          */
         getClass: function() {
-            var node = this._node;
+            var node = this._bemjson;
 
             if(node.cls) {
                 this._tag.addClass(node.cls.split(' ').filter(function(cls) { return cls; }));
@@ -2299,9 +2431,9 @@ Node = (function (Tag, Selector, object) {
          * @returns {*|Node}
          */
         content: function(content) {
-            if(content === undefined) return this._node.content || '';
+            if(content === undefined) return this._bemjson.content || '';
 
-            this._node.content = content;
+            this._bemjson.content = content;
             return this;
         },
 
@@ -2317,8 +2449,8 @@ Node = (function (Tag, Selector, object) {
                 this._tag.attr(Node.bemAttr, this._params);
             }
 
-            if(this._node.content) {
-                this._tag.addContent(this._node.content);
+            if(this._bemjson.content) {
+                this._tag.addContent(this._bemjson.content);
             }
 
             var escape = Node.resolveOptionEscape(this._options.escape);
@@ -2337,7 +2469,7 @@ Node = (function (Tag, Selector, object) {
          * @returns {string[]}
          */
         _getModsClasses: function(method) {
-            var mods = this._node[method + 's'];
+            var mods = this._bemjson[method + 's'];
             return Object.keys(mods).reduce(function(classes, key) {
                 if(mods[key]) {
                     classes.push(this._name[method](key, mods[key]).toString());
@@ -2353,9 +2485,9 @@ Node = (function (Tag, Selector, object) {
          * @returns {string[]}
          */
         _getElemModsClasses: function() {
-            if(!object.isEmpty(this._node.mods)) {
-                return Object.keys(this._node.mods).reduce(function(classes, key) {
-                    this._name.mod(key, this._node.mods[key]);
+            if(!object.isEmpty(this._bemjson.mods)) {
+                return Object.keys(this._bemjson.mods).reduce(function(classes, key) {
+                    this._name.mod(key, this._bemjson.mods[key]);
                     return classes.concat(this._getModsClasses('elemMod'));
                 }.bind(this), []);
             }
@@ -2366,7 +2498,7 @@ Node = (function (Tag, Selector, object) {
     };
 
     /**
-     * Разернуть опции экранирования.
+     * Получить/установить опции экранирования.
      *
      * @param {boolean|object} escape Флаг экранирования спецсимволов
      * @param {boolean} [escape.content] Флаг экранирования содержимого
@@ -2400,7 +2532,62 @@ Node = (function (Tag, Selector, object) {
     return Node;
 
 }).call(global, Tag, Selector, object),
-Pool = (function () {
+array = (function (is) {
+
+    /**
+     * Модуль работы с массивами.
+     *
+     * @class
+     */
+    function array() {}
+
+    /**
+     * Добавить элементы в массив без повтора.
+     * Дополненный аналог стандартного метода `Array.prototype.push`.
+     *
+     * @param {array} arr Массив
+     * @param {...*} element Элементы для добавления
+     * @returns {number} Количество элементов в массиве
+     */
+    array.pushOnce = function(arr, element) {
+        var elements = Array.prototype.slice.call(arguments, 1);
+        for(var i = 0; i < elements.length; i++) {
+            if(!~arr.indexOf(elements[i])) {
+                arr.push(elements[i]);
+            }
+        }
+        return arr.length;
+    };
+
+    /**
+     * Добавить отдельные элементы и элементы других массивов в массив без повтора.
+     * Дополненный аналог стандартного метода `Array.prototype.concat`.
+     *
+     * @param {array} arr Массив
+     * @param {...*} element Элементы для добавления
+     * @returns {array} Новый массив
+     */
+    array.concatOnce = function(arr, element) {
+        var elements = Array.prototype.slice.call(arguments, 1),
+            newArr = arr.slice();
+
+        for(var i = 0; i < elements.length; i++) {
+            if(is.array(elements[i])) {
+                for(var j = 0; j < elements[i].length; j++) {
+                    this.pushOnce(newArr, elements[i][j]);
+                }
+            } else {
+                this.pushOnce(newArr, elements[i]);
+            }
+        }
+
+        return newArr;
+    };
+
+    return array;
+
+}).call(global, is),
+Pool = (function (array, object) {
 
     /**
      * Модуль хранения списка шаблонов.
@@ -2425,7 +2612,7 @@ Pool = (function () {
          * @param {...Template} template Шаблон к добавлению
          * @returns {Pool}
          */
-        add: function(template) {
+        add: function(template) { /* jshint unused: false */
             var args = arguments,
                 templates = Object.keys(args).reduce(function(templates, key) {
                     return templates.concat(args[key].split());
@@ -2469,20 +2656,72 @@ Pool = (function () {
         },
 
         /**
-         * Найти шаблон для BEMJSON.
+         * Найти и применить шаблон для BEMJSON.
          *
          * @param {object} bemjson BEMJSON
          * @param {object} [data] Данные по сущности в дереве
          * @returns {Node|null} Экземпляр БЭМ-узла или null при отсутствии подходящего шаблона
          */
         find: function(bemjson, data) {
+            var node = null,
+                nextNode = null,
+                currentBemjson = bemjson,
+
+                /**
+                 * Обработанные шаблоны.
+                 *
+                 * @type {Template[]}
+                 */
+                processedTemplates = [],
+
+                /**
+                 * Обработанные модификаторы.
+                 *
+                 * @type {object[]}
+                 * @property {string} object.modName Имя модификатора блока
+                 * @property {string} object.elemModName Имя модификатора элемента
+                 */
+                processedMods = [],
+
+                /**
+                 * Установленные из шаблонов моды.
+                 *
+                 * @type {object}
+                 * @property {object} * Имя моды
+                 * @property {number} *.weight Вес шаблона
+                 * @property {number} *.index Порядковый номер шаблона в общем списке
+                 */
+                modesFromTemplates = {};
+
             for(var index = this.pool.length - 1; index >= 0; index--) {
-                var node = this.pool[index].match(bemjson, data);
+                if(~processedTemplates.indexOf(this.pool[index])) continue;
+
                 if(node) {
-                    return node;
+                    currentBemjson = node.bemjson();
+                }
+
+                nextNode = this.pool[index].match(
+                    currentBemjson,
+                    data,
+                    processedMods,
+                    bemjson,
+                    modesFromTemplates,
+                    index
+                );
+
+                if(nextNode) {
+                    node = nextNode;
+                    processedTemplates.push(this.pool[index]);
+
+                    // Если изменился набор модификаторов, шаблоны нужно прогонять заново.
+                    if(!object.isEqual(currentBemjson.mods || {}, node.bemjson().mods) ||
+                        !object.isEqual(currentBemjson.elemMods || {}, node.bemjson().elemMods)) {
+                        index = this.pool.length;
+                    }
                 }
             }
-            return null;
+
+            return node;
         },
 
         /**
@@ -2499,11 +2738,13 @@ Pool = (function () {
 
     return Pool;
 
-}).call(global),
+}).call(global, array, object),
 classify = (function (inherit) {
     return inherit;
 }).call(global, inherit),
-Template = (function (Match, classify, Node, Selector, Helpers, object, string, is) {
+Template = (function ( /* jshint maxparams: false */
+    Match, classify, Node, Selector, Helpers, object, string, is
+) {
 
     /**
      * Модуль шаблонизации BEMJSON-узла.
@@ -2512,7 +2753,7 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
      * @param {...string} pattern Шаблоны для матчинга
      * @param {object} modes Моды для преобразования узла
      */
-    function Template(pattern, modes) {
+    function Template(pattern, modes) { /* jshint unused: false */
 
         /**
          * Шаблоны для матчинга.
@@ -2525,10 +2766,29 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
         /**
          * Моды для преобразования узла.
          *
-         * @private
          * @type {object}
          */
-        this._modes = [].slice.call(arguments, -1)[0];
+        this.modes = [].slice.call(arguments, -1)[0];
+
+        /**
+         * Имена мод шаблона.
+         *
+         * @private
+         * @type {string[]}
+         */
+        this._modesNames = Object.keys(this.modes);
+
+        /**
+         * Вес шаблона.
+         *
+         * Рассчитать вес шаблона возможно при наличии только одного селектора.
+         * При наличии в шаблоне нескольких селекторов его вес устанавливается как `null`.
+         *
+         * @type {?number}
+         */
+        this.weight = this._patterns.length === 1
+            ? new Selector(this._patterns[0]).weight()
+            : null;
 
         /**
          * Функции-помощники.
@@ -2544,10 +2804,9 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
          * @private
          * @type {Match[]}
          */
-        this._matches = Object.keys(this._patterns).reduce(function(matches, key) {
-            matches.push(new Match(this._patterns[key]));
-            return matches;
-        }.bind(this), []);
+        this._matches = Object.keys(this._patterns).map(function(key) {
+            return new Match(this._patterns[key]);
+        }, this);
 
         /**
          * Класс по модам.
@@ -2576,13 +2835,37 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
          *
          * @param {object} bemjson Входящий BEMJSON
          * @param {object} [data] Данные по сущности в дереве
+         * @param {object[]} [processedMods] Список модификаторов, для которых уже были выполнены шаблоны
+         * @param {object} [baseBemjson] Базовый BEMJSON из входящих данных
+         * @param {string[]} [modesFromAnotherTemplates] Список полей, которые были установлены из других шаблонов
+         * @param {number} [index] Порядковый номер шаблона в общем списке
          * @returns {Node|null} Экземпляр БЭМ-узла или null при несоответствии BEMJSON шаблону
          */
-        match: function(bemjson, data) {
-
+        match: function(bemjson, data, processedMods, baseBemjson, modesFromAnotherTemplates, index) {
             for(var i = 0; i < this._matches.length; i++) {
+                var pattern = this._matches[i].pattern(),
+                    mods = {
+                        modName: pattern.modName(),
+                        elemModName: pattern.elemModName()
+                    },
+                    isBlock = pattern.isBlock();
+
+                processedMods = processedMods || [];
+
+                // Не нужно выполнять шаблон без модификатора,
+                // если уже был выполнен хотя бы один шаблон с модификатором.
+                if(!mods[isBlock ? 'modName' : 'elemModName'] && processedMods.length) {
+                    continue;
+                }
+
                 if(this._matches[i].is(bemjson)) {
-                    return this.transform(bemjson, data);
+                    if(mods.modName !== '' || mods.elemModName !== '') {
+                        processedMods.push({
+                            modName: mods.modName,
+                            elemModName: mods.elemModName
+                        });
+                    }
+                    return this.transform(object.clone(bemjson), data, baseBemjson, modesFromAnotherTemplates, index);
                 }
             }
 
@@ -2594,14 +2877,24 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
          *
          * @param {object} bemjson Входящий BEMJSON
          * @param {object} [data] Данные по сущности в дереве
+         * @param {object} [baseBemjson=bemjson] Базовый BEMJSON из входящих данных
+         * @param {string[]} [modesFromAnotherTemplates={}] Список полей, которые были установлены из других шаблонов
+         * @param {number} [index=0] Порядковый номер шаблона в общем списке
          * @returns {Node}
          */
-        transform: function(bemjson, data) {
+        transform: function(bemjson, data, baseBemjson, modesFromAnotherTemplates, index) {
             var modes = new this.Modes(bemjson, data);
 
             for(var i = 0, len = Template._defaultModesNames.length; i < len; i++) {
                 var mode = Template._defaultModesNames[i];
-                bemjson[mode] = this._getMode(modes, bemjson, mode);
+                bemjson[mode] = this._getMode(
+                    modes,
+                    bemjson,
+                    mode,
+                    baseBemjson || bemjson,
+                    modesFromAnotherTemplates || {},
+                    index || 0
+                );
             }
 
             return new Node(bemjson);
@@ -2614,7 +2907,7 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
          * @returns {Template}
          */
         extend: function(template) {
-            template.Modes = classify(this.Modes, template._modes);
+            template.Modes = classify(this.Modes, template.modes);
             return template;
         },
 
@@ -2624,10 +2917,9 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
          * @returns {Template[]}
          */
         split: function() {
-            return Object.keys(this._patterns).reduce(function(templates, key) {
-                templates.push(new Template(this._patterns[key], this._modes).helper(this._helpers.get()));
-                return templates;
-            }.bind(this), []);
+            return Object.keys(this._patterns).map(function(key) {
+                return new Template(this._patterns[key], this.modes).helper(this._helpers.get());
+            }, this);
         },
 
         /**
@@ -2676,7 +2968,7 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
          * @returns {Function}
          */
         _classifyModes: function() {
-            return classify(classify(this._getBaseModes()), this._functionifyModes(this._modes));
+            return classify(classify(this._getBaseModes()), this._functionifyModes(this.modes));
         },
 
         /**
@@ -2699,17 +2991,17 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
          * в анонимную функцию со свойством `__wrapped__`.
          *
          * @private
-         * @param {object} mods Поля
+         * @param {object} modes Поля
          * @returns {object}
          */
-        _functionifyModes: function(mods) {
-            object.each(mods, function(name, val) {
+        _functionifyModes: function(modes) {
+            object.each(modes, function(name, val) {
                 if(!is.function(val)) {
-                    mods[name] = function() { return val; };
-                    mods[name].__wrapped__ = true;
+                    modes[name] = function() { return val; };
+                    modes[name].__wrapped__ = true;
                 }
-            });
-            return mods;
+            }, this);
+            return modes;
         },
 
         /**
@@ -2744,19 +3036,33 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
          * @param {Object} modes Экземпляр класса по модам
          * @param {object} bemjson Входящий BEMJSON
          * @param {string} name Имя требуемой моды
+         * @param {object} baseBemjson Базовый BEMJSON из входящих данных
+         * @param {string[]} modesFromAnotherTemplates Список полей, которые были установлены из других шаблонов
+         * @param {number} index Порядковый номер шаблона в общем списке
          * @returns {*}
          */
-        _getMode: function(modes, bemjson, name) {
+        _getMode: function(modes, bemjson, name, baseBemjson, modesFromAnotherTemplates, index) {
             var isValFunc = !modes[name].__wrapped__,
                 bemjsonVal = bemjson[name],
+                baseBemjsonVal = baseBemjson[name],
                 val = modes[name].call(modes, bemjsonVal),
-                priorityVal = this._getPriorityValue(isValFunc, val, bemjsonVal);
+                priorityVal = this._getPriorityValue(
+                    name,
+                    val,
+                    bemjsonVal,
+                    baseBemjsonVal,
+                    isValFunc,
+                    modesFromAnotherTemplates,
+                    { weight: this.weight, index: index }
+                );
 
             if(!isValFunc) {
                 if(is.array(val, bemjsonVal)) {
                     priorityVal = bemjsonVal.concat(val);
                 } else if(is.map(val, bemjsonVal)) {
-                    priorityVal = object.extend(object.clone(val), bemjsonVal);
+                    priorityVal = this._isThisTemplatePriority(index, modesFromAnotherTemplates[name])
+                        ? object.extend(object.clone(bemjsonVal), val)
+                        : object.extend(object.clone(val), bemjsonVal);
                 }
             }
 
@@ -2770,14 +3076,52 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
          * то оно является приоритетным.
          *
          * @private
-         * @param {boolean} isValFunc Значение моды в шаблоне может быть задано функцией
+         * @param {string} name Имя требуемой моды
          * @param {*} val Значение моды в шаблоне
          * @param {*} bemjsonVal Значение моды в BEMJSON
+         * @param {*} baseBemjsonVal Значение моды базового BEMJSON из входящих данных
+         * @param {boolean} isValFunc Значение моды в шаблоне может быть задано функцией
+         * @param {string[]} modesFromAnotherTemplates Список полей, которые были установлены из других шаблонов
+         * @param {object} info Информация для добавления в список полей, установленных из шаблонов
          * @returns {*}
          */
-        _getPriorityValue: function(isValFunc, val, bemjsonVal) {
-            if(isValFunc) return val;
-            return is.undefined(bemjsonVal) ? val : bemjsonVal;
+        _getPriorityValue: function(name, val, bemjsonVal, baseBemjsonVal, isValFunc, modesFromAnotherTemplates, info) {
+            var isOwn = !!~this._modesNames.indexOf(name);
+
+            if(isValFunc && isOwn) {
+                modesFromAnotherTemplates[name] = info;
+                return val;
+            }
+
+            if(!is.undefined(baseBemjsonVal)) return baseBemjsonVal;
+
+            if(is.undefined(val) || modesFromAnotherTemplates[name] && (!isOwn ||
+                !this._isThisTemplatePriority(info.index, modesFromAnotherTemplates[name]))) return bemjsonVal;
+
+            if(isOwn) {
+                modesFromAnotherTemplates[name] = info;
+            }
+            return val;
+        },
+
+        /**
+         * Проверить приоритет моды текущего шаблона.
+         *
+         * @private
+         * @param {number} index Порядковый номер текущего шаблона в общем списке
+         * @param {object} modeFromAnotherTemplate Информация об установке моды из другого шаблона
+         * @returns {boolean}
+         */
+        _isThisTemplatePriority: function(index, modeFromAnotherTemplate) {
+            // Мода не была установлена в другом шаблоне, значит приоритет имеет BEMJSON.
+            if(!modeFromAnotherTemplate) return false;
+
+            if(modeFromAnotherTemplate.weight > this.weight) return false;
+            if(modeFromAnotherTemplate.weight === this.weight) {
+                return modeFromAnotherTemplate.index <= index;
+            }
+
+            return true;
         }
 
     };
@@ -2790,12 +3134,20 @@ Template = (function (Match, classify, Node, Selector, Helpers, object, string, 
     Template.baseTemplate = new Template('', {});
 
     /**
+     * Стандартные моды базового шаблона.
+     *
+     * @private
+     * @type {object}
+     */
+    Template._defaultModes = Template.baseTemplate._getDefaultModes();
+
+    /**
      * Список имён стандартных мод.
      *
      * @private
      * @type {array}
      */
-    Template._defaultModesNames = Object.keys(Template.baseTemplate._getDefaultModes());
+    Template._defaultModesNames = Object.keys(Template._defaultModes);
 
     return Template;
 
@@ -2826,14 +3178,6 @@ Tree = (function (Template, is, object) {
          * @type {Pool}
          */
         this._pool = pool;
-
-        /**
-         * Контекст блока в дереве.
-         *
-         * @private
-         * @type {string}
-         */
-        this._block = tree.block || '';
     }
 
     Tree.prototype = {
@@ -2910,25 +3254,24 @@ Tree = (function (Template, is, object) {
 
             data = data || {};
 
-            if(bemjson.elem && !bemjson.block && data.context.block) {
+            if(!bemjson.block && bemjson.elem) {
                 bemjson.block = data.context.block;
-                if(data.context.mods) {
-                    bemjson.mods = object.extend(data.context.mods, bemjson.mods || {});
-                }
+                bemjson.mods = object.extend(data.context.mods, bemjson.mods || {});
             }
 
-            var node = this._pool.find(bemjson, data) || Template.base(bemjson, data);
+            var node = this._pool.find(bemjson, data) || Template.base(bemjson, data),
+                nodeBemjson = node.bemjson();
 
-            if(bemjson.block) {
-                data.context = { block: bemjson.block };
-                if(bemjson.mods) {
-                    data.context.mods = object.clone(bemjson.mods);
-                }
+            if(nodeBemjson.block) {
+                data.context = {
+                    block: nodeBemjson.block,
+                    mods: object.clone(nodeBemjson.mods)
+                };
             }
 
             return node.content(this[
-                is.array(bemjson.content) ? '_getContentList' : '_getNode'
-            ](bemjson.content, data));
+                is.array(nodeBemjson.content) ? '_getContentList' : '_getNode'
+            ](nodeBemjson.content, data));
         }
 
     };
@@ -2998,7 +3341,7 @@ modules = (function (Tag, Selector, Node, Match) {
     return modules;
 
 }).call(global, Tag, Selector, Node, Match),
-bemer = definer.export("bemer", (function (
+bemer = definer.export("bemer", (function ( /* jshint maxparams: false */
     Tag, Tree, Template, Pool, Selector, Node, Helpers, functions, object, is, modules
 ) {
 
@@ -3039,7 +3382,7 @@ bemer = definer.export("bemer", (function (
      * @param {object} modes Моды для преобразования узла
      * @returns {bemer}
      */
-    bemer.match = function(pattern, modes) {
+    bemer.match = function(pattern, modes) { /* jshint unused: false */
         pool.add(functions.apply(Template, arguments).helper(helpers));
         return this;
     };
@@ -3178,17 +3521,18 @@ bemer = definer.export("bemer", (function (
 
 }).call(global, Tag, Tree, Template, Pool, Selector, Node, Helpers, functions, object, is, modules)),
 molotok = definer.export("molotok", (function (
-        is, string, number, object, functions
+        is, string, number, array, object, functions
     ) {
 
     return {
         is: is,
         string: string,
         number: number,
+        array: array,
         object: object,
         functions: functions
     };
 
-}).call(global, is, string, number, object, functions));
+}).call(global, is, string, number, array, object, functions));
 ["inherit"].forEach(function(g) { delete global[g]; });
 })(this);

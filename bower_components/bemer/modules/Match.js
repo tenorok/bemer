@@ -20,6 +20,21 @@ definer('Match', /** @exports Match */ function(Selector, object, is) {
     Match.prototype = {
 
         /**
+         * Получить/установить шаблон.
+         *
+         * @param {string} [pattern] Шаблон
+         * @returns {Selector|Match}
+         */
+        pattern: function(pattern) {
+            if(pattern === undefined) {
+                return this._pattern;
+            }
+
+            this._pattern = new Selector(pattern);
+            return this;
+        },
+
+        /**
          * Проверить узел или имя на соответствие шаблону.
          *
          * @param {object|string} test Узел или имя БЭМ-сущности
