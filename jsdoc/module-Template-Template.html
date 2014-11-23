@@ -173,7 +173,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line10">line 10</a>
+        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line12">line 12</a>
     </li></ul></dd>
     
 
@@ -267,7 +267,142 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line262">line 262</a>
+        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line390">line 390</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="modes"><span class="type-signature"></span>modes<span class="type-signature"> :object</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Моды для преобразования узла.
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">object</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line27">line 27</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="weight"><span class="type-signature">(nullable) </span>weight<span class="type-signature"> :number</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Вес шаблона.
+
+Рассчитать вес шаблона возможно при наличии только одного селектора.
+При наличии в шаблоне нескольких селекторов его вес устанавливается как `null`.
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">number</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line45">line 45</a>
     </li></ul></dd>
     
 
@@ -425,7 +560,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line63">line 63</a>
+        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line83">line 83</a>
     </li></ul></dd>
     
 
@@ -562,7 +697,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line111">line 111</a>
+        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line165">line 165</a>
     </li></ul></dd>
     
 
@@ -746,7 +881,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line153">line 153</a>
+        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line206">line 206</a>
     </li></ul></dd>
     
 
@@ -886,7 +1021,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line137">line 137</a>
+        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line190">line 190</a>
     </li></ul></dd>
     
 
@@ -934,7 +1069,7 @@
         
             
 <dt>
-    <h4 class="name" id="match"><span class="type-signature"></span>match<span class="signature">(bemjson, data<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Node|null}</span></h4>
+    <h4 class="name" id="match"><span class="type-signature"></span>match<span class="signature">(bemjson, data<span class="signature-attributes">opt</span>, processedMods<span class="signature-attributes">opt</span>, baseBemjson<span class="signature-attributes">opt</span>, modesFromAnotherTemplates<span class="signature-attributes">opt</span>, index<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Node|null}</span></h4>
 
     
 </dt>
@@ -1039,6 +1174,138 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>processedMods</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;object></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Список модификаторов, для которых уже были выполнены шаблоны</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>baseBemjson</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Базовый BEMJSON из входящих данных</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>modesFromAnotherTemplates</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;string></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Список полей, которые были установлены из других шаблонов</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Порядковый номер шаблона в общем списке</td>
+        </tr>
+
+    
     </tbody>
 </table>
     
@@ -1066,7 +1333,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line76">line 76</a>
+        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line100">line 100</a>
     </li></ul></dd>
     
 
@@ -1162,7 +1429,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line121">line 121</a>
+        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line175">line 175</a>
     </li></ul></dd>
     
 
@@ -1210,7 +1477,7 @@
         
             
 <dt>
-    <h4 class="name" id="transform"><span class="type-signature"></span>transform<span class="signature">(bemjson, data<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Node}</span></h4>
+    <h4 class="name" id="transform"><span class="type-signature"></span>transform<span class="signature">(bemjson, data<span class="signature-attributes">opt</span>, baseBemjson<span class="signature-attributes">opt</span>, modesFromAnotherTemplates<span class="signature-attributes">opt</span>, index<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Node}</span></h4>
 
     
 </dt>
@@ -1243,6 +1510,8 @@
         <th>Attributes</th>
         
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -1277,6 +1546,10 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">Входящий BEMJSON</td>
         </tr>
@@ -1310,8 +1583,129 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">Данные по сущности в дереве</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>baseBemjson</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    bemjson
+                
+                </td>
+            
+
+            <td class="description last">Базовый BEMJSON из входящих данных</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>modesFromAnotherTemplates</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;string></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    {}
+                
+                </td>
+            
+
+            <td class="description last">Список полей, которые были установлены из других шаблонов</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    0
+                
+                </td>
+            
+
+            <td class="description last">Порядковый номер шаблона в общем списке</td>
         </tr>
 
     
@@ -1342,7 +1736,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line94">line 94</a>
+        <a href="Template.js.html">Template.js</a>, <a href="Template.js.html#line141">line 141</a>
     </li></ul></dd>
     
 
@@ -1409,7 +1803,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha8</a> on Thu Oct 02 2014 15:26:23 GMT+0400 (MSK)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha8</a> on Sun Nov 23 2014 15:48:22 GMT+0400 (MSK)
 </footer>
 
 <script> prettyPrint(); </script>
