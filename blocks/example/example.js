@@ -27,21 +27,21 @@ BEM.DOM.decl('example', {
     setDefaultTemplates: function() {
         this.editors.templates.val(
             "bemer\n" +
-            "   .match('header', {\n" +
-            "       tag: 'header',\n" +
-            "       content: function() {\n" +
-            "           return {\n" +
-            "               elem: 'title',\n" +
-            "               content: this.bemjson.title\n" +
-            "           };\n" +
-            "       }\n" +
-            "   })\n" +
-            "   .match('header__title', {\n" +
-            "       tag: 'h1',\n" +
-            "       content: function(content) {\n" +
-            "           return content + '!';\n" +
-            "       }\n" +
-            "   });"
+            "    .match('header', {\n" +
+            "        tag: 'header',\n" +
+            "        content: function() {\n" +
+            "            return {\n" +
+            "                elem: 'title',\n" +
+            "                content: this.bemjson.title\n" +
+            "            };\n" +
+            "        }\n" +
+            "    })\n" +
+            "    .match('header__title', {\n" +
+            "        tag: 'h1',\n" +
+            "        content: function(content) {\n" +
+            "            return content + '!';\n" +
+            "        }\n" +
+            "    });"
         );
         return this;
     },
