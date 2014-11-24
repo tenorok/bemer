@@ -1,7 +1,7 @@
 {
     "name": "bemer.gh-pages",
     "dependencies": {
-        "bemer": "^0.7.0",
+        "bemer": "^0.7.1",
         "bemer-components": "^0.1.0",
         "i-bem": "^0.1.0",
         "normalize.css": "~3.0.1",

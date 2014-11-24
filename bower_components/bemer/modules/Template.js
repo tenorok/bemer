@@ -104,18 +104,18 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
                         modName: pattern.modName(),
                         elemModName: pattern.elemModName()
                     },
-                    isBlock = pattern.isBlock();
+                    modProp = pattern.isBlock() ? 'modName' : 'elemModName';
 
                 processedMods = processedMods || [];
 
                 // Не нужно выполнять шаблон без модификатора,
                 // если уже был выполнен хотя бы один шаблон с модификатором.
-                if(!mods[isBlock ? 'modName' : 'elemModName'] && processedMods.length) {
+                if(!mods[modProp] && processedMods.length) {
                     continue;
                 }
 
                 if(this._matches[i].is(bemjson)) {
-                    if(mods.modName !== '' || mods.elemModName !== '') {
+                    if(mods[modProp] !== '') {
                         processedMods.push({
                             modName: mods.modName,
                             elemModName: mods.elemModName
