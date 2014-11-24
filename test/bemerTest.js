@@ -184,6 +184,24 @@ definer('bemerTest', function(assert, bemer, Helpers) {
             });
         });
 
+        it('Несколько шаблонов на модификаторы блока элемента', function() {
+            bemer
+                .match('input_type_*__control', {
+                    tag: 'input',
+                    attrs: { value: 'Constantin' }
+                })
+                .match('input_type_text__control', {
+                    attrs: { placeholder: 'Your name' }
+                });
+            assert.equal(bemer({
+                block: 'input',
+                mods: { type: 'text' },
+                elem: 'control'
+            }),
+                '<input class="input_type_text__control" value="Constantin" placeholder="Your name">'
+            );
+        });
+
         describe('Приоритеты шаблонов.', function() {
 
             it('При равном весе селекторов приоритет у более позднего', function() {
