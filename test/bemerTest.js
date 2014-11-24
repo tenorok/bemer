@@ -301,6 +301,25 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                 );
             });
 
+            it('Шаблон на блок без модификатора должен заместить значение из BEMJSON', function() {
+                bemer
+                    .match('link', {
+                        content: function() {
+                            return 'second';
+                        }
+                    })
+                    .match('link_https', {
+                        tag: 'a'
+                    });
+                assert.equal(bemer({
+                        block: 'link',
+                        mods: { https: true },
+                        content: 'first'
+                    }),
+                    '<a class="link link_https">second</a>'
+                );
+            });
+
             describe('Изменение модификаторов в шаблонах.', function() {
 
                 it('Добавление нового модификатора', function() {
@@ -447,17 +466,13 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                         );
                     });
 
-                    it('Не нужно выполнять шаблон без модификатора после шаблона с модификатором', function() {
+                    it('Поле шаблона не должно выполняться более одного раза', function() {
                         var i = 0;
                         bemer
                             .match('header__logo', {
-                                construct: /* istanbul ignore next */ function() {
-                                    throw new Error('Excessively execute template');
-                                },
                                 tag: 'footer'
                             })
                             .match('header__logo', {
-                                construct: function() {},
                                 attrs: function() {
                                     var attrs = {};
                                     attrs['a' + i] = i++;
@@ -490,17 +505,13 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                         );
                     });
 
-                    it('Не нужно выполнять шаблон без модификатора после шаблона с модификатором', function() {
+                    it('Поле шаблона не должно выполняться более одного раза', function() {
                         var i = 0;
                         bemer
                             .match('header__logo', {
-                                construct: /* istanbul ignore next */ function() {
-                                    throw new Error('Excessively execute template');
-                                },
                                 tag: 'footer'
                             })
                             .match('header__logo', {
-                                construct: function() {},
                                 attrs: function() {
                                     var attrs = {};
                                     attrs['a' + i] = i++;

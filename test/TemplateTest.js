@@ -174,15 +174,6 @@ definer('TemplateTest', function(assert, Template, Helpers, Selector) {
             }).match({ block: 'name' }).toString(), 'содержимое');
         });
 
-        it('Шаблон без модификатора не должен выполняться после шаблона с модификатором', function() {
-            var processedMods = [];
-            assert.equal(new Template('name_a_b', { tag: 'span' })
-                    .match({ block: 'name', mods: { a: 'b' }}, {}, processedMods).toString(),
-                '<span class="name name_a_b"></span>'
-            );
-            assert.isNull(new Template('name', { tag: 'p' }).match({ block: 'name' }, {}, processedMods));
-        });
-
         it('Корректно устанавливаются моды шаблонов с разным весом', function() {
             var bemjson = { block: 'name', mods: { a: 'b' }},
                 processedMods = [],
