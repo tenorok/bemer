@@ -40,7 +40,7 @@ var bemer = require('bemer');
 
 ### Входящие данные
 
-Общепринятым форматом входящих данных для БЭМ-шаблонизаторов является [BEMJSON](http://ru.bem.info/libs/bem-core/2.2.0/templating/bemjson/#синтаксис-bemjson).
+Общепринятым форматом входящих данных для БЭМ-шаблонизаторов является [BEMJSON](http://ru.bem.info/technology/bemjson/2.3.0/bemjson/#Синтаксис-BEMJSON).
 
 ### Выходящие данные
 
@@ -48,7 +48,7 @@ var bemer = require('bemer');
 
 ## Получение результата
 
-Единственная переменная, предоставляемая шаблонизатором — `bemer` и она является функцией, которая принимает на вход один параметр — объект в формате [BEMJSON](http://ru.bem.info/libs/bem-core/2.2.0/templating/bemjson/#синтаксис-bemjson).
+Единственная переменная, предоставляемая шаблонизатором — `bemer` и она является функцией, которая принимает на вход один параметр — объект в формате [BEMJSON](http://ru.bem.info/technology/bemjson/2.3.0/bemjson/#Синтаксис-BEMJSON).
 
 ### Один блок
 
@@ -920,16 +920,11 @@ bemer({ block: 'name' })
 
 ### Метод `modules`
 
-Шаблонизатор bemer состоит из множества самостоятельных модулей,
-каждый из которых выполняет только свою заданную функцию.
+Шаблонизатор bemer состоит из самостоятельных модулей,
+каждый из которых предназначен для выполнения собственных целей.
 
 Имеющиеся модули достаточно абстрактные, благодаря чему могут быть использованы за пределами bemer:
 
-* [`number`](http://tenorok.github.io/bemer/jsdoc/module-number-number.html) — работа с числами
-* [`string`](http://tenorok.github.io/bemer/jsdoc/module-string-string.html) — работа со строками
-* [`object`](http://tenorok.github.io/bemer/jsdoc/module-object-object.html) — работа с объектами
-* [`functions`](http://tenorok.github.io/bemer/jsdoc/module-functions-functions.html) — работа с функциями
-* [`is`](http://tenorok.github.io/bemer/jsdoc/module-is-is.html) — работа с типами данных
 * [`Tag`](http://tenorok.github.io/bemer/jsdoc/module-Tag-Tag.html) — работа с тегом
 * [`Selector`](http://tenorok.github.io/bemer/jsdoc/module-Selector-Selector.html) — работа с БЭМ-селектором
 * [`Node`](http://tenorok.github.io/bemer/jsdoc/module-Node-Node.html) — работа с БЭМ-узлом
