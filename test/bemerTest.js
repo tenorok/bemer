@@ -351,14 +351,14 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                             mods: { b: 'bar' }
                         })
                         .match('header_b_bar', {
-                            mods: function(bemjson) { return this.extend(bemjson, { a: false }); }
+                            mods: function(mods) { return this.extend(mods, { a: false }); }
                         });
                     assert.equal(bemer({ block: 'header', mods: { a: 'foo' }}),
                         '<header class="header header_b_bar"></header>'
                     );
                 });
 
-                it('Изменение имеющегося модификатора', function() {
+                it('Модификатор удаляет сам себя', function() {
                     bemer
                         .match('header', {
                             mods: { a: 'foo' }
@@ -368,6 +368,25 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                             mods: { a: false }
                         });
                     assert.equal(bemer({ block: 'header' }), '<header class="header"></header>');
+                });
+
+                it('Изменение модификатора', function() {
+                    bemer
+                        .match('name_mod_first', {
+                            attrs: { a: 1 },
+                            mods: function() {
+                                return { mod: 'second' };
+                            }
+                        })
+                        .match('name_mod_second', {
+                            attrs: { b: 2 }
+                        });
+                    assert.equal(bemer({
+                        block: 'name',
+                        mods: { mod: 'first' }
+                    }),
+                        '<div class="name name_mod_second" a="1" b="2"></div>'
+                    );
                 });
 
                 it('При равном весе приоритет у более позднего шаблона', function() {
