@@ -91,40 +91,17 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
          *
          * @param {object} bemjson Входящий BEMJSON
          * @param {object} [data] Данные по сущности в дереве
-         * @param {object[]} [processedMods] Список модификаторов, для которых уже были выполнены шаблоны
          * @param {object} [baseBemjson] Базовый BEMJSON из входящих данных
          * @param {string[]} [modesFromAnotherTemplates] Список полей, которые были установлены из других шаблонов
          * @param {number} [index] Порядковый номер шаблона в общем списке
          * @returns {Node|null} Экземпляр БЭМ-узла или null при несоответствии BEMJSON шаблону
          */
-        match: function(bemjson, data, processedMods, baseBemjson, modesFromAnotherTemplates, index) {
+        match: function(bemjson, data, baseBemjson, modesFromAnotherTemplates, index) {
             for(var i = 0; i < this._matches.length; i++) {
-                var pattern = this._matches[i].pattern(),
-                    mods = {
-                        modName: pattern.modName(),
-                        elemModName: pattern.elemModName()
-                    },
-                    modProp = pattern.isBlock() ? 'modName' : 'elemModName';
-
-                processedMods = processedMods || [];
-
-                // Не нужно выполнять шаблон без модификатора,
-                // если уже был выполнен хотя бы один шаблон с модификатором.
-                if(!mods[modProp] && processedMods.length) {
-                    continue;
-                }
-
                 if(this._matches[i].is(bemjson)) {
-                    if(mods[modProp] !== '') {
-                        processedMods.push({
-                            modName: mods.modName,
-                            elemModName: mods.elemModName
-                        });
-                    }
                     return this.transform(object.clone(bemjson), data, baseBemjson, modesFromAnotherTemplates, index);
                 }
             }
-
             return null;
         },
 
@@ -316,7 +293,7 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
                 if(is.array(val, bemjsonVal)) {
                     priorityVal = bemjsonVal.concat(val);
                 } else if(is.map(val, bemjsonVal)) {
-                    priorityVal = this._isThisTemplatePriority(index, modesFromAnotherTemplates[name])
+                    priorityVal = this._isThisTemplatePriority(index, modesFromAnotherTemplates[name], isValFunc)
                         ? object.extend(object.clone(bemjsonVal), val)
                         : object.extend(object.clone(val), bemjsonVal);
                 }
@@ -342,17 +319,25 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
          * @returns {*}
          */
         _getPriorityValue: function(name, val, bemjsonVal, baseBemjsonVal, isValFunc, modesFromAnotherTemplates, info) {
-            var isOwn = !!~this._modesNames.indexOf(name);
+            var isOwn = !!~this._modesNames.indexOf(name),
+                isThisTemplatePriority = this._isThisTemplatePriority(
+                    info.index,
+                    modesFromAnotherTemplates[name],
+                    isValFunc
+                );
 
-            if(isValFunc && isOwn) {
+            if(isThisTemplatePriority && isOwn) {
                 modesFromAnotherTemplates[name] = info;
                 return val;
             }
 
-            if(!is.undefined(baseBemjsonVal)) return baseBemjsonVal;
+            if(!is.undefined(baseBemjsonVal)) {
+                return baseBemjsonVal;
+            }
 
-            if(is.undefined(val) || modesFromAnotherTemplates[name] && (!isOwn ||
-                !this._isThisTemplatePriority(info.index, modesFromAnotherTemplates[name]))) return bemjsonVal;
+            if(is.undefined(val) || modesFromAnotherTemplates[name] && (!isOwn || !isThisTemplatePriority)) {
+                return bemjsonVal;
+            }
 
             if(isOwn) {
                 modesFromAnotherTemplates[name] = info;
@@ -366,11 +351,12 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
          * @private
          * @param {number} index Порядковый номер текущего шаблона в общем списке
          * @param {object} modeFromAnotherTemplate Информация об установке моды из другого шаблона
+         * @param {boolean} isValFunc Значение моды в шаблоне может быть задано функцией
          * @returns {boolean}
          */
-        _isThisTemplatePriority: function(index, modeFromAnotherTemplate) {
-            // Мода не была установлена в другом шаблоне, значит приоритет имеет BEMJSON.
-            if(!modeFromAnotherTemplate) return false;
+        _isThisTemplatePriority: function(index, modeFromAnotherTemplate, isValFunc) {
+            // Мода не была установлена в другом шаблоне, значит приоритет имеет BEMJSON или функция шаблона.
+            if(!modeFromAnotherTemplate) return isValFunc;
 
             if(modeFromAnotherTemplate.weight > this.weight) return false;
             if(modeFromAnotherTemplate.weight === this.weight) {

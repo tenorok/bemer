@@ -301,6 +301,25 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                 );
             });
 
+            it('Шаблон на блок без модификатора должен заместить значение из BEMJSON', function() {
+                bemer
+                    .match('link', {
+                        content: function() {
+                            return 'second';
+                        }
+                    })
+                    .match('link_https', {
+                        tag: 'a'
+                    });
+                assert.equal(bemer({
+                        block: 'link',
+                        mods: { https: true },
+                        content: 'first'
+                    }),
+                    '<a class="link link_https">second</a>'
+                );
+            });
+
             describe('Изменение модификаторов в шаблонах.', function() {
 
                 it('Добавление нового модификатора', function() {
@@ -332,14 +351,14 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                             mods: { b: 'bar' }
                         })
                         .match('header_b_bar', {
-                            mods: function(bemjson) { return this.extend(bemjson, { a: false }); }
+                            mods: function(mods) { return this.extend(mods, { a: false }); }
                         });
                     assert.equal(bemer({ block: 'header', mods: { a: 'foo' }}),
                         '<header class="header header_b_bar"></header>'
                     );
                 });
 
-                it('Изменение имеющегося модификатора', function() {
+                it('Модификатор удаляет сам себя', function() {
                     bemer
                         .match('header', {
                             mods: { a: 'foo' }
@@ -349,6 +368,25 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                             mods: { a: false }
                         });
                     assert.equal(bemer({ block: 'header' }), '<header class="header"></header>');
+                });
+
+                it('Изменение модификатора', function() {
+                    bemer
+                        .match('name_mod_first', {
+                            attrs: { a: 1 },
+                            mods: function() {
+                                return { mod: 'second' };
+                            }
+                        })
+                        .match('name_mod_second', {
+                            attrs: { b: 2 }
+                        });
+                    assert.equal(bemer({
+                        block: 'name',
+                        mods: { mod: 'first' }
+                    }),
+                        '<div class="name name_mod_second" a="1" b="2"></div>'
+                    );
                 });
 
                 it('При равном весе приоритет у более позднего шаблона', function() {
@@ -447,17 +485,13 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                         );
                     });
 
-                    it('Не нужно выполнять шаблон без модификатора после шаблона с модификатором', function() {
+                    it('Поле шаблона не должно выполняться более одного раза', function() {
                         var i = 0;
                         bemer
                             .match('header__logo', {
-                                construct: /* istanbul ignore next */ function() {
-                                    throw new Error('Excessively execute template');
-                                },
                                 tag: 'footer'
                             })
                             .match('header__logo', {
-                                construct: function() {},
                                 attrs: function() {
                                     var attrs = {};
                                     attrs['a' + i] = i++;
@@ -490,17 +524,13 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                         );
                     });
 
-                    it('Не нужно выполнять шаблон без модификатора после шаблона с модификатором', function() {
+                    it('Поле шаблона не должно выполняться более одного раза', function() {
                         var i = 0;
                         bemer
                             .match('header__logo', {
-                                construct: /* istanbul ignore next */ function() {
-                                    throw new Error('Excessively execute template');
-                                },
                                 tag: 'footer'
                             })
                             .match('header__logo', {
-                                construct: function() {},
                                 attrs: function() {
                                     var attrs = {};
                                     attrs['a' + i] = i++;
@@ -767,6 +797,143 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                 var Selector = bemer.modules('Selector');
                 assert.isTrue(is.function(Selector));
                 assert.isTrue(new Selector() instanceof Selector);
+            });
+
+        });
+
+        describe('Интерактивные примеры для сайта.', function() {
+
+            it('Декларативная шаблонизация и инкапсуляция структуры блока', function() {
+                bemer
+                    .match('header', {
+                        tag: 'header',
+                        content: function() {
+                            return {
+                                elem: 'title',
+                                content: this.bemjson.title
+                            };
+                        }
+                    })
+                    .match('header__title', {
+                        tag: 'h1',
+                        content: function(content) {
+                            return content + '!';
+                        }
+                    });
+                assert.equal(bemer({
+                    block: 'header',
+                    title: 'Hello World'
+                }),
+                    '<header class="header">' +
+                        '<h1 class="header__title">Hello World!</h1>' +
+                    '</header>'
+                );
+            });
+
+            it('Гибкие селекторы и настройка', function() {
+                bemer
+                    .config({ xhtml: true })
+                    .match('input_type_*', {
+                        content: function() {
+                            return {
+                                elem: 'control',
+                                value: this.bemjson.value
+                            };
+                        }
+                    })
+                    .match('input_disable__control', {
+                        attrs: { disable: true }
+                    })
+                    .match('input_*_text__control', {
+                        tag: 'input',
+                        attrs: function() {
+                            return {
+                                placeholder: 'Your name',
+                                value: this.bemjson.value
+                            };
+                        }
+                    });
+                assert.equal(bemer({
+                    block: 'input',
+                    mods: {
+                        type: 'text',
+                        disable: true
+                    },
+                    value: 'Constantin'
+                }),
+                    '<div class="input input_type_text input_disable">' +
+                        '<input class="input_type_text__control input_disable__control" ' +
+                            'disable="disable" placeholder="Your name" value="Constantin"/>' +
+                    '</div>'
+                );
+            });
+
+            it('Автоматическое применение шаблонов при изменении модификаторов', function() {
+                bemer
+                    .match('button', {
+                        mods: { theme: 'normal' }
+                    })
+                    .match('button_theme_normal', {
+                        tag: 'button',
+                        content: function(content) {
+                            return {
+                                elem: 'label',
+                                content: content
+                            };
+                        }
+                    })
+                    .match('button_theme_normal__label', {
+                        elemMods: { size: 'm' }
+                    })
+                    .match('button_theme_normal__label_size_m', {
+                        tag: 'label'
+                    });
+                assert.equal(bemer({
+                    block: 'button',
+                    content: 'Button'
+                }),
+                    '<button class="button button_theme_normal">' +
+                        '<label class="button_theme_normal__label button_theme_normal__label_size_m">Button</label>' +
+                    '</button>'
+                );
+            });
+
+            it('Автоматическое наследование, произвольные поля и помощники', function() {
+                bemer
+                    .helper('bang', function(text) {
+                        return text + '!';
+                    })
+                    .match('link', {
+                        construct: function() {
+                            this.url = this.setProtocol();
+                        },
+                        setProtocol: function() {
+                            return '//' + this.bemjson.url;
+                        },
+                        tag: 'a',
+                        attrs: function() {
+                            return { href: this.url };
+                        },
+                        content: function(content) {
+                            return this.bang(content);
+                        }
+                    })
+                    .match('link_https', {
+                        setProtocol: function() {
+                            return 'https:' + this.__base();
+                        },
+                        attrs: function() {
+                            return this.__base();
+                        }
+                    });
+                assert.equal(bemer({
+                        block: 'link',
+                        mods: { https: true },
+                        url: 'example.com',
+                        content: 'mylink'
+                    }),
+                    '<a class="link link_https" href="https://example.com">mylink!</a>'
+                );
             });
 
         });
