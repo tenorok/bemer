@@ -86,15 +86,6 @@ definer('Pool', /** @exports Pool */ function(array, object) {
                 processedTemplates = [],
 
                 /**
-                 * Обработанные модификаторы.
-                 *
-                 * @type {object[]}
-                 * @property {string} object.modName Имя модификатора блока
-                 * @property {string} object.elemModName Имя модификатора элемента
-                 */
-                processedMods = [],
-
-                /**
                  * Установленные из шаблонов моды.
                  *
                  * @type {object}
@@ -114,7 +105,6 @@ definer('Pool', /** @exports Pool */ function(array, object) {
                 nextNode = this.pool[index].match(
                     currentBemjson,
                     data,
-                    processedMods,
                     bemjson,
                     modesFromTemplates,
                     index
