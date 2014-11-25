@@ -782,5 +782,142 @@ definer('bemerTest', function(assert, bemer, Helpers) {
 
         });
 
+        describe('Интерактивные примеры для сайта.', function() {
+
+            it('Декларативная шаблонизация и инкапсуляция структуры блока', function() {
+                bemer
+                    .match('header', {
+                        tag: 'header',
+                        content: function() {
+                            return {
+                                elem: 'title',
+                                content: this.bemjson.title
+                            };
+                        }
+                    })
+                    .match('header__title', {
+                        tag: 'h1',
+                        content: function(content) {
+                            return content + '!';
+                        }
+                    });
+                assert.equal(bemer({
+                    block: 'header',
+                    title: 'Hello World'
+                }),
+                    '<header class="header">' +
+                        '<h1 class="header__title">Hello World!</h1>' +
+                    '</header>'
+                );
+            });
+
+            it('Гибкие селекторы и настройка', function() {
+                bemer
+                    .config({ xhtml: true })
+                    .match('input_type_*', {
+                        content: function() {
+                            return {
+                                elem: 'control',
+                                value: this.bemjson.value
+                            };
+                        }
+                    })
+                    .match('input_disable__control', {
+                        attrs: { disable: true }
+                    })
+                    .match('input_*_text__control', {
+                        tag: 'input',
+                        attrs: function() {
+                            return {
+                                placeholder: 'Your name',
+                                value: this.bemjson.value
+                            };
+                        }
+                    });
+                assert.equal(bemer({
+                    block: 'input',
+                    mods: {
+                        type: 'text',
+                        disable: true
+                    },
+                    value: 'Constantin'
+                }),
+                    '<div class="input input_type_text input_disable">' +
+                        '<input class="input_type_text__control input_disable__control" ' +
+                            'disable="disable" placeholder="Your name" value="Constantin"/>' +
+                    '</div>'
+                );
+            });
+
+            it('Автоматическое применение шаблонов при изменении модификаторов', function() {
+                bemer
+                    .match('button', {
+                        mods: { theme: 'normal' }
+                    })
+                    .match('button_theme_normal', {
+                        tag: 'button',
+                        content: function(content) {
+                            return {
+                                elem: 'label',
+                                content: content
+                            };
+                        }
+                    })
+                    .match('button_theme_normal__label', {
+                        elemMods: { size: 'm' }
+                    })
+                    .match('button_theme_normal__label_size_m', {
+                        tag: 'label'
+                    });
+                assert.equal(bemer({
+                    block: 'button',
+                    content: 'Button'
+                }),
+                    '<button class="button button_theme_normal">' +
+                        '<label class="button_theme_normal__label button_theme_normal__label_size_m">Button</label>' +
+                    '</button>'
+                );
+            });
+
+            it('Автоматическое наследование, произвольные поля и помощники', function() {
+                bemer
+                    .helper('bang', function(text) {
+                        return text + '!';
+                    })
+                    .match('link', {
+                        construct: function() {
+                            this.url = this.setProtocol();
+                        },
+                        setProtocol: function() {
+                            return '//' + this.bemjson.url;
+                        },
+                        tag: 'a',
+                        attrs: function() {
+                            return { href: this.url };
+                        },
+                        content: function(content) {
+                            return this.bang(content);
+                        }
+                    })
+                    .match('link_https', {
+                        setProtocol: function() {
+                            return 'https:' + this.__base();
+                        },
+                        attrs: function() {
+                            return this.__base();
+                        }
+                    });
+                assert.equal(bemer({
+                        block: 'link',
+                        mods: { https: true },
+                        url: 'example.com',
+                        content: 'mylink'
+                    }),
+                    '<a class="link link_https" href="https://example.com">mylink!</a>'
+                );
+            });
+
+        });
+
     });
 });
