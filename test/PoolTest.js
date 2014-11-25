@@ -102,11 +102,11 @@ definer('PoolTest', function(assert, Pool, Template) {
             it('Шаблоны с наследованием', function() {
                 assert.equal(new Pool()
                     .add(new Template('header', { tag: function() { return 'head'; }}))
-                    .add(new Template('header_mod_*', { js: false }))
+                    .add(new Template('header_mod_*', { attrs: { a: 1 }}))
                     .add(new Template('header_mod_val', { tag: function() { return this.__base() + 'er'; }}))
                     .find({ block: 'header', mods: { mod: 'val' }})
                     .toString(),
-                    '<header class="header header_mod_val"></header>'
+                    '<header class="header header_mod_val" a="1"></header>'
                 );
             });
 
