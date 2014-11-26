@@ -14,11 +14,11 @@
 }
 
 .examples-list__item_eq_1 {
-    width: 262px;
+    width: 267px;
 }
 
 .examples-list__item_eq_2 {
-    width: 216px;
+    width: 211px;
 }
 
 .examples-list__item_eq_3 {
@@ -45,15 +45,17 @@
     cursor: default;
 }
 
+.examples-list__index-wrapper {
+    float: left;
+    padding-right: 8px;
+}
+
 .examples-list__index-border {
     position: relative;
 
     border-radius: 50%;
     width: 34px;
     height: 34px;
-
-    float: left;
-    margin-right: 8px;
 
     background-image: linear-gradient(bottom, rgb(6, 138, 244) 0%, rgb(123, 179, 226) 100%);
     background-image: -o-linear-gradient(bottom, rgb(6, 138, 244) 0%, rgb(123, 179, 226) 100%);

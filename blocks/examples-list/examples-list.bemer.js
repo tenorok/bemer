@@ -30,10 +30,13 @@ bemer
                     content: [
                         {
                             block: this.data.context.block,
-                            elem: 'index-border',
+                            elem: 'index-wrapper',
                             content: {
-                                elem: 'index',
-                                content: this.eq
+                                elem: 'index-border',
+                                content: {
+                                    elem: 'index',
+                                    content: this.eq
+                                }
                             }
                         },
                         content
