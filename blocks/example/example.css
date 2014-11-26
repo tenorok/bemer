@@ -1,5 +1,5 @@
 .example {
-    width: 904px;
+    width: 988px;
     margin: 0 auto;
 }
 
@@ -27,15 +27,15 @@
 }
 
 .example__templates {
-    width: 520px;
+    width: 587px;
     margin-right: 10px;
 }
 
 .example__bemjson {
-    width: 362px;
+    width: 381px;
     margin-left: 10px;
 }
 
 .example__result {
-    width: 902px;
+    width: 988px;
 }
