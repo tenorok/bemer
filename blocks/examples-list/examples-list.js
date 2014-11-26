@@ -1,7 +1,7 @@
 BEM.DOM.decl('examples-list', {
 
     examples: [
-        "",
+        {},
 
         {
             template: "bemer\n" +
