@@ -42,6 +42,7 @@
 .examples-list__item_selected_true .link {
     border-bottom: none;
     color: #382516;
+    cursor: default;
 }
 
 .examples-list__index {

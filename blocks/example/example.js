@@ -12,48 +12,17 @@ BEM.DOM.decl('example', {
                 this._templatesValue = '';
                 this._bemjsonValue = '';
 
-                this.setDefaultExample();
+                this._examplesList = this.findBlockInside('examples-list');
+
+                this._examplesList.on('select', function(e, data) {
+                    this.editors.templates.val(data.template);
+                    this.editors.bemjson.val(data.bemjson);
+                    this.setResult();
+                }, this);
+
+                this._examplesList.selectExample(1);
             }
         }
-    },
-
-    setDefaultExample: function() {
-        this
-            .setDefaultTemplates()
-            .setDefaultBEMJSON()
-            .setResult();
-    },
-
-    setDefaultTemplates: function() {
-        this.editors.templates.val(
-            "bemer\n" +
-            "    .match('header', {\n" +
-            "        tag: 'header',\n" +
-            "        content: function() {\n" +
-            "            return {\n" +
-            "                elem: 'title',\n" +
-            "                content: this.bemjson.title\n" +
-            "            };\n" +
-            "        }\n" +
-            "    })\n" +
-            "    .match('header__title', {\n" +
-            "        tag: 'h1',\n" +
-            "        content: function(content) {\n" +
-            "            return content + '!';\n" +
-            "        }\n" +
-            "    });"
-        );
-        return this;
-    },
-
-    setDefaultBEMJSON: function() {
-        this.editors.bemjson.val(
-            "({\n" +
-            "   block: 'header',\n" +
-            "   title: 'Hello World'\n" +
-            "});"
-        );
-        return this;
     },
 
     setResult: function() {

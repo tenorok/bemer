@@ -71,6 +71,15 @@ bemer.match('layout', {
             block: 'example',
             content: [
                 {
+                    block: 'examples-list',
+                    content: [
+                        { elem: 'item', content: 'Декларация и инкапсуляция структуры блока' },
+                        { elem: 'item', content: 'Гибкие селекторы и настройка' },
+                        { elem: 'item', content: 'Применение шаблонов при изменении модификаторов' },
+                        { elem: 'item', content: 'Наследование, произвольные поля и помощники' }
+                    ]
+                },
+                {
                     elem: 'templates',
                     title: {
                         block: 'link',
