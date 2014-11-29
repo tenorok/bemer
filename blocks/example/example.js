@@ -20,7 +20,7 @@ BEM.DOM.decl('example', {
                     this.setResult();
                 }, this);
 
-                this._examplesList.selectExample(1);
+                this._examplesList.selectExample(localStorage['selectedExampleIndex'] || 1);
             }
         }
     },
@@ -34,7 +34,7 @@ BEM.DOM.decl('example', {
         this._templatesValue = templatesValue;
         this._bemjsonValue = bemjsonValue;
 
-        bemer.clean();
+        bemer.clean().config();
 
         try { eval(templatesValue); } catch(e) {
             console.log(e);

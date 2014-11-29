@@ -126,6 +126,8 @@ BEM.DOM.decl('examples-list', {
         this.delMod(this.elem('item', 'selected', 'true'), 'selected');
         this.setMod(this.elem('item', 'eq', index), 'selected', true);
 
+        localStorage['selectedExampleIndex'] = index;
+
         this.trigger('select', {
             index: index,
             template: this.examples[index].template,
