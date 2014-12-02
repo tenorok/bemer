@@ -15,12 +15,21 @@ BEM.DOM.decl('example', {
                 this._examplesList = this.findBlockInside('examples-list');
 
                 this._examplesList.on('select', function(e, data) {
-                    this.editors.templates.val(data.template);
-                    this.editors.bemjson.val(data.bemjson);
+                    if(data.data.changeEditors !== false) {
+                        this.editors.templates.val(localStorage.templatesValue = data.template);
+                        this.editors.bemjson.val(localStorage.bemjsonValue = data.bemjson);
+                    }
                     this.setResult();
                 }, this);
 
-                this._examplesList.selectExample(localStorage['selectedExampleIndex'] || 1);
+                if(this._examplesList.selectExample(
+                    localStorage.templatesValue || 1,
+                    localStorage.bemjsonValue
+                ) === null) {
+                    this.editors.templates.val(localStorage.templatesValue);
+                    this.editors.bemjson.val(localStorage.bemjsonValue);
+                    this.setResult();
+                }
             }
         }
     },
@@ -56,7 +65,13 @@ BEM.DOM.decl('example', {
     live: function() {
 
         this.liveBindTo('templates bemjson', 'keyup', function() {
-            this.setResult();
+            if(this._examplesList.selectExample(
+                localStorage.templatesValue = this.editors.templates.val(),
+                localStorage.bemjsonValue = this.editors.bemjson.val(),
+                { changeEditors: false }
+            ) === null) {
+                this.setResult();
+            }
         });
 
         return false;

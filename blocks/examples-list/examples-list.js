@@ -122,17 +122,33 @@ BEM.DOM.decl('examples-list', {
         }
     ],
 
-    selectExample: function(index) {
+    selectExample: function(indexOrTemplate, bemjson, data) {
         this.delMod(this.elem('item', 'selected', 'true'), 'selected');
-        this.setMod(this.elem('item', 'eq', index), 'selected', true);
 
-        localStorage['selectedExampleIndex'] = index;
+        var index = typeof indexOrTemplate === 'number'
+            ? indexOrTemplate
+            : this.findExample(indexOrTemplate, bemjson);
 
-        this.trigger('select', {
-            index: index,
-            template: this.examples[index].template,
-            bemjson: this.examples[index].bemjson
-        });
+        if(index) {
+            this.setMod(this.elem('item', 'eq', index), 'selected', true);
+            this.trigger('select', {
+                index: index,
+                template: this.examples[index].template,
+                bemjson: this.examples[index].bemjson,
+                data: data || {}
+            });
+            return index;
+        }
+
+        return null;
+    },
+
+    findExample: function(template, bemjson) {
+        var index;
+        return this.examples.some(function(example, i) {
+            index = i;
+            return example.template === template && example.bemjson === bemjson;
+        }) ? index : null;
     }
 
 }, {
