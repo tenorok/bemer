@@ -1,6 +1,6 @@
 {
   "name": "i-bem",
-  "version": "0.1.4",
+  "version": "2.5.1",
   "main": "i-bem/i-bem.js",
   "license": "MIT",
   "ignore": [
@@ -20,13 +20,13 @@
     "library"
   ],
   "homepage": "https://github.com/tenorok/get-i-bem",
-  "_release": "0.1.4",
+  "_release": "2.5.1",
   "_resolution": {
     "type": "version",
-    "tag": "v0.1.4",
-    "commit": "adc651d36d38359ef06aaa65c2a7bfcd82db6a3f"
+    "tag": "v2.5.1",
+    "commit": "6a24a00d784c72452626fe073cacc033a79ac833"
   },
   "_source": "git://github.com/tenorok/get-i-bem.git",
-  "_target": "^0.1.0",
+  "_target": "^2.5.1",
   "_originalSource": "i-bem"
 }

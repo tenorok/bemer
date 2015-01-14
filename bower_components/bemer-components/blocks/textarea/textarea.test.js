@@ -2,7 +2,7 @@ describe('textarea.', function() {
 
     describe('HTML.', function() {
 
-        describe('textarea', function() {
+        describe('textarea.', function() {
 
             it('Тег', function() {
                 assert.equal($(bemer({ block: 'textarea' }))[0].tagName, 'DIV');
@@ -10,7 +10,7 @@ describe('textarea.', function() {
 
         });
 
-        describe('__control', function() {
+        describe('__control.', function() {
 
             it('Тег', function() {
                 assert.equal($(bemer({ block: 'textarea' })).children('.textarea__control')[0].tagName, 'TEXTAREA');

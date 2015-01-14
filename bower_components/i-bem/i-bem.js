@@ -1,6 +1,6 @@
 /*!
  * @file i-bem — library to write client side with BEM methodology
- * @version 0.1.4
+ * @version 2.5.1
  * @tutorial http://ru.bem.info/libs/bem-bl/dev/desktop.sets/i-bem/
  * @link https://github.com/bem-node/i-bem-doc
  */
@@ -28,7 +28,7 @@ var hasIntrospection = (function(){'_';}).toString().indexOf('_') > -1,
     needCheckProps = true,
     testPropObj = { toString : '' };
 
-for(var i in testPropObj) { // fucking ie hasn't toString, valueOf in for
+for(var i in testPropObj) { // IE skips "toString" and "valueOf" in a for-in loop
     testPropObj.hasOwnProperty(i) && (needCheckProps = false);
 }
 
@@ -1030,10 +1030,13 @@ this.BEM = $.inherit($.observable, /** @lends BEM.prototype */ {
         }
 
         var block;
-        decl.block == baseBlock._name?
+        if(decl.block == baseBlock._name) {
             // makes a new "live" if the old one was already executed
-            (block = $.inheritSelf(baseBlock, props, staticProps))._processLive(true) :
+            (block = $.inheritSelf(baseBlock, props, staticProps))._processLive(true);
+        } else {
             (block = blocks[decl.block] = $.inherit(baseBlock, props, staticProps))._name = decl.block;
+            delete block._liveInitable;
+        }
 
         return block;
 
@@ -2567,7 +2570,15 @@ var DOM = BEM.DOM = BEM.decl('i-bem__dom', {
 
             if(noLive ^ heedLive) {
                 res = _this.live() !== false;
-                _this.live = function() {};
+
+                var blockName = _this.getName(),
+                    origLive = _this.live;
+
+                _this.live = function() {
+                    return this.getName() === blockName?
+                        res :
+                        origLive.apply(this, arguments);
+                };
             }
         }
 
@@ -2647,11 +2658,12 @@ var DOM = BEM.DOM = BEM.decl('i-bem__dom', {
      * @param {jQuery|String} content New content
      * @param {Function} [callback] Handler to be called after initialization
      * @param {Object} [callbackCtx] Handler's context
+     * @returns {jQuery} ctx Initialization context
      */
     update : function(ctx, content, callback, callbackCtx) {
 
         this.destruct(ctx, true);
-        this.init(ctx.html(content), callback, callbackCtx);
+        return this.init(ctx.html(content), callback, callbackCtx);
 
     },
 
@@ -2659,11 +2671,12 @@ var DOM = BEM.DOM = BEM.decl('i-bem__dom', {
      * Changes a fragment of the DOM tree including the context and initializes blocks.
      * @param {jQuery} ctx Root DOM node
      * @param {jQuery|String} content Content to be added
+     * @returns {jQuery} ctx Initialization context
      */
     replace : function(ctx, content) {
 
         this.destruct(true, ctx);
-        this.init($(content).replaceAll(ctx));
+        return this.init($(content).replaceAll(ctx));
 
     },
 
@@ -2671,10 +2684,11 @@ var DOM = BEM.DOM = BEM.decl('i-bem__dom', {
      * Adds a fragment of the DOM tree at the end of the context and initializes blocks
      * @param {jQuery} ctx Root DOM node
      * @param {jQuery|String} content Content to be added
+     * @returns {jQuery} ctx Initialization context
      */
     append : function(ctx, content) {
 
-        this.init($(content).appendTo(ctx));
+        return this.init($(content).appendTo(ctx));
 
     },
 
@@ -2682,10 +2696,11 @@ var DOM = BEM.DOM = BEM.decl('i-bem__dom', {
      * Adds a fragment of the DOM tree at the beginning of the context and initializes blocks
      * @param {jQuery} ctx Root DOM node
      * @param {jQuery|String} content Content to be added
+     * @returns {jQuery} ctx Initialization context
      */
     prepend : function(ctx, content) {
 
-        this.init($(content).prependTo(ctx));
+        return this.init($(content).prependTo(ctx));
 
     },
 
@@ -2693,10 +2708,11 @@ var DOM = BEM.DOM = BEM.decl('i-bem__dom', {
      * Adds a fragment of the DOM tree before the context and initializes blocks
      * @param {jQuery} ctx Contextual DOM node
      * @param {jQuery|String} content Content to be added
+     * @returns {jQuery} ctx Initialization context
      */
     before : function(ctx, content) {
 
-        this.init($(content).insertBefore(ctx));
+        return this.init($(content).insertBefore(ctx));
 
     },
 
@@ -2704,10 +2720,11 @@ var DOM = BEM.DOM = BEM.decl('i-bem__dom', {
      * Adds a fragment of the DOM tree after the context and initializes blocks
      * @param {jQuery} ctx Contextual DOM node
      * @param {jQuery|String} content Content to be added
+     * @returns {jQuery} ctx Initialization context
      */
     after : function(ctx, content) {
 
-        this.init($(content).insertAfter(ctx));
+        return this.init($(content).insertAfter(ctx));
 
     },
 

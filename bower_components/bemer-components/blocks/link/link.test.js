@@ -2,7 +2,7 @@ describe('link.', function() {
 
     describe('HTML.', function() {
 
-        describe('link', function() {
+        describe('link.', function() {
 
             it('Тег', function() {
                 assert.equal($(bemer({ block: 'link' }))[0].tagName, 'A');

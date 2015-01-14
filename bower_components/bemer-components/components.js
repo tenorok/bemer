@@ -265,6 +265,94 @@ BEM.DOM.decl({ block: 'i-control', baseBlock: 'i-component' }, /** @lends i-cont
 
 });
 /* after: ../../../../../blocks/i-control/i-control.js */
+/* before: ../../../../../blocks/tabs/tabs.js */
+/**
+ * Табы.
+ *
+ * Одновременно может быть выделен только один таб.
+ *
+ * @class tabs
+ * @extends i-control
+ * @bemaker i-control
+ */
+BEM.DOM.decl({ block: 'tabs', baseBlock: 'i-control' }, /** @lends tabs.prototype */ {
+
+    /**
+     * Событие изменения значения табов при выделении другого таба.
+     *
+     * @event tabs#change
+     * @param {string|number|boolean} value Значение выделяемой радиокнопки
+     * @param {jQuery} item Выделенный элемент `item`
+     */
+
+    /**
+     * На элементах `item` возможен булев модификатор `checked`,
+     * символизирующий текущий выделенный таб.
+     */
+
+    /**
+     * Получить/установить значение табов.
+     *
+     * При получении возвращает значение текущей
+     * радиокнопки в состоянии `checked`.
+     *
+     * При установке переводит состояние `checked` на радиокнопку
+     * с указанным значением в атрибуте `value`.
+     *
+     * @param {string|number|boolean} [value] Значение выделяемой радиокнопки
+     * @returns {string|number|BEM.DOM}
+     */
+    val: function(value) {
+        if(!arguments.length) {
+            return this.getControl().filter(':checked').val();
+        }
+
+        // Таб к выделению.
+        var item = this.elem('item').filter(function(index, item) {
+            return this.elemParams($(item)).value === value;
+        }.bind(this));
+
+        if(item.length) {
+            // TODO: Заменить эти строки, когда решится задача https://github.com/bem/bem-bl/issues/325
+            // TODO: `.delMod(this.elem('item', 'checked', true), 'checked').setMod(item, 'checked', true);`
+            this.elem('item').removeClass('tabs__item_checked');
+            item.addClass('tabs__item_checked');
+
+            this.getControl().filter('[value="' + value + '"]').prop('checked', true);
+
+            this.trigger('change', {
+                value: value,
+                item: item
+            });
+        }
+
+        return this;
+    },
+
+    /**
+     * Сбросить выделение табов.
+     *
+     * @returns {BEM.DOM}
+     */
+    reset: function() {
+        // TODO: Заменить эту строку, когда решится задача https://github.com/bem/bem-bl/issues/325
+        // TODO: `this.delMod(this.elem('item'), 'checked');`
+        this.elem('item').removeClass('tabs__item_checked');
+        this.getControl().prop('checked', false);
+        return this;
+    }
+
+}, /** @lends tabs */ {
+
+    live: function() {
+        this
+            .liveBindTo('control', 'change', function(e) {
+                this.val(e.target.value);
+            });
+    }
+
+});
+/* after: ../../../../../blocks/tabs/tabs.js */
 /* before: ../../../../../blocks/textarea/textarea.js */
 /**
  * @class textarea
@@ -312,6 +400,98 @@ bemer.match('link', {
 
 });
 /* after: ../../../../../blocks/link/link.bemer.js */
+/* before: ../../../../../blocks/tabs/tabs.bemer.js */
+bemer.match('tabs', {
+
+    construct: function(bemjson) {
+
+        /**
+         * Значение для атрибута `name` тегов `input[type=radio]`.
+         *
+         * @private
+         * @type {string}
+         */
+        this._name = bemjson.name || this.id();
+    },
+
+    tag: 'ul',
+
+    content: function() {
+        return this.bemjson.items.map(function(item) {
+            item.elem = 'item';
+            item.name = this._name;
+            item.elemMods = { checked: !!item.checked };
+            return item;
+        }, this);
+    }
+
+});
+/* after: ../../../../../blocks/tabs/tabs.bemer.js */
+/* before: ../../../../../blocks/tabs/__control.bemer.js */
+bemer.match('tabs__control', {
+
+    tag: 'input',
+
+    attrs: {
+        type: 'radio'
+    }
+
+});
+/* after: ../../../../../blocks/tabs/__control.bemer.js */
+/* before: ../../../../../blocks/tabs/__item.bemer.js */
+bemer.match('tabs__item', {
+
+    tag: 'li',
+
+    js: function() {
+        return {
+            value: this.bemjson.value
+        };
+    },
+
+    content: function(text) {
+        return {
+            elem: 'label',
+            name: this.bemjson.name,
+            value: this.bemjson.value,
+            checked: this.bemjson.elemMods.checked,
+            content: text
+        };
+    }
+
+});
+/* after: ../../../../../blocks/tabs/__item.bemer.js */
+/* before: ../../../../../blocks/tabs/__label.bemer.js */
+bemer.match('tabs__label', {
+
+    tag: 'label',
+
+    content: function(text) {
+        return [
+            {
+                elem: 'control',
+                attrs: {
+                    name: this.bemjson.name,
+                    value: this.bemjson.value,
+                    checked: this.bemjson.checked
+                }
+            },
+            {
+                elem: 'text',
+                content: text
+            }
+        ];
+    }
+
+});
+/* after: ../../../../../blocks/tabs/__label.bemer.js */
+/* before: ../../../../../blocks/tabs/__text.bemer.js */
+bemer.match('tabs__text', {
+
+    tag: 'span'
+
+});
+/* after: ../../../../../blocks/tabs/__text.bemer.js */
 /* before: ../../../../../blocks/textarea/textarea.bemer.js */
 bemer.match('textarea', {
 
