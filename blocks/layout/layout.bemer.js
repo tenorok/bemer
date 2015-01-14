@@ -2,6 +2,8 @@ bemer.match('layout', {
 
     tag: 'div',
 
+    js: true,
+
     content: [
         {
             block: 'header',
@@ -68,6 +70,16 @@ bemer.match('layout', {
             ]
         },
         {
+            block: 'nav',
+            content: {
+                block: 'tabs',
+                items: [
+                    { value: 'example', content: 'Примеры', checked: true },
+                    { value: 'video', content: 'Видео' }
+                ]
+            }
+        },
+        {
             block: 'example',
             content: [
                 {
@@ -129,6 +141,9 @@ bemer.match('layout', {
                     }
                 }
             ]
+        },
+        {
+            block: 'video'
         }
     ]
 
