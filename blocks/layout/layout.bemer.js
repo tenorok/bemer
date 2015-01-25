@@ -143,7 +143,10 @@ bemer.match('layout', {
             ]
         },
         {
-            block: 'video'
+            block: 'video',
+            clip: 'https://video.yandex.ru/iframe/ya-events/r87e3eszfy.6103/?player-type=custom&show-info=false&show-logo=false&hd=1',
+            slideshare: 'http://www.slideshare.net/slideshow/embed_code/39152899',
+            slides: 'http://download.cdn.yandex.net/company/experience/moscowjs/msk_2014_kurbatov.pdf'
         }
     ]
 

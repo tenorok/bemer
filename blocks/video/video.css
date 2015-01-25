@@ -4,9 +4,10 @@
     margin: 0 auto;
 
     font-size: 14px;
+    text-align: right;
 }
 
 .video iframe {
-    width: 100%;
+    width: 50%;
     height: 450px;
 }

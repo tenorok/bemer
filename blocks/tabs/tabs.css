@@ -1,4 +1,6 @@
 .tabs {
+    position: relative;
+
     display: inline-block;
     margin: 0;
     padding: 0;
@@ -12,6 +14,21 @@
 
     color: #fff;
     text-shadow: 0  -1px 0 rgba(0,0,0,.5);
+}
+
+.nav:before {
+    position: absolute;
+    top: 14px;
+    right: 0;
+    left: 0;
+
+    height: 1px;
+
+    background: -webkit-linear-gradient(left, transparent 0%, rgba(0, 0, 0, 0.2) 50%, transparent 100%);
+    background: -moz-linear-gradient(left, transparent 0%, #eaf2d9 50%, transparent 100%);
+    background: -o-linear-gradient(left, transparent 0%, #eaf2d9 50%, transparent 100%);
+    background: linear-gradient(left, transparent 0%, #eaf2d9 50%, transparent 100%);
+    content: '';
 }
 
 .tabs__item {
