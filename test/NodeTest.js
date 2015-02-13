@@ -104,8 +104,18 @@ definer('NodeTest', function(assert, Node) {
             });
 
             it('Блок с модификаторами', function() {
-                assert.deepEqual(new Node({ block: 'name', mods: { size: 'm', theme: 'normal' }}).getClass(),
-                    ['name', 'name_size_m', 'name_theme_normal']
+                assert.deepEqual(new Node({ block: 'name', mods: {
+                    size: 'm', theme: 'normal',
+                    position: 0, is: null,
+                    yes: true,
+                    no: false,
+                    type: undefined
+                }}).getClass(),
+                    [
+                        'name', 'name_size_m', 'name_theme_normal',
+                        'name_position_0', 'name_is_null',
+                        'name_yes'
+                    ]
                 );
             });
 

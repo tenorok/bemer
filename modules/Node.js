@@ -251,7 +251,7 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
         _getModsClasses: function(method) {
             var mods = this._bemjson[method + 's'];
             return Object.keys(mods).reduce(function(classes, key) {
-                if(mods[key]) {
+                if(mods[key] !== false && mods[key] !== undefined) {
                     classes.push(this._name[method](key, mods[key]).toString());
                 }
                 return classes;
