@@ -345,6 +345,16 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 assert.equal(tree.toString(), '<div class="a"><div><div class="a__b"></div></div></div>');
             });
 
+            it('Вложенный элемент с примиксованным элементом', function() {
+                var tree = new Tree({ block: 'a', content: { elem: 'b', mix: [{ elem: 'c' }] }},
+                    new Pool().add(new Template('a', {}))
+                );
+                assert.equal(tree.toString(),
+                    '<div class="a">' +
+                        '<div class="a__b a__c"></div>' +
+                    '</div>');
+            });
+
         });
 
         describe('Модификаторы.', function() {

@@ -124,11 +124,8 @@ definer('NodeTest', function(assert, Node) {
                 assert.deepEqual(new Node({ block: 'name', js: { a: 100 }}).getClass(), ['name', 'i-bem']);
             });
 
-            it('Микс', function() {
-                assert.deepEqual(new Node({
-                    block: 'block1', js: false,
-                    mix: [{ block: 'block2', js: true }]
-                }).getClass(), ['block1', 'i-bem', 'block2']);
+            it('После изменения BEMJSON', function() {
+                assert.deepEqual(new Node({ block: 'a' }).bemjson({ block: 'a', elem: 'b' }).getClass(), ['a__b']);
             });
 
             it('Элемент', function() {
@@ -157,6 +154,20 @@ definer('NodeTest', function(assert, Node) {
                     { block: 'block2', elem: 'elem2' },
                     { block: 'block3', mods: { size: 's' }}
                 ] }).getClass(), ['block__elem', 'block2__elem2', 'block3', 'block3_size_s']);
+            });
+
+            it('Микс блока с включенным js', function() {
+                assert.deepEqual(new Node({
+                    block: 'block1', js: false,
+                    mix: [{ block: 'block2', js: true }]
+                }).getClass(), ['block1', 'i-bem', 'block2']);
+            });
+
+            it('Микс элемента без указания блока', function() {
+                assert.deepEqual(new Node({
+                    block: 'link',
+                    mix: [{ elem: 'text' }]
+                }).getClass(), ['link', 'link__text']);
             });
 
             it('Произвольные классы', function() {
