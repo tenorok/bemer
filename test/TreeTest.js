@@ -335,6 +335,16 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 assert.equal(tree.toString(), '<div class="a"><div class="b__c"></div></div>');
             });
 
+            it('Элемент обёрнут в анонимный блок, расположенный в массиве', function() {
+                var tree = new Tree({
+                    block: 'a',
+                    content: [
+                        { content: { elem: 'b' }}
+                    ]
+                }, new Pool());
+                assert.equal(tree.toString(), '<div class="a"><div><div class="a__b"></div></div></div>');
+            });
+
         });
 
         describe('Модификаторы.', function() {
@@ -574,16 +584,18 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 ).toString();
             });
 
-            it('У блока поле context должно отсутствовать', function() {
+            it('У блока должно быть поле context', function() {
                 new Tree({
                         block: 'a',
+                        mods: { x: 'y' },
                         content: [
                             { block: 'b' }
                         ]
                     }, new Pool()
                     .add(new Template('b', {
                         construct: function(bemjson, data) {
-                            assert.isUndefined(data.context);
+                            assert.equal(data.context.block, 'a');
+                            assert.deepEqual(data.context.mods, { x: 'y' });
                         }
                     }))
                 ).toString();
