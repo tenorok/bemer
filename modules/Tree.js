@@ -96,7 +96,7 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
          * @returns {Node|*}
          */
         _getNode: function(bemjson, data) {
-            if(!is.map(bemjson)) return bemjson;
+            if(!is.map(bemjson)) return bemjson === undefined ? '' : bemjson;
 
             data = data || {};
 

@@ -404,6 +404,11 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
 
         describe('Определение содержимого в шаблоне.', function() {
 
+            it('Значение undefined в содержимом шаблона', function() {
+                var tree = new Tree({ block: 'a' }, new Pool().add(new Template('a', { content: undefined })));
+                assert.equal(tree.toString(), '<div class="a"></div>');
+            });
+
             it('Блок с текстом', function() {
                 var tree = new Tree({ block: 'a' }, new Pool().add(new Template('a', { content: 'content' })));
                 assert.equal(tree.toString(), '<div class="a">content</div>');
