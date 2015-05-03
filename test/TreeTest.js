@@ -604,8 +604,10 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     }, new Pool()
                     .add(new Template('b', {
                         construct: function(bemjson, data) {
-                            assert.equal(data.context.block, 'a');
-                            assert.deepEqual(data.context.mods, { x: 'y' });
+                            assert.deepEqual(data.context, {
+                                block: 'a',
+                                mods: { x: 'y' }
+                            });
                         }
                     }))
                 ).toString();
@@ -621,10 +623,56 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     }, new Pool()
                     .add(new Template('a_c_d__b', {
                         construct: function(bemjson, data) {
-                            assert.equal(data.context.block, 'a');
-                            assert.deepEqual(data.context.mods, { c: 'd' });
+                            assert.deepEqual(data.context, {
+                                block: 'a',
+                                mods: { c: 'd' }
+                            });
                         }
                     }))
+                ).toString();
+            });
+
+            it('Контекст элемента у блока', function() {
+                new Tree({
+                        block: 'a',
+                        elem: 'b',
+                        content: { block: 'g' }
+                    }, new Pool()
+                        .add(new Template('g', {
+                            construct: function(bemjson, data) {
+                                assert.deepEqual(data.context, {
+                                    block: 'a',
+                                    mods: {},
+                                    elem: 'b',
+                                    elemMods: {}
+                                });
+                            }
+                        }))
+                ).toString();
+            });
+
+            it('Контекст элемента с модификаторами у вложенного элемента', function() {
+                new Tree({
+                        block: 'a',
+                        mods: { x: 'y' },
+                        content: [
+                            {
+                                elem: 'b',
+                                elemMods: { k: 'l' },
+                                content: { elem: 'c' }
+                            }
+                        ]
+                    }, new Pool()
+                        .add(new Template('a_x_y__c', {
+                            construct: function(bemjson, data) {
+                                assert.deepEqual(data.context, {
+                                    block: 'a',
+                                    mods: { x: 'y' },
+                                    elem: 'b',
+                                    elemMods: { k: 'l' }
+                                });
+                            }
+                        }))
                 ).toString();
             });
 

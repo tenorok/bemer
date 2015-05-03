@@ -113,6 +113,11 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
                     block: nodeBemjson.block,
                     mods: object.clone(nodeBemjson.mods)
                 };
+
+                if(node.isElem()) {
+                    data.context.elem = nodeBemjson.elem;
+                    data.context.elemMods = nodeBemjson.elemMods;
+                }
             }
 
             return node.content(this[
