@@ -62,19 +62,19 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
         _getContentList: function(bemjson, data) {
             var list = [];
             for(var index = 0, len = bemjson.length; index < len; index++) {
-                var elem = bemjson[index],
+                var item = bemjson[index],
                     elemData = {
                         index: index,
                         length: bemjson.length
                     };
 
-                if(elem && elem.elem) {
+                if(item) {
                     elemData.context = data.context;
                 }
 
-                var node = is.array(elem)
-                    ? this._getContentList(elem, data)
-                    : this._getNode(elem, elemData);
+                var node = is.array(item)
+                    ? this._getContentList(item, data)
+                    : this._getNode(item, elemData);
 
                 list = list.concat(node);
             }
@@ -90,13 +90,13 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
          * @param {object} [data] Данные по сущности в дереве
          * @param {object} [data.index] Порядковый индекс сущности
          * @param {object} [data.length] Количество сущностей у родителя
-         * @param {object} [data.context] Информация о родительском контексте (только для элементов)
+         * @param {object} [data.context] Информация о контексте родительского блока
          * @param {object} [data.context.block] Имя родительского блока
          * @param {object} [data.context.mods] Модификаторы родительского блока
          * @returns {Node|*}
          */
         _getNode: function(bemjson, data) {
-            if(!is.map(bemjson)) return bemjson;
+            if(!is.map(bemjson)) return bemjson === undefined ? '' : bemjson;
 
             data = data || {};
 
@@ -113,6 +113,11 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
                     block: nodeBemjson.block,
                     mods: object.clone(nodeBemjson.mods)
                 };
+
+                if(node.isElem()) {
+                    data.context.elem = nodeBemjson.elem;
+                    data.context.elemMods = nodeBemjson.elemMods;
+                }
             }
 
             return node.content(this[

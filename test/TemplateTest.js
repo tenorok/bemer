@@ -438,6 +438,11 @@ definer('TemplateTest', function(assert, Template, Helpers, Selector) {
                 }).toString(),
                     '<div class="name name_a_c name_d_e"></div>'
                 );
+                assert.equal(new Template('name', { attrs: { style: { height: 100 }}}).match({
+                        block: 'name', attrs: { style: { textAlign: 'center' }}
+                    }).toString(),
+                    '<div class="name" style="text-align:center;"></div>'
+                );
             });
 
             describe('Переопределение функцией в шаблоне.', function() {

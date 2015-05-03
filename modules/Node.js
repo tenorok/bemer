@@ -16,49 +16,7 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
          */
         this._bemjson = bemjson;
 
-        /**
-         * Экземпляр тега.
-         *
-         * @private
-         * @type {Tag}
-         */
-        this._tag = new Tag(bemjson.tag).attr(bemjson.attrs || {});
-
-        if(bemjson.single !== undefined) {
-            this._tag.single(bemjson.single);
-        }
-
-        /**
-         * Экземпляр имени БЭМ-сущности.
-         *
-         * @private
-         * @type {Selector}
-         */
-        this._name = this.getName();
-
-        /**
-         * Список информационных объектов о примиксованных сущностях.
-         *
-         * @private
-         * @type {array}
-         */
-        this._mix = this.getMix();
-
-        /**
-         * Параметры узла.
-         *
-         * @private
-         * @type {object}
-         */
-        this._params = this.getParams();
-
-        /**
-         * Опции преобразования узла.
-         *
-         * @private
-         * @type {object}
-         */
-        this._options = bemjson.options || {};
+        this._setInfo(bemjson);
     }
 
     /**
@@ -89,6 +47,7 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
             }
 
             this._bemjson = bemjson;
+            this._setInfo(bemjson);
             return this;
         },
 
@@ -157,13 +116,20 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
                 if(!mixNode) return mix;
 
                 var node = new Node(mixNode);
+
+                if(node.isElem() && !node.bemjson().block) {
+                    var nodeBemjson = node.bemjson();
+                    nodeBemjson.block = this._bemjson.block;
+                    node.bemjson(nodeBemjson);
+                }
+
                 mix.push({
                     name: node.getName().toString(),
                     params: node.getParams(),
                     classes: node.getClass()
                 });
                 return mix;
-            }, []);
+            }.bind(this), []);
         },
 
         /**
@@ -242,6 +208,59 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
         },
 
         /**
+         * Сохранить информацию об узле.
+         *
+         * @private
+         * @param {object} bemjson BEMJSON узла
+         */
+        _setInfo: function(bemjson) {
+
+            /**
+             * Экземпляр тега.
+             *
+             * @private
+             * @type {Tag}
+             */
+            this._tag = new Tag(bemjson.tag).attr(bemjson.attrs || {});
+
+            if(bemjson.single !== undefined) {
+                this._tag.single(bemjson.single);
+            }
+
+            /**
+             * Экземпляр имени БЭМ-сущности.
+             *
+             * @private
+             * @type {Selector}
+             */
+            this._name = this.getName();
+
+            /**
+             * Список информационных объектов о примиксованных сущностях.
+             *
+             * @private
+             * @type {array}
+             */
+            this._mix = this.getMix();
+
+            /**
+             * Параметры узла.
+             *
+             * @private
+             * @type {object}
+             */
+            this._params = this.getParams();
+
+            /**
+             * Опции преобразования узла.
+             *
+             * @private
+             * @type {object}
+             */
+            this._options = bemjson.options || {};
+        },
+
+        /**
          * Получить список классов модификаторов узла.
          *
          * @private
@@ -251,7 +270,7 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
         _getModsClasses: function(method) {
             var mods = this._bemjson[method + 's'];
             return Object.keys(mods).reduce(function(classes, key) {
-                if(mods[key]) {
+                if(mods[key] !== false && mods[key] !== undefined) {
                     classes.push(this._name[method](key, mods[key]).toString());
                 }
                 return classes;

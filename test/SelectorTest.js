@@ -108,12 +108,12 @@ definer('SelectorTest', function(assert, Selector) {
             });
 
             it('Блок с модификатором и элементом с модификатором', function() {
-                var entity2 = new Selector('block_mod__element_mod');
-                assert.equal(entity2.elem(), 'element');
-                assert.equal(entity2.elemMod('mod2').elemMod().name, 'mod2');
-                assert.equal(entity2.elemMod('mod3', 'val3').elemMod().name, 'mod3');
-                assert.equal(entity2.elemModVal(), 'val3');
-                assert.equal(entity2.toString(), 'block_mod__element_mod3_val3');
+                var entity = new Selector('block_mod__element_mod');
+                assert.equal(entity.elem(), 'element');
+                assert.equal(entity.elemMod('mod2').elemMod().name, 'mod2');
+                assert.equal(entity.elemMod('mod3', 'val3').elemMod().name, 'mod3');
+                assert.equal(entity.elemModVal(), 'val3');
+                assert.equal(entity.toString(), 'block_mod__element_mod3_val3');
             });
 
             it('Блок и элемент с назначением модификаторов методами', function() {
@@ -141,6 +141,26 @@ definer('SelectorTest', function(assert, Selector) {
                 assert.equal(new Selector().block('block').elem('elem').elemMod('mod', false).toString(),
                     'block__elem'
                 );
+            });
+
+            it('Модификатор с числовым значением', function() {
+                var entity = new Selector('block').mod('position', 1);
+                assert.equal(entity.modVal(), '1');
+                assert.equal(entity.toString(), 'block_position_1');
+                assert.equal(entity.modVal(0).modVal(), '0');
+                assert.equal(entity.toString(), 'block_position_0');
+            });
+
+            it('Модификатор со значением undefined', function() {
+                var entity = new Selector('block').mod('position', undefined);
+                assert.equal(entity.modVal(), '');
+                assert.equal(entity.toString(), 'block_position');
+            });
+
+            it('Модификатор со значением null', function() {
+                var entity = new Selector('block').mod('position', null);
+                assert.equal(entity.modVal(), 'null');
+                assert.equal(entity.toString(), 'block_position_null');
             });
 
             it('Пустое имя', function() {

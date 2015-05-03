@@ -91,6 +91,9 @@ definer('Helpers', /** @exports Helpers */ function(string, number, object, is) 
                  * @param {object} [data] Данные по сущности в дереве
                  * @param {number} [data.index=0] Индекс сущности среди сестринских элементов
                  * @param {number} [data.length=1] Количество сестринских элементов, включая текущий
+                 * @param {object} [data.context] Информация о контексте родительского блока
+                 * @param {object} [data.context.block] Имя родительского блока
+                 * @param {object} [data.context.mods] Модификаторы родительского блока
                  */
                 __constructor: function(bemjson, data) {
                     this.bemjson = bemjson;
