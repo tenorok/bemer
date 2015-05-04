@@ -134,7 +134,7 @@ definer('NodeTest', function(assert, Node) {
 
             it('Элемент с модификатором у блока', function() {
                 assert.deepEqual(new Node({ block: 'name', mods: { theme: 'normal' }, elem: 'elem' }).getClass(),
-                    ['name_theme_normal__elem']
+                    ['name__elem', 'name_theme_normal__elem']
                 );
             });
 
@@ -293,7 +293,7 @@ definer('NodeTest', function(assert, Node) {
                     mods: { size: 's' },
                     elem: 'element'
                 }).toString(),
-                    '<div class="name_size_s__element"></div>'
+                    '<div class="name__element name_size_s__element"></div>'
                 );
             });
 
@@ -303,7 +303,7 @@ definer('NodeTest', function(assert, Node) {
                     mods: { size: 's', theme: 'dark' },
                     elem: 'element'
                 }).toString(),
-                    '<div class="name_size_s__element name_theme_dark__element"></div>'
+                    '<div class="name__element name_size_s__element name_theme_dark__element"></div>'
                 );
             });
 
@@ -314,7 +314,7 @@ definer('NodeTest', function(assert, Node) {
                     elem: 'element',
                     elemMods: { theme: 'normal' }
                 }).toString(),
-                    '<div class="name_size_s__element name_size_s__element_theme_normal"></div>'
+                    '<div class="name__element name_size_s__element name_size_s__element_theme_normal"></div>'
                 );
             });
 
@@ -325,7 +325,7 @@ definer('NodeTest', function(assert, Node) {
                     elem: 'element',
                     elemMods: { state: true }
                 }).toString(),
-                    '<div class="name_size_s__element name_theme_dark__element ' +
+                    '<div class="name__element name_size_s__element name_theme_dark__element ' +
                         'name_size_s__element_state name_theme_dark__element_state"></div>'
                 );
             });
@@ -337,7 +337,7 @@ definer('NodeTest', function(assert, Node) {
                     elem: 'element',
                     elemMods: { state: true, side: 'left' }
                 }).toString(),
-                    '<div class="name_size_s__element name_theme_dark__element ' +
+                    '<div class="name__element name_size_s__element name_theme_dark__element ' +
                         'name_size_s__element_state name_size_s__element_side_left ' +
                         'name_theme_dark__element_state name_theme_dark__element_side_left"></div>'
                 );
@@ -393,7 +393,7 @@ definer('NodeTest', function(assert, Node) {
                         mods: { visible: true },
                         elem: 'element'
                     }).toString(),
-                        '<div class="name_visible__element"></div>'
+                        '<div class="name__element name_visible__element"></div>'
                     );
                 });
 
@@ -413,7 +413,7 @@ definer('NodeTest', function(assert, Node) {
                         mods: { visible: true, overflow: true },
                         elem: 'element'
                     }).toString(),
-                        '<div class="name_visible__element name_overflow__element"></div>'
+                        '<div class="name__element name_visible__element name_overflow__element"></div>'
                     );
                 });
 
@@ -433,7 +433,7 @@ definer('NodeTest', function(assert, Node) {
                         mods: { visible: true, overflow: false },
                         elem: 'element'
                     }).toString(),
-                        '<div class="name_visible__element"></div>'
+                        '<div class="name__element name_visible__element"></div>'
                     );
                 });
 
@@ -443,7 +443,7 @@ definer('NodeTest', function(assert, Node) {
                         mods: { visible: false, overflow: true },
                         elem: 'element'
                     }).toString(),
-                        '<div class="name_overflow__element"></div>'
+                        '<div class="name__element name_overflow__element"></div>'
                     );
                 });
 
