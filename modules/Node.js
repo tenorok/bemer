@@ -146,7 +146,7 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
 
             if(node.bem === false) return this._tag.getClass();
 
-            if(this.isBlock() || this.isElem() && object.isEmpty(node.mods)) {
+            if(this.isBlock() || this.isElem()) {
                 this._tag.addClass(this._name.toString());
             }
 

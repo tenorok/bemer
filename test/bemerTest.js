@@ -94,7 +94,7 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                 content: { elem: 'logo' }
             }),
                 '<footer class="header i-bem header_color_red" data-bem="{&quot;header&quot;:{}}">' +
-                    '<head class="header_color_red__logo"></head>' +
+                    '<head class="header__logo header_color_red__logo"></head>' +
                 '</footer>'
             );
         });
@@ -198,7 +198,7 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                 mods: { type: 'text' },
                 elem: 'control'
             }),
-                '<input class="input_type_text__control" value="Constantin" placeholder="Your name">'
+                '<input class="input__control input_type_text__control" value="Constantin" placeholder="Your name">'
             );
         });
 
@@ -481,7 +481,7 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                                 tag: 'header'
                             });
                         assert.equal(bemer({ block: 'header', elem: 'logo' }),
-                            '<header class="header_a_foo__logo"></header>'
+                            '<header class="header__logo header_a_foo__logo"></header>'
                         );
                     });
 
@@ -503,7 +503,7 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                                 tag: 'header'
                             });
                         assert.equal(bemer({ block: 'header', elem: 'logo' }),
-                            '<header class="header_a_foo__logo" a0="0"></header>'
+                            '<header class="header__logo header_a_foo__logo" a0="0"></header>'
                         );
                     });
 
@@ -862,7 +862,7 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                     value: 'Constantin'
                 }),
                     '<div class="input input_type_text input_disable">' +
-                        '<input class="input_type_text__control input_disable__control" ' +
+                        '<input class="input__control input_type_text__control input_disable__control" ' +
                             'disable="disable" placeholder="Your name" value="Constantin"/>' +
                     '</div>'
                 );
@@ -893,7 +893,9 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                     content: 'Button'
                 }),
                     '<button class="button button_theme_normal">' +
-                        '<label class="button_theme_normal__label button_theme_normal__label_size_m">Button</label>' +
+                        '<label class="button__label button_theme_normal__label button_theme_normal__label_size_m">' +
+                            'Button' +
+                        '</label>' +
                     '</button>'
                 );
             });
