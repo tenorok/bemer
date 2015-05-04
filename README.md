@@ -1,6 +1,7 @@
 # Bemer — БЭМ-шаблонизатор
-[![npm version](https://badge.fury.io/js/bemer.svg)](http://badge.fury.io/js/bemer)
-[![Build Status](https://travis-ci.org/tenorok/bemer.svg?branch=master)](https://travis-ci.org/tenorok/bemer)
+[![bower](https://img.shields.io/bower/v/bemer.svg)](http://bower.io/search/?q=bemer)
+[![npm](https://img.shields.io/npm/v/bemer.svg)](https://www.npmjs.com/package/bemer)
+[![Build Status](https://img.shields.io/travis/tenorok/bemer/master.svg)](https://travis-ci.org/tenorok/bemer)
 [![Coverage Status](https://img.shields.io/coveralls/tenorok/bemer/master.svg)](https://coveralls.io/r/tenorok/bemer)
 
 БЭМ — это методология эффективной разработки веб-приложений.
