@@ -54,9 +54,11 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
          * @private
          * @param {array} bemjson Массив
          * @param {object} data Данные по сущности в дереве
-         * @param {object} [data.context] Информация о родительском контексте (если родитель — блок)
-         * @param {object} [data.context.block] Имя родительского блока
+         * @param {object} [data.context] Информация о родительском контексте
+         * @param {string} [data.context.block] Имя родительского блока
          * @param {object} [data.context.mods] Модификаторы родительского блока
+         * @param {string} [data.context.elem] Имя родительского элемента
+         * @param {object} [data.context.elemMods] Модификаторы родительского элемента
          * @returns {array}
          */
         _getContentList: function(bemjson, data) {
@@ -91,8 +93,10 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
          * @param {object} [data.index] Порядковый индекс сущности
          * @param {object} [data.length] Количество сущностей у родителя
          * @param {object} [data.context] Информация о контексте родительского блока
-         * @param {object} [data.context.block] Имя родительского блока
+         * @param {string} [data.context.block] Имя родительского блока
          * @param {object} [data.context.mods] Модификаторы родительского блока
+         * @param {string} [data.context.elem] Имя родительского элемента
+         * @param {object} [data.context.elemMods] Модификаторы родительского элемента
          * @returns {Node|*}
          */
         _getNode: function(bemjson, data) {
