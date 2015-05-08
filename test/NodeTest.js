@@ -104,8 +104,18 @@ definer('NodeTest', function(assert, Node) {
             });
 
             it('Блок с модификаторами', function() {
-                assert.deepEqual(new Node({ block: 'name', mods: { size: 'm', theme: 'normal' }}).getClass(),
-                    ['name', 'name_size_m', 'name_theme_normal']
+                assert.deepEqual(new Node({ block: 'name', mods: {
+                    size: 'm', theme: 'normal',
+                    position: 0, is: null,
+                    yes: true,
+                    no: false,
+                    type: undefined
+                }}).getClass(),
+                    [
+                        'name', 'name_size_m', 'name_theme_normal',
+                        'name_position_0', 'name_is_null',
+                        'name_yes'
+                    ]
                 );
             });
 
@@ -114,11 +124,8 @@ definer('NodeTest', function(assert, Node) {
                 assert.deepEqual(new Node({ block: 'name', js: { a: 100 }}).getClass(), ['name', 'i-bem']);
             });
 
-            it('Микс', function() {
-                assert.deepEqual(new Node({
-                    block: 'block1', js: false,
-                    mix: [{ block: 'block2', js: true }]
-                }).getClass(), ['block1', 'i-bem', 'block2']);
+            it('После изменения BEMJSON', function() {
+                assert.deepEqual(new Node({ block: 'a' }).bemjson({ block: 'a', elem: 'b' }).getClass(), ['a__b']);
             });
 
             it('Элемент', function() {
@@ -127,7 +134,7 @@ definer('NodeTest', function(assert, Node) {
 
             it('Элемент с модификатором у блока', function() {
                 assert.deepEqual(new Node({ block: 'name', mods: { theme: 'normal' }, elem: 'elem' }).getClass(),
-                    ['name_theme_normal__elem']
+                    ['name__elem', 'name_theme_normal__elem']
                 );
             });
 
@@ -147,6 +154,20 @@ definer('NodeTest', function(assert, Node) {
                     { block: 'block2', elem: 'elem2' },
                     { block: 'block3', mods: { size: 's' }}
                 ] }).getClass(), ['block__elem', 'block2__elem2', 'block3', 'block3_size_s']);
+            });
+
+            it('Микс блока с включенным js', function() {
+                assert.deepEqual(new Node({
+                    block: 'block1', js: false,
+                    mix: [{ block: 'block2', js: true }]
+                }).getClass(), ['block1', 'i-bem', 'block2']);
+            });
+
+            it('Микс элемента без указания блока', function() {
+                assert.deepEqual(new Node({
+                    block: 'link',
+                    mix: [{ elem: 'text' }]
+                }).getClass(), ['link', 'link__text']);
             });
 
             it('Произвольные классы', function() {
@@ -272,7 +293,7 @@ definer('NodeTest', function(assert, Node) {
                     mods: { size: 's' },
                     elem: 'element'
                 }).toString(),
-                    '<div class="name_size_s__element"></div>'
+                    '<div class="name__element name_size_s__element"></div>'
                 );
             });
 
@@ -282,7 +303,7 @@ definer('NodeTest', function(assert, Node) {
                     mods: { size: 's', theme: 'dark' },
                     elem: 'element'
                 }).toString(),
-                    '<div class="name_size_s__element name_theme_dark__element"></div>'
+                    '<div class="name__element name_size_s__element name_theme_dark__element"></div>'
                 );
             });
 
@@ -293,7 +314,7 @@ definer('NodeTest', function(assert, Node) {
                     elem: 'element',
                     elemMods: { theme: 'normal' }
                 }).toString(),
-                    '<div class="name_size_s__element name_size_s__element_theme_normal"></div>'
+                    '<div class="name__element name_size_s__element name_size_s__element_theme_normal"></div>'
                 );
             });
 
@@ -304,7 +325,7 @@ definer('NodeTest', function(assert, Node) {
                     elem: 'element',
                     elemMods: { state: true }
                 }).toString(),
-                    '<div class="name_size_s__element name_theme_dark__element ' +
+                    '<div class="name__element name_size_s__element name_theme_dark__element ' +
                         'name_size_s__element_state name_theme_dark__element_state"></div>'
                 );
             });
@@ -316,7 +337,7 @@ definer('NodeTest', function(assert, Node) {
                     elem: 'element',
                     elemMods: { state: true, side: 'left' }
                 }).toString(),
-                    '<div class="name_size_s__element name_theme_dark__element ' +
+                    '<div class="name__element name_size_s__element name_theme_dark__element ' +
                         'name_size_s__element_state name_size_s__element_side_left ' +
                         'name_theme_dark__element_state name_theme_dark__element_side_left"></div>'
                 );
@@ -372,7 +393,7 @@ definer('NodeTest', function(assert, Node) {
                         mods: { visible: true },
                         elem: 'element'
                     }).toString(),
-                        '<div class="name_visible__element"></div>'
+                        '<div class="name__element name_visible__element"></div>'
                     );
                 });
 
@@ -392,7 +413,7 @@ definer('NodeTest', function(assert, Node) {
                         mods: { visible: true, overflow: true },
                         elem: 'element'
                     }).toString(),
-                        '<div class="name_visible__element name_overflow__element"></div>'
+                        '<div class="name__element name_visible__element name_overflow__element"></div>'
                     );
                 });
 
@@ -412,7 +433,7 @@ definer('NodeTest', function(assert, Node) {
                         mods: { visible: true, overflow: false },
                         elem: 'element'
                     }).toString(),
-                        '<div class="name_visible__element"></div>'
+                        '<div class="name__element name_visible__element"></div>'
                     );
                 });
 
@@ -422,7 +443,7 @@ definer('NodeTest', function(assert, Node) {
                         mods: { visible: false, overflow: true },
                         elem: 'element'
                     }).toString(),
-                        '<div class="name_overflow__element"></div>'
+                        '<div class="name__element name_overflow__element"></div>'
                     );
                 });
 

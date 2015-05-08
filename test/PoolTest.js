@@ -234,7 +234,7 @@ definer('PoolTest', function(assert, Pool, Template) {
                             d: 'baz'
                         }})
                         .toString(),
-                        '<header class="header_a_foo__logo header_b_bar__logo ' +
+                        '<header class="header__logo header_a_foo__logo header_b_bar__logo ' +
                             'header_a_foo__logo_c_faz header_a_foo__logo_d_baz ' +
                             'header_b_bar__logo_c_faz header_b_bar__logo_d_baz" ' +
                             'afaz="1" abaz="1" bfaz="1" bbaz="1">'

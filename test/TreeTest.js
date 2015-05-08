@@ -89,14 +89,14 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
             it('Блок с модификатором и элементом', function() {
                 var tree = new Tree({ block: 'a', mods: { c: 'd' }, elem: 'b' }, new Pool());
                 assert.equal(tree.toString(),
-                    '<div class="a_c_d__b"></div>'
+                    '<div class="a__b a_c_d__b"></div>'
                 );
             });
 
             it('Блок с модификатором и элемент с модификатором', function() {
                 var tree = new Tree({ block: 'a', mods: { c: 'd' }, elem: 'b', elemMods: { e: 'f' }}, new Pool());
                 assert.equal(tree.toString(),
-                    '<div class="a_c_d__b a_c_d__b_e_f"></div>'
+                    '<div class="a__b a_c_d__b a_c_d__b_e_f"></div>'
                 );
             });
 
@@ -335,6 +335,26 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 assert.equal(tree.toString(), '<div class="a"><div class="b__c"></div></div>');
             });
 
+            it('Элемент обёрнут в анонимный блок, расположенный в массиве', function() {
+                var tree = new Tree({
+                    block: 'a',
+                    content: [
+                        { content: { elem: 'b' }}
+                    ]
+                }, new Pool());
+                assert.equal(tree.toString(), '<div class="a"><div><div class="a__b"></div></div></div>');
+            });
+
+            it('Вложенный элемент с примиксованным элементом', function() {
+                var tree = new Tree({ block: 'a', content: { elem: 'b', mix: [{ elem: 'c' }] }},
+                    new Pool().add(new Template('a', {}))
+                );
+                assert.equal(tree.toString(),
+                    '<div class="a">' +
+                        '<div class="a__b a__c"></div>' +
+                    '</div>');
+            });
+
         });
 
         describe('Модификаторы.', function() {
@@ -349,7 +369,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 }, new Pool());
                 assert.equal(tree.toString(), '' +
                     '<div class="a a_c_d">' +
-                        '<div class="a_c_d__b"></div>' +
+                        '<div class="a__b a_c_d__b"></div>' +
                     '</div>');
             });
 
@@ -364,7 +384,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 }, new Pool());
                 assert.equal(tree.toString(), '' +
                     '<div class="a a_c_d">' +
-                        '<div class="a_c_d__b a_c_d__b_e_f"></div>' +
+                        '<div class="a__b a_c_d__b a_c_d__b_e_f"></div>' +
                     '</div>');
             });
 
@@ -380,7 +400,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 }, new Pool());
                 assert.equal(tree.toString(), '' +
                     '<div class="a a_c_d">' +
-                        '<div class="a_c_g__b a_c_g__b_e_f"></div>' +
+                        '<div class="a__b a_c_g__b a_c_g__b_e_f"></div>' +
                     '</div>');
             });
 
@@ -396,13 +416,18 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 }, new Pool());
                 assert.equal(tree.toString(), '' +
                     '<div class="a a_c_d">' +
-                        '<div class="a_c_d__b a_g_h__b a_c_d__b_e_f a_g_h__b_e_f"></div>' +
+                        '<div class="a__b a_c_d__b a_g_h__b a_c_d__b_e_f a_g_h__b_e_f"></div>' +
                     '</div>');
             });
 
         });
 
         describe('Определение содержимого в шаблоне.', function() {
+
+            it('Значение undefined в содержимом шаблона', function() {
+                var tree = new Tree({ block: 'a' }, new Pool().add(new Template('a', { content: undefined })));
+                assert.equal(tree.toString(), '<div class="a"></div>');
+            });
 
             it('Блок с текстом', function() {
                 var tree = new Tree({ block: 'a' }, new Pool().add(new Template('a', { content: 'content' })));
@@ -569,16 +594,20 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 ).toString();
             });
 
-            it('У блока поле context должно отсутствовать', function() {
+            it('У блока должно быть поле context', function() {
                 new Tree({
                         block: 'a',
+                        mods: { x: 'y' },
                         content: [
                             { block: 'b' }
                         ]
                     }, new Pool()
                     .add(new Template('b', {
                         construct: function(bemjson, data) {
-                            assert.isUndefined(data.context);
+                            assert.deepEqual(data.context, {
+                                block: 'a',
+                                mods: { x: 'y' }
+                            });
                         }
                     }))
                 ).toString();
@@ -594,10 +623,56 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     }, new Pool()
                     .add(new Template('a_c_d__b', {
                         construct: function(bemjson, data) {
-                            assert.equal(data.context.block, 'a');
-                            assert.deepEqual(data.context.mods, { c: 'd' });
+                            assert.deepEqual(data.context, {
+                                block: 'a',
+                                mods: { c: 'd' }
+                            });
                         }
                     }))
+                ).toString();
+            });
+
+            it('Контекст элемента у блока', function() {
+                new Tree({
+                        block: 'a',
+                        elem: 'b',
+                        content: { block: 'g' }
+                    }, new Pool()
+                        .add(new Template('g', {
+                            construct: function(bemjson, data) {
+                                assert.deepEqual(data.context, {
+                                    block: 'a',
+                                    mods: {},
+                                    elem: 'b',
+                                    elemMods: {}
+                                });
+                            }
+                        }))
+                ).toString();
+            });
+
+            it('Контекст элемента с модификаторами у вложенного элемента', function() {
+                new Tree({
+                        block: 'a',
+                        mods: { x: 'y' },
+                        content: [
+                            {
+                                elem: 'b',
+                                elemMods: { k: 'l' },
+                                content: { elem: 'c' }
+                            }
+                        ]
+                    }, new Pool()
+                        .add(new Template('a_x_y__c', {
+                            construct: function(bemjson, data) {
+                                assert.deepEqual(data.context, {
+                                    block: 'a',
+                                    mods: { x: 'y' },
+                                    elem: 'b',
+                                    elemMods: { k: 'l' }
+                                });
+                            }
+                        }))
                 ).toString();
             });
 

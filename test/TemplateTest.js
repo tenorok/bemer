@@ -391,13 +391,13 @@ definer('TemplateTest', function(assert, Template, Helpers, Selector) {
 
             it('Блок с модификатором и элементом', function() {
                 assert.equal(Template.base({ block: 'a', mods: { c: 'd' }, elem: 'b' }).toString(),
-                    '<div class="a_c_d__b"></div>'
+                    '<div class="a__b a_c_d__b"></div>'
                 );
             });
 
             it('Блок с модификатором и элемент с модификатором', function() {
                 assert.equal(Template.base({ block: 'a', mods: { c: 'd' }, elem: 'b', elemMods: { e: 'f' }}).toString(),
-                    '<div class="a_c_d__b a_c_d__b_e_f"></div>'
+                    '<div class="a__b a_c_d__b a_c_d__b_e_f"></div>'
                 );
             });
 
@@ -437,6 +437,11 @@ definer('TemplateTest', function(assert, Template, Helpers, Selector) {
                     block: 'name', mods: { a: 'c', d: 'e' }
                 }).toString(),
                     '<div class="name name_a_c name_d_e"></div>'
+                );
+                assert.equal(new Template('name', { attrs: { style: { height: 100 }}}).match({
+                        block: 'name', attrs: { style: { textAlign: 'center' }}
+                    }).toString(),
+                    '<div class="name" style="text-align:center;"></div>'
                 );
             });
 

@@ -49,7 +49,8 @@ module.exports = function(grunt) {
                 }
             },
             jscs: { command: './node_modules/.bin/jscs modules/' },
-            jshint: { command: './node_modules/.bin/jshint modules/' }
+            jshint: { command: './node_modules/.bin/jshint modules/' },
+            yaspeller: { options: { stderr: false }, command: './node_modules/.bin/yaspeller --lang ru README.md' }
         },
         definer: Target.definer(),
         mochaTest: Target.mocha(module),
@@ -109,7 +110,8 @@ module.exports = function(grunt) {
 
     grunt.registerTask('lint', [
         'shell:jscs',
-        'shell:jshint'
+        'shell:jshint',
+        'shell:yaspeller'
     ]);
 
     grunt.registerTask('update:jsdoc', [

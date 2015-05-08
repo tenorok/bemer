@@ -188,6 +188,10 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
          * В качестве значения атрибуту можно передавать массив или объект,
          * они будут установлены в заэкранированном виде.
          *
+         * Атрибут `style` преобразуется в строку при получении объекта в качестве значения.
+         * Числу (кроме нуля), указанному в качестве значения CSS-свойства добавляются пиксели.
+         * CSS-свойства можно записывать в верблюжьей нотации.
+         *
          * @param {string|object} [name] Имя атрибута или список атрибутов
          * @param {*} [val] Значение атрибута
          * @returns {*|object|Tag}
@@ -283,16 +287,29 @@ definer('Tag', /** @exports Tag */ function(string, object, is) {
             object.each(attrs, function(key, val) {
                 if(val === true) {
                     tag.push(' ' + key + (options.repeatBooleanAttr ? '="' + key + '"' : ''));
-                } else {
-
-                    if(is.array(val) || is.map(val)) {
-                        val = string.htmlEscape(JSON.stringify(val));
-                    } else if(options.escapeAttr && is.string(val)) {
-                        val = string.htmlEscape(val);
-                    }
-
-                    tag.push(' ' + key + '="' + val + '"');
+                    return;
                 }
+
+                var isValMap = is.map(val);
+                if(isValMap && key === 'style') {
+                    var style = [];
+                    object.each(val, function(prop, propVal) {
+                        if(is.number(propVal) && propVal !== 0) {
+                            propVal = propVal + 'px';
+                        }
+                        prop = prop.replace(/([A-Z])/g, function(all, letter) {
+                            return '-' + letter.toLowerCase();
+                        });
+                        style.push(prop + ':' + propVal + ';');
+                    });
+                    val = style.join('');
+                } else if(is.array(val) || isValMap) {
+                    val = string.htmlEscape(JSON.stringify(val));
+                } else if(options.escapeAttr && is.string(val)) {
+                    val = string.htmlEscape(val);
+                }
+
+                tag.push(' ' + key + '="' + val + '"');
             });
 
             if(this.single(name)) {

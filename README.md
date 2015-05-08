@@ -1,6 +1,7 @@
 # Bemer — БЭМ-шаблонизатор
-[![npm version](https://badge.fury.io/js/bemer.svg)](http://badge.fury.io/js/bemer)
-[![Build Status](https://travis-ci.org/tenorok/bemer.svg?branch=master)](https://travis-ci.org/tenorok/bemer)
+[![bower](https://img.shields.io/bower/v/bemer.svg)](http://bower.io/search/?q=bemer)
+[![npm](https://img.shields.io/npm/v/bemer.svg)](https://www.npmjs.com/package/bemer)
+[![Build Status](https://img.shields.io/travis/tenorok/bemer/master.svg)](https://travis-ci.org/tenorok/bemer)
 [![Coverage Status](https://img.shields.io/coveralls/tenorok/bemer/master.svg)](https://coveralls.io/r/tenorok/bemer)
 
 БЭМ — это методология эффективной разработки веб-приложений.
@@ -240,9 +241,11 @@ bemer.match('block1', 'block2', 'blockN', {});
 * `{object}` `data` — данные о БЭМ-сущности в дереве
     * `{number}` `data.index` — индекс сущности среди сестринских элементов
     * `{number}` `data.length` — количество сестринских элементов, включая текущий
-    * `{object}` `data.context` — контекст блока доступен только в элементах
-        * `{string}` `data.context.block` — имя блока, которому принадлежит элемент
-        * `{object}` `data.context.mods` — модификаторы блока, которому принадлежит элемент
+    * `{object}` `[data.context]` — информация о контексте родительского блока
+        * `{string}` `[data.context.block]` — имя родительского блока
+        * `{object}` `[data.context.mods]` — модификаторы родительского блока
+        * `{string}` `[data.context.elem]` — имя родительского элемента
+        * `{object}` `[data.context.elemMods]` — модификаторы родительского элемента
 
 Получение данных о блоке `menu` из параметров конструктора:
 
@@ -379,6 +382,30 @@ bemer({ block: 'input', attrs: { placeholder: 'login' }});
 <input class="input" type="text" placeholder="login">
 ```
 
+**Особый атрибут `style`**
+
+Помимо обычной строки, атрибут `style` способен принять список CSS-стилей в виде объекта.
+
+Составные имена CSS-свойств допускается указывать как через минус (`text-align`),
+так и в верблюжьей нотации (`textAlign`).
+Если в значении свойства указано число (кроме нуля), ему добавляется единица измерения пикселя (`px`).
+
+Список CSS-свойств в виде объекта:
+
+```js
+bemer.match('text', { attrs: { style: {
+    width: 100,
+    height: 0,
+    'text-align': 'center',
+    verticalAlign: 'top'
+}}});
+bemer({ block: 'text' });
+```
+
+```html
+<div class="text" style="width:100px;height:0;text-align:center;vertical-align:top;"></div>
+```
+
 ###### Поле `js`
 
 Тип: `{boolean}` `{object}`
@@ -501,8 +528,33 @@ bemer({ block: 'header', elem: 'logo' });
 ```
 
 ```html
-<div class="header_theme_blue__logo"></div>
+<div class="header__logo header_theme_blue__logo"></div>
 ```
+
+**Особые значения модификаторов**
+
+Помимо строк значением модификатора может быть `null`, `true` или число.
+Значения `undefined` и `false` отменяют установку модификатора.
+
+Пример различных типов значений модификаторов:
+```js
+bemer.match('example', { mods: {
+    string: 'text',
+    nil: null,
+    yes: true,
+    zero: 0,
+    number: 5,
+    undef: undefined,
+    no: false
+}});
+bemer({ block: 'example' });
+```
+
+```html
+<div class="example example_string_text example_nil_null example_yes example_zero_0 example_number_5"></div>
+```
+
+**Изменение списка модификаторов в шаблоне**
 
 При изменении списка модификаторов автоматически накладываются подходящие шаблоны:
 ```js
@@ -568,15 +620,15 @@ bemer({ block: 'header' });
 <div class="header clearfix"></div>
 ```
 
-Примешивание блока `menu` с JS-параметрами:
+Примешивание элемента `menu` с JS-параметрами:
 
 ```js
-bemer.match('header', { mix: [{ block: 'menu', js: { length: 10 }}] });
+bemer.match('header', { mix: [{ elem: 'menu', js: { length: 10 }}] });
 bemer({ block: 'header' });
 ```
 
 ```html
-<div class="header i-bem menu" data-bem="{&quot;menu&quot;:{&quot;length&quot;:10}}"></div>
+<div class="header i-bem header__menu" data-bem="{&quot;header__menu&quot;:{&quot;length&quot;:10}}"></div>
 ```
 
 Примешиваемые сущности в шаблоне и входящем BEMJSON складываются:
@@ -608,12 +660,12 @@ bemer({ block: 'page' });
 <div class="page">Hello world!</div>
 ```
 
-Добавление блоков `header` и `footer` в содержимое блока `page`:
+Добавление блока `header` и элемента `footer` в содержимое блока `page`:
 
 ```js
 bemer.match('page', { content: [
     { block: 'header' },
-    { block: 'footer' }
+    { elem: 'footer' }
 ] });
 bemer({ block: 'page' });
 ```
@@ -621,7 +673,7 @@ bemer({ block: 'page' });
 ```html
 <div class="page">
     <div class="header"></div>
-    <div class="footer"></div>
+    <div class="page__footer"></div>
 </div>
 ```
 
@@ -742,7 +794,7 @@ bemer({ block: 'text', tag: 'b' });
 
 ##### Произвольные поля шаблона
 
-Кроме стандартных полей можно задавать произволные поля шаблона.
+Кроме стандартных полей можно задавать произвольные поля шаблона.
 Они будут доступны в `this`.
 
 Произвольное поле `sum` складывает два числа:
@@ -1049,7 +1101,7 @@ bemer({ block: 'header', content: [4, 9] })
 
 Экранирует строку текста.
 
-Предваряет дополнительным слешом: слеш, кавычки, символы перевода строки, каретки и табуляции.
+Предваряет дополнительным слешем: слеш, кавычки, символы перевода строки, каретки и табуляции.
 
 Параметры:
 
@@ -1245,7 +1297,7 @@ bemer({ block: 'header', content: [4, 9] })
 
 Определяет тип переданных параметров.
 
-Возвращает строку, соответствущую имени одного из помощников для проверки на определённый тип данных, которые перечислены выше.
+Возвращает строку, соответствующую имени одного из помощников для проверки на определённый тип данных, которые перечислены выше.
 
 Возвращает `mixed`, если были переданы параметры разных типов данных.
 

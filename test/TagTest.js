@@ -133,6 +133,25 @@ definer('TagTest', function(assert, Tag) {
             );
         });
 
+        it('Получить строковое представление атрибута style', function() {
+            assert.equal(new Tag().attr('style', 'width: 100px;').toString(),
+                '<div style="width: 100px;"></div>',
+                'обычная строка'
+            );
+            assert.equal(new Tag().attr('style', { width: '100px', 'vertical-align': 'top' }).toString(),
+                '<div style="width:100px;vertical-align:top;"></div>',
+                'стили в виде объекта'
+            );
+            assert.equal(new Tag().attr('style', { width: 100, height: 0 }).toString(),
+                '<div style="width:100px;height:0;"></div>',
+                'числам кроме нуля добавляются пиксели'
+            );
+            assert.equal(new Tag().attr('style', { textAlign: 'center', listStyleType: 'none' }).toString(),
+                '<div style="text-align:center;list-style-type:none;"></div>',
+                'возможность записывать свойства в верблюжьей нотации'
+            );
+        });
+
         describe('Получить строковое представление тега с заданными опциями.', function() {
 
             it('Изменение стандартного имени тега', function() {

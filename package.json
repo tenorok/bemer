@@ -1,7 +1,7 @@
 {
     "name": "bemer",
     "description": "Template engine. BEMJSON to HTML processor.",
-    "version": "0.8.0",
+    "version": "0.8.1",
     "repository": {
         "type": "git",
         "url": "https://github.com/tenorok/bemer.git"
@@ -35,6 +35,7 @@
         "grunt-mocha-istanbul": "~2.1.0",
         "benchmark": "~1.0.0",
         "beautify-benchmark": "~0.2.4",
-        "grunt-coveralls": "~1.0.0"
+        "grunt-coveralls": "~1.0.0",
+        "yaspeller": "~2.1.0"
     }
 }
