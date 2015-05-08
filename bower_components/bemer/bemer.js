@@ -174,8 +174,8 @@ defineAsGlobal && (global.inherit = inherit);
  * @file Template engine. BEMJSON to HTML processor.
  * @copyright 2014 Artem Kurbatov, tenorok.ru
  * @license MIT license
- * @version 0.8.0
- * @date 25 November 2014
+ * @version 0.8.1
+ * @date 8 May 2015
  */
 (function(global, undefined) {
 var definer = {
@@ -1131,6 +1131,9 @@ Helpers = (function (string, number, object, is) {
                  * @param {object} [data] Данные по сущности в дереве
                  * @param {number} [data.index=0] Индекс сущности среди сестринских элементов
                  * @param {number} [data.length=1] Количество сестринских элементов, включая текущий
+                 * @param {object} [data.context] Информация о контексте родительского блока
+                 * @param {object} [data.context.block] Имя родительского блока
+                 * @param {object} [data.context.mods] Модификаторы родительского блока
                  */
                 __constructor: function(bemjson, data) {
                     this.bemjson = bemjson;
@@ -1254,7 +1257,7 @@ Helpers = (function (string, number, object, is) {
     return Helpers;
 
 }).call(global, string, number, object, is),
-Selector = (function () {
+Selector = (function (is) {
 
     /**
      * Модуль работы с БЭМ-селектором.
@@ -1404,7 +1407,7 @@ Selector = (function () {
          * Получить/установить модификатор блока.
          *
          * @param {string} [name] Имя модификатора
-         * @param {string} [val] Значение модификатора
+         * @param {string|boolean} [val] Значение модификатора
          * @returns {{name: string, val: string}|Selector}
          */
         mod: function(name, val) {
@@ -1431,11 +1434,11 @@ Selector = (function () {
         /**
          * Получить/установить значение модификатора блока.
          *
-         * @param {string} [val] Значение модификатора
+         * @param {string|boolean} [val] Значение модификатора
          * @returns {string|Selector}
          */
         modVal: function(val) {
-            return this._getSet('_modVal', val);
+            return this._getSet('_modVal', val, true);
         },
 
         /**
@@ -1452,7 +1455,7 @@ Selector = (function () {
          * Получить/установить модификатор элемента.
          *
          * @param {string} [name] Имя модификатора
-         * @param {string} [val] Значение модификатора
+         * @param {string|boolean} [val] Значение модификатора
          * @returns {{name: string, val: string}|Selector}
          */
         elemMod: function(name, val) {
@@ -1479,11 +1482,11 @@ Selector = (function () {
         /**
          * Получить/установить значение модификатора элемента.
          *
-         * @param {string} [val] Значение модификатора
+         * @param {string|boolean} [val] Значение модификатора
          * @returns {string|Selector}
          */
         elemModVal: function(val) {
-            return this._getSet('_elemModVal', val);
+            return this._getSet('_elemModVal', val, true);
         },
 
         /**
@@ -1577,7 +1580,7 @@ Selector = (function () {
          * @private
          * @param {string} name Имя поля имени модификатора
          * @param {string} val Имя поля значения модификатора
-         * @returns {array}
+         * @returns {string[]}
          */
         _getMod: function(name, val) {
             var mod = [];
@@ -1601,13 +1604,14 @@ Selector = (function () {
          *
          * @private
          * @param {string} name Имя поля
-         * @param {*} [val] Значение
+         * @param {string|boolean} [val] Значение
+         * @param {boolean} [isCanBeBoolean] Значение поля может быть логическим
          * @returns {*|Selector}
          */
-        _getSet: function(name, val) {
+        _getSet: function(name, val, isCanBeBoolean) {
             if(val === undefined) return this[name];
 
-            this[name] = val;
+            this[name] = isCanBeBoolean === true && is.boolean(val) ? val : String(val);
             return this;
         }
 
@@ -1615,7 +1619,7 @@ Selector = (function () {
 
     return Selector;
 
-}).call(global),
+}).call(global, is),
 Match = (function (Selector, object, is) {
 
     /**
@@ -2091,6 +2095,10 @@ Tag = (function (string, object, is) {
          * В качестве значения атрибуту можно передавать массив или объект,
          * они будут установлены в заэкранированном виде.
          *
+         * Атрибут `style` преобразуется в строку при получении объекта в качестве значения.
+         * Числу (кроме нуля), указанному в качестве значения CSS-свойства добавляются пиксели.
+         * CSS-свойства можно записывать в верблюжьей нотации.
+         *
          * @param {string|object} [name] Имя атрибута или список атрибутов
          * @param {*} [val] Значение атрибута
          * @returns {*|object|Tag}
@@ -2186,16 +2194,29 @@ Tag = (function (string, object, is) {
             object.each(attrs, function(key, val) {
                 if(val === true) {
                     tag.push(' ' + key + (options.repeatBooleanAttr ? '="' + key + '"' : ''));
-                } else {
-
-                    if(is.array(val) || is.map(val)) {
-                        val = string.htmlEscape(JSON.stringify(val));
-                    } else if(options.escapeAttr && is.string(val)) {
-                        val = string.htmlEscape(val);
-                    }
-
-                    tag.push(' ' + key + '="' + val + '"');
+                    return;
                 }
+
+                var isValMap = is.map(val);
+                if(isValMap && key === 'style') {
+                    var style = [];
+                    object.each(val, function(prop, propVal) {
+                        if(is.number(propVal) && propVal !== 0) {
+                            propVal = propVal + 'px';
+                        }
+                        prop = prop.replace(/([A-Z])/g, function(all, letter) {
+                            return '-' + letter.toLowerCase();
+                        });
+                        style.push(prop + ':' + propVal + ';');
+                    });
+                    val = style.join('');
+                } else if(is.array(val) || isValMap) {
+                    val = string.htmlEscape(JSON.stringify(val));
+                } else if(options.escapeAttr && is.string(val)) {
+                    val = string.htmlEscape(val);
+                }
+
+                tag.push(' ' + key + '="' + val + '"');
             });
 
             if(this.single(name)) {
@@ -2236,49 +2257,7 @@ Node = (function (Tag, Selector, object) {
          */
         this._bemjson = bemjson;
 
-        /**
-         * Экземпляр тега.
-         *
-         * @private
-         * @type {Tag}
-         */
-        this._tag = new Tag(bemjson.tag).attr(bemjson.attrs || {});
-
-        if(bemjson.single !== undefined) {
-            this._tag.single(bemjson.single);
-        }
-
-        /**
-         * Экземпляр имени БЭМ-сущности.
-         *
-         * @private
-         * @type {Selector}
-         */
-        this._name = this.getName();
-
-        /**
-         * Список информационных объектов о примиксованных сущностях.
-         *
-         * @private
-         * @type {array}
-         */
-        this._mix = this.getMix();
-
-        /**
-         * Параметры узла.
-         *
-         * @private
-         * @type {object}
-         */
-        this._params = this.getParams();
-
-        /**
-         * Опции преобразования узла.
-         *
-         * @private
-         * @type {object}
-         */
-        this._options = bemjson.options || {};
+        this._setInfo(bemjson);
     }
 
     /**
@@ -2309,6 +2288,7 @@ Node = (function (Tag, Selector, object) {
             }
 
             this._bemjson = bemjson;
+            this._setInfo(bemjson);
             return this;
         },
 
@@ -2377,13 +2357,20 @@ Node = (function (Tag, Selector, object) {
                 if(!mixNode) return mix;
 
                 var node = new Node(mixNode);
+
+                if(node.isElem() && !node.bemjson().block) {
+                    var nodeBemjson = node.bemjson();
+                    nodeBemjson.block = this._bemjson.block;
+                    node.bemjson(nodeBemjson);
+                }
+
                 mix.push({
                     name: node.getName().toString(),
                     params: node.getParams(),
                     classes: node.getClass()
                 });
                 return mix;
-            }, []);
+            }.bind(this), []);
         },
 
         /**
@@ -2400,7 +2387,7 @@ Node = (function (Tag, Selector, object) {
 
             if(node.bem === false) return this._tag.getClass();
 
-            if(this.isBlock() || this.isElem() && object.isEmpty(node.mods)) {
+            if(this.isBlock() || this.isElem()) {
                 this._tag.addClass(this._name.toString());
             }
 
@@ -2462,6 +2449,59 @@ Node = (function (Tag, Selector, object) {
         },
 
         /**
+         * Сохранить информацию об узле.
+         *
+         * @private
+         * @param {object} bemjson BEMJSON узла
+         */
+        _setInfo: function(bemjson) {
+
+            /**
+             * Экземпляр тега.
+             *
+             * @private
+             * @type {Tag}
+             */
+            this._tag = new Tag(bemjson.tag).attr(bemjson.attrs || {});
+
+            if(bemjson.single !== undefined) {
+                this._tag.single(bemjson.single);
+            }
+
+            /**
+             * Экземпляр имени БЭМ-сущности.
+             *
+             * @private
+             * @type {Selector}
+             */
+            this._name = this.getName();
+
+            /**
+             * Список информационных объектов о примиксованных сущностях.
+             *
+             * @private
+             * @type {array}
+             */
+            this._mix = this.getMix();
+
+            /**
+             * Параметры узла.
+             *
+             * @private
+             * @type {object}
+             */
+            this._params = this.getParams();
+
+            /**
+             * Опции преобразования узла.
+             *
+             * @private
+             * @type {object}
+             */
+            this._options = bemjson.options || {};
+        },
+
+        /**
          * Получить список классов модификаторов узла.
          *
          * @private
@@ -2471,7 +2511,7 @@ Node = (function (Tag, Selector, object) {
         _getModsClasses: function(method) {
             var mods = this._bemjson[method + 's'];
             return Object.keys(mods).reduce(function(classes, key) {
-                if(mods[key]) {
+                if(mods[key] !== false && mods[key] !== undefined) {
                     classes.push(this._name[method](key, mods[key]).toString());
                 }
                 return classes;
@@ -3184,27 +3224,29 @@ Tree = (function (Template, is, object) {
          * @private
          * @param {array} bemjson Массив
          * @param {object} data Данные по сущности в дереве
-         * @param {object} [data.context] Информация о родительском контексте (если родитель — блок)
-         * @param {object} [data.context.block] Имя родительского блока
+         * @param {object} [data.context] Информация о родительском контексте
+         * @param {string} [data.context.block] Имя родительского блока
          * @param {object} [data.context.mods] Модификаторы родительского блока
+         * @param {string} [data.context.elem] Имя родительского элемента
+         * @param {object} [data.context.elemMods] Модификаторы родительского элемента
          * @returns {array}
          */
         _getContentList: function(bemjson, data) {
             var list = [];
             for(var index = 0, len = bemjson.length; index < len; index++) {
-                var elem = bemjson[index],
+                var item = bemjson[index],
                     elemData = {
                         index: index,
                         length: bemjson.length
                     };
 
-                if(elem && elem.elem) {
+                if(item) {
                     elemData.context = data.context;
                 }
 
-                var node = is.array(elem)
-                    ? this._getContentList(elem, data)
-                    : this._getNode(elem, elemData);
+                var node = is.array(item)
+                    ? this._getContentList(item, data)
+                    : this._getNode(item, elemData);
 
                 list = list.concat(node);
             }
@@ -3220,13 +3262,15 @@ Tree = (function (Template, is, object) {
          * @param {object} [data] Данные по сущности в дереве
          * @param {object} [data.index] Порядковый индекс сущности
          * @param {object} [data.length] Количество сущностей у родителя
-         * @param {object} [data.context] Информация о родительском контексте (только для элементов)
-         * @param {object} [data.context.block] Имя родительского блока
+         * @param {object} [data.context] Информация о контексте родительского блока
+         * @param {string} [data.context.block] Имя родительского блока
          * @param {object} [data.context.mods] Модификаторы родительского блока
+         * @param {string} [data.context.elem] Имя родительского элемента
+         * @param {object} [data.context.elemMods] Модификаторы родительского элемента
          * @returns {Node|*}
          */
         _getNode: function(bemjson, data) {
-            if(!is.map(bemjson)) return bemjson;
+            if(!is.map(bemjson)) return bemjson === undefined ? '' : bemjson;
 
             data = data || {};
 
@@ -3243,6 +3287,11 @@ Tree = (function (Template, is, object) {
                     block: nodeBemjson.block,
                     mods: object.clone(nodeBemjson.mods)
                 };
+
+                if(node.isElem()) {
+                    data.context.elem = nodeBemjson.elem;
+                    data.context.elemMods = nodeBemjson.elemMods;
+                }
             }
 
             return node.content(this[

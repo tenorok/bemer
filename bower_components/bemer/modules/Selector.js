@@ -1,4 +1,4 @@
-definer('Selector', /** @exports Selector */ function() {
+definer('Selector', /** @exports Selector */ function(is) {
 
     /**
      * Модуль работы с БЭМ-селектором.
@@ -148,7 +148,7 @@ definer('Selector', /** @exports Selector */ function() {
          * Получить/установить модификатор блока.
          *
          * @param {string} [name] Имя модификатора
-         * @param {string} [val] Значение модификатора
+         * @param {string|boolean} [val] Значение модификатора
          * @returns {{name: string, val: string}|Selector}
          */
         mod: function(name, val) {
@@ -175,11 +175,11 @@ definer('Selector', /** @exports Selector */ function() {
         /**
          * Получить/установить значение модификатора блока.
          *
-         * @param {string} [val] Значение модификатора
+         * @param {string|boolean} [val] Значение модификатора
          * @returns {string|Selector}
          */
         modVal: function(val) {
-            return this._getSet('_modVal', val);
+            return this._getSet('_modVal', val, true);
         },
 
         /**
@@ -196,7 +196,7 @@ definer('Selector', /** @exports Selector */ function() {
          * Получить/установить модификатор элемента.
          *
          * @param {string} [name] Имя модификатора
-         * @param {string} [val] Значение модификатора
+         * @param {string|boolean} [val] Значение модификатора
          * @returns {{name: string, val: string}|Selector}
          */
         elemMod: function(name, val) {
@@ -223,11 +223,11 @@ definer('Selector', /** @exports Selector */ function() {
         /**
          * Получить/установить значение модификатора элемента.
          *
-         * @param {string} [val] Значение модификатора
+         * @param {string|boolean} [val] Значение модификатора
          * @returns {string|Selector}
          */
         elemModVal: function(val) {
-            return this._getSet('_elemModVal', val);
+            return this._getSet('_elemModVal', val, true);
         },
 
         /**
@@ -321,7 +321,7 @@ definer('Selector', /** @exports Selector */ function() {
          * @private
          * @param {string} name Имя поля имени модификатора
          * @param {string} val Имя поля значения модификатора
-         * @returns {array}
+         * @returns {string[]}
          */
         _getMod: function(name, val) {
             var mod = [];
@@ -345,13 +345,14 @@ definer('Selector', /** @exports Selector */ function() {
          *
          * @private
          * @param {string} name Имя поля
-         * @param {*} [val] Значение
+         * @param {string|boolean} [val] Значение
+         * @param {boolean} [isCanBeBoolean] Значение поля может быть логическим
          * @returns {*|Selector}
          */
-        _getSet: function(name, val) {
+        _getSet: function(name, val, isCanBeBoolean) {
             if(val === undefined) return this[name];
 
-            this[name] = val;
+            this[name] = isCanBeBoolean === true && is.boolean(val) ? val : String(val);
             return this;
         }
 
