@@ -4,9 +4,9 @@ node_js:
     - "0.10"
 
 branches:
-  only:
-    - master
-    - dev
+    only:
+        - master
+        - dev
 
 install:
     - npm install
