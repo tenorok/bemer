@@ -174,8 +174,8 @@ defineAsGlobal && (global.inherit = inherit);
  * @file Template engine. BEMJSON to HTML processor.
  * @copyright 2014 Artem Kurbatov, tenorok.ru
  * @license MIT license
- * @version 0.8.1
- * @date 8 May 2015
+ * @version 0.8.2
+ * @date 19 June 2015
  */
 (function(global, undefined) {
 var definer = {
@@ -1775,7 +1775,7 @@ Match = (function (Selector, object, is) {
          * @returns {boolean}
          */
         _blockMod: function(mods) {
-            if(this._pattern.isBlock() && !this._pattern.modName() && !this._pattern.modVal()) {
+            if(!this._pattern.modName() && !this._pattern.modVal()) {
                 return true;
             }
 

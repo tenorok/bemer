@@ -153,7 +153,7 @@ definer('Match', /** @exports Match */ function(Selector, object, is) {
          * @returns {boolean}
          */
         _blockMod: function(mods) {
-            if(this._pattern.isBlock() && !this._pattern.modName() && !this._pattern.modVal()) {
+            if(!this._pattern.modName() && !this._pattern.modVal()) {
                 return true;
             }
 
