@@ -50,7 +50,7 @@ module.exports = function(grunt) {
             },
             jscs: { command: './node_modules/.bin/jscs modules/' },
             jshint: { command: './node_modules/.bin/jshint modules/' },
-            yaspeller: { options: { stderr: false }, command: './node_modules/.bin/yaspeller --lang ru README.md' }
+            yaspeller: { options: { stderr: false }, command: './node_modules/.bin/yaspeller README.md' }
         },
         definer: Target.definer(),
         mochaTest: Target.mocha(module),
