@@ -11,6 +11,7 @@ definer('MatchTest', function(assert, Match) {
             it('По имени', function() {
                 var match = new Match('block');
                 assert.isTrue(match.is({ block: 'block' }));
+                assert.isTrue(match.is({ block: 'block', mods: {}}));
                 assert.isFalse(match.is({ block: 'not-block' }));
                 assert.isFalse(match.is({ block: 'block', elem: '*' }));
             });
@@ -29,6 +30,7 @@ definer('MatchTest', function(assert, Match) {
             it('По имени', function() {
                 var match = new Match('block_size_s');
                 assert.isFalse(match.is({ block: 'block' }));
+                assert.isFalse(match.is({ block: 'block', mods: {}}));
                 assert.isFalse(match.is({ block: 'block', mods: { theme: 'normal' }}));
                 assert.isFalse(match.is({ block: 'block', mods: { size: 'm' }}));
                 assert.isFalse(match.is({ block: 'block', mods: { margin: 's' }}));
@@ -39,8 +41,10 @@ definer('MatchTest', function(assert, Match) {
             it('Булев модификатор', function() {
                 var match = new Match('block_big');
                 assert.isFalse(match.is({ block: 'block' }));
+                assert.isFalse(match.is({ block: 'block', mods: {}}));
                 assert.isFalse(match.is({ block: 'block', mods: { big: 'yes' }}));
                 assert.isTrue(match.is({ block: 'block', mods: { big: true }}));
+                assert.isTrue(match.is({ block: 'block', mods: { theme: 'large', big: true }}));
             });
 
             it('Любое имя модификатора', function() {
@@ -76,6 +80,9 @@ definer('MatchTest', function(assert, Match) {
             it('По имени', function() {
                 var match = new Match('block__element');
                 assert.isTrue(match.is({ block: 'block', elem: 'element' }));
+                assert.isTrue(match.is({ block: 'block', mods: {}, elem: 'element' }));
+                assert.isTrue(match.is({ block: 'block', mods: {}, elem: 'element', elemMods: {}}));
+                assert.isTrue(match.is({ block: 'block', mods: { mod: true }, elem: 'element' }));
                 assert.isFalse(match.is({ block: 'block' }));
                 assert.isFalse(match.is({ block: 'not-block', elem: 'element' }));
                 assert.isFalse(match.is({ block: 'block', elem: 'not-element' }));
@@ -109,6 +116,7 @@ definer('MatchTest', function(assert, Match) {
             it('По имени', function() {
                 var match = new Match('block__elem_size_s');
                 assert.isFalse(match.is({ block: 'block', elem: 'elem' }));
+                assert.isFalse(match.is({ block: 'block', elem: 'elem', elemMods: {}}));
                 assert.isFalse(match.is({ block: 'block', elem: 'elem', elemMods: { theme: 'normal' }}));
                 assert.isFalse(match.is({ block: 'block', elem: 'elem', elemMods: { size: 'm' }}));
                 assert.isFalse(match.is({ block: 'block', elem: 'elem', elemMods: { margin: 's' }}));
@@ -119,8 +127,10 @@ definer('MatchTest', function(assert, Match) {
             it('Булев модификатор', function() {
                 var match = new Match('block__elem_big');
                 assert.isFalse(match.is({ block: 'block', elem: 'elem' }));
+                assert.isFalse(match.is({ block: 'block', mods: {}, elem: 'elem', elemMods: {}}));
                 assert.isFalse(match.is({ block: 'block', elem: 'elem', elemMods: { big: 'yes' }}));
                 assert.isTrue(match.is({ block: 'block', elem: 'elem', elemMods: { big: true }}));
+                assert.isTrue(match.is({ block: 'block', mods: {}, elem: 'elem', elemMods: { big: true }}));
             });
 
             it('Любое имя модификатора', function() {
@@ -321,6 +331,7 @@ definer('MatchTest', function(assert, Match) {
             it('Элемент у блока с булевым модификатором', function() {
                 var match = new Match('block_mod__elem');
                 assert.isFalse(match.is({ block: 'block', elem: 'elem' }));
+                assert.isFalse(match.is({ block: 'block', mods: {}, elem: 'elem' }));
                 assert.isFalse(match.is({ block: 'block', mods: { mod: 'val' }, elem: 'elem' }));
                 assert.isTrue(match.is({ block: 'block', mods: { mod: true }, elem: 'elem' }));
             });
@@ -328,6 +339,8 @@ definer('MatchTest', function(assert, Match) {
             it('Элемент у блока с модификатором', function() {
                 var match = new Match('block_mod_val__elem');
                 assert.isFalse(match.is({ block: 'block', elem: 'elem' }));
+                assert.isFalse(match.is({ block: 'block', mods: {}, elem: 'elem' }));
+                assert.isFalse(match.is({ block: 'block', mods: {}, elem: 'elem', elemMods: {}}));
                 assert.isFalse(match.is({ block: 'block', mods: { mod: true }, elem: 'elem' }));
                 assert.isFalse(match.is({ block: 'block', mods: { mod: 'no' }, elem: 'elem' }));
                 assert.isTrue(match.is({ block: 'block', mods: { mod: 'val' }, elem: 'elem' }));
@@ -344,6 +357,7 @@ definer('MatchTest', function(assert, Match) {
             it('Булев модификатор элемента', function() {
                 var match = new Match('block__elem_mod');
                 assert.isFalse(match.is({ block: 'block', elem: 'elem' }));
+                assert.isFalse(match.is({ block: 'block', mods: {}, elem: 'elem' }));
                 assert.isFalse(match.is({ block: 'block', mods: { mod: true }, elem: 'elem' }));
                 assert.isFalse(match.is({ block: 'block', elemMods: { mod: true }}));
             });

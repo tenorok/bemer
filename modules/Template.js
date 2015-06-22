@@ -1,5 +1,5 @@
 definer('Template', /** @exports Template */ function( /* jshint maxparams: false */
-    Match, classify, Node, Selector, Helpers, object, string, is
+    Match, classify, Node, Selector, Helpers, object, array, string, is
 ) {
 
     /**
@@ -230,7 +230,11 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
         _functionifyModes: function(modes) {
             object.each(modes, function(name, val) {
                 if(!is.function(val)) {
-                    modes[name] = function() { return val; };
+                    modes[name] = function() {
+                        if(is.array(val)) return array.deepClone(val);
+                        if(is.map(val)) return object.deepClone(val);
+                        return val;
+                    };
                     modes[name].__wrapped__ = true;
                 }
             }, this);
