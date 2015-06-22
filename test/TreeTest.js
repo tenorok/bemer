@@ -525,6 +525,61 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     '</div>');
             });
 
+            it('Объект в содержимом шаблона и несколько подходящих узлов в дереве', function() {
+                var tree = new Tree({
+                    block: 'root',
+                    content: [
+                        { block: 'checkbox' },
+                        {
+                            block: 'checkbox',
+                            mods: { checked: true }
+                        }
+                    ]
+                }, new Pool().add(new Template('checkbox', {
+                    content: { elem: 'control' }
+                })));
+
+                assert.equal(tree.toString(),
+                    '<div class="root">' +
+                        '<div class="checkbox">' +
+                            '<div class="checkbox__control"></div>' +
+                        '</div>' +
+                        '<div class="checkbox checkbox_checked">' +
+                            '<div class="checkbox__control checkbox_checked__control"></div>' +
+                        '</div>' +
+                    '</div>');
+            });
+
+            it('Массив в содержимом шаблона и несколько подходящих узлов в дереве', function() {
+                var tree = new Tree({
+                    block: 'root',
+                    content: [
+                        { block: 'checkbox' },
+                        {
+                            block: 'checkbox',
+                            mods: { checked: true }
+                        }
+                    ]
+                }, new Pool().add(new Template('checkbox', {
+                    content: [
+                        { elem: 'control' },
+                        { elem: 'label' }
+                    ]
+                })));
+
+                assert.equal(tree.toString(),
+                    '<div class="root">' +
+                        '<div class="checkbox">' +
+                            '<div class="checkbox__control"></div>' +
+                            '<div class="checkbox__label"></div>' +
+                        '</div>' +
+                        '<div class="checkbox checkbox_checked">' +
+                            '<div class="checkbox__control checkbox_checked__control"></div>' +
+                            '<div class="checkbox__label checkbox_checked__label"></div>' +
+                        '</div>' +
+                    '</div>');
+            });
+
         });
 
         describe('Проверка правильных значений в this.data.', function() {
