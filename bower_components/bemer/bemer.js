@@ -174,8 +174,8 @@ defineAsGlobal && (global.inherit = inherit);
  * @file Template engine. BEMJSON to HTML processor.
  * @copyright 2014 Artem Kurbatov, tenorok.ru
  * @license MIT license
- * @version 0.8.2
- * @date 19 June 2015
+ * @version 0.8.3
+ * @date 22 June 2015
  */
 (function(global, undefined) {
 var definer = {
@@ -1850,7 +1850,7 @@ Match = (function (Selector, object, is) {
          * @returns {boolean}
          */
         _anyMod: function(patternName, patternVal, mods) {
-            if(!patternName && !mods) {
+            if(!patternName && (!mods || object.isEmpty(mods))) {
                 return true;
             }
 
@@ -1858,7 +1858,7 @@ Match = (function (Selector, object, is) {
                 return false;
             }
 
-            return object.isEmpty(mods) || Object.keys(mods).some(function(name) {
+            return Object.keys(mods).some(function(name) {
                 return this._mod(patternName, patternVal, name, mods[name]);
             }, this);
         },
@@ -2572,7 +2572,7 @@ Node = (function (Tag, Selector, object) {
     return Node;
 
 }).call(global, Tag, Selector, object),
-array = (function (is) {
+array = (function (is, object) {
 
     /**
      * Модуль работы с массивами.
@@ -2624,9 +2624,41 @@ array = (function (is) {
         return newArr;
     };
 
+    /**
+     * Клонировать массив.
+     *
+     * @param {array} arr Массив
+     * @returns {array} Новый массив
+     */
+    array.clone = function(arr) {
+        return arr.slice();
+    };
+
+    /**
+     * Клонировать массив рекурсивно.
+     *
+     * @param {array} arr Массив
+     * @returns {array} Новый массив
+     */
+    array.deepClone = function(arr) {
+        var clone = [];
+        for(var i = 0, len = arr.length; i < len; i++) {
+            var elem = arr[i];
+
+            if(is.array(elem)) {
+                elem = array.deepClone(elem);
+            } else if(is.map(elem)) {
+                elem = object.deepClone(elem);
+            }
+
+            clone.push(elem);
+        }
+        return clone;
+    };
+
     return array;
 
-}).call(global, is),
+}).call(global, is, object),
 Pool = (function (array, object) {
 
     /**
@@ -2773,7 +2805,7 @@ classify = (function (inherit) {
     return inherit;
 }).call(global, inherit),
 Template = (function ( /* jshint maxparams: false */
-    Match, classify, Node, Selector, Helpers, object, string, is
+    Match, classify, Node, Selector, Helpers, object, array, string, is
 ) {
 
     /**
@@ -3004,7 +3036,11 @@ Template = (function ( /* jshint maxparams: false */
         _functionifyModes: function(modes) {
             object.each(modes, function(name, val) {
                 if(!is.function(val)) {
-                    modes[name] = function() { return val; };
+                    modes[name] = function() {
+                        if(is.array(val)) return array.deepClone(val);
+                        if(is.map(val)) return object.deepClone(val);
+                        return val;
+                    };
                     modes[name].__wrapped__ = true;
                 }
             }, this);
@@ -3167,7 +3203,7 @@ Template = (function ( /* jshint maxparams: false */
 
     return Template;
 
-}).call(global, Match, classify, Node, Selector, Helpers, object, string, is),
+}).call(global, Match, classify, Node, Selector, Helpers, object, array, string, is),
 Tree = (function (Template, is, object) {
 
     /**

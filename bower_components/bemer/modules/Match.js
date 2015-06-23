@@ -228,7 +228,7 @@ definer('Match', /** @exports Match */ function(Selector, object, is) {
          * @returns {boolean}
          */
         _anyMod: function(patternName, patternVal, mods) {
-            if(!patternName && !mods) {
+            if(!patternName && (!mods || object.isEmpty(mods))) {
                 return true;
             }
 
@@ -236,7 +236,7 @@ definer('Match', /** @exports Match */ function(Selector, object, is) {
                 return false;
             }
 
-            return object.isEmpty(mods) || Object.keys(mods).some(function(name) {
+            return Object.keys(mods).some(function(name) {
                 return this._mod(patternName, patternVal, name, mods[name]);
             }, this);
         },
