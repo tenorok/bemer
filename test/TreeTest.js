@@ -335,6 +335,36 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 assert.equal(tree.toString(), '<div class="a"><div class="b__c"></div></div>');
             });
 
+            it('Элемент во вложенном элементе другого блока', function() {
+                var tree = new Tree({
+                    block: 'a',
+                    content: {
+                        block: 'b',
+                        elem: 'c',
+                        content: { elem: 'd' }
+                    }
+                }, new Pool());
+                assert.equal(tree.toString(), '<div class="a"><div class="b__c"><div class="a__d"></div></div></div>');
+            });
+
+            it('Элемент в элементе с модифицированным блоком', function() {
+                var tree = new Tree({
+                    block: 'x',
+                    content: {
+                        block: 'a',
+                        mods: { b: 'c' },
+                        elem: 'd',
+                        content: { elem: 'e' }
+                    }
+                }, new Pool());
+                assert.equal(tree.toString(),
+                    '<div class="x">' +
+                        '<div class="a__d a_b_c__d">' +
+                            '<div class="x__e"></div>' +
+                        '</div>' +
+                    '</div>');
+            });
+
             it('Элемент обёрнут в анонимный блок, расположенный в массиве', function() {
                 var tree = new Tree({
                     block: 'a',
