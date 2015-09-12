@@ -3,10 +3,12 @@
     "description": "Template engine. BEMJSON to HTML processor.",
     "version": "0.8.4",
     "license": "MIT",
+    "main": "bemer.js",
     "ignore": [
         "**/.*",
         "grunt",
         "test",
+        "benchmark",
         "Gruntfile.js",
         "index.js",
         "package.json"
