@@ -191,6 +191,19 @@ definer('PoolTest', function(assert, Pool, Template) {
                 );
             });
 
+            it('Приоритет у более позднего шаблона при наличии поля во входящем BEMJSON и другом шаблоне', function() {
+                assert.equal(new Pool()
+                        .add(new Template('section', { content: function() { return '1'; }}))
+                        .add(new Template('section', { content: function() { return '2'; }}))
+                        .find({
+                            block: 'section',
+                            content: '0'
+                        })
+                        .toString(),
+                    '<div class="section">2</div>'
+                );
+            });
+
             describe('Элементы.', function() {
 
                 it('Простой элемент', function() {

@@ -59,9 +59,12 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
          * @param {object} [data.context.mods] Модификаторы родительского блока
          * @param {string} [data.context.elem] Имя родительского элемента
          * @param {object} [data.context.elemMods] Модификаторы родительского элемента
+         * @param {object} [context] Информация о контекстуальном блоке
+         * @param {object} [context.block] Имя контекстуального блока
+         * @param {object} [context.mods] Модификаторы контекстуального блока
          * @returns {array}
          */
-        _getContentList: function(bemjson, data) {
+        _getContentList: function(bemjson, data, context) {
             var list = [];
             for(var index = 0, len = bemjson.length; index < len; index++) {
                 var item = bemjson[index],
@@ -75,8 +78,8 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
                 }
 
                 var node = is.array(item)
-                    ? this._getContentList(item, data)
-                    : this._getNode(item, elemData);
+                    ? this._getContentList(item, data, context)
+                    : this._getNode(item, elemData, context);
 
                 list = list.concat(node);
             }
@@ -92,21 +95,25 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
          * @param {object} [data] Данные по сущности в дереве
          * @param {object} [data.index] Порядковый индекс сущности
          * @param {object} [data.length] Количество сущностей у родителя
-         * @param {object} [data.context] Информация о контексте родительского блока
+         * @param {object} [data.context] Информация о родительском контексте
          * @param {string} [data.context.block] Имя родительского блока
          * @param {object} [data.context.mods] Модификаторы родительского блока
          * @param {string} [data.context.elem] Имя родительского элемента
          * @param {object} [data.context.elemMods] Модификаторы родительского элемента
+         * @param {object} [context] Информация о контекстуальном блоке
+         * @param {object} [context.block] Имя контекстуального блока
+         * @param {object} [context.mods] Модификаторы контекстуального блока
          * @returns {Node|*}
          */
-        _getNode: function(bemjson, data) {
+        _getNode: function(bemjson, data, context) {
             if(!is.map(bemjson)) return bemjson === undefined ? '' : bemjson;
 
             data = data || {};
+            context = context || {};
 
             if(!bemjson.block && bemjson.elem) {
-                bemjson.block = data.context.block;
-                bemjson.mods = object.extend(data.context.mods, bemjson.mods || {});
+                bemjson.block = context.block;
+                bemjson.mods = object.extend(context.mods, bemjson.mods || {});
             }
 
             var node = this._pool.find(bemjson, data) || Template.base(bemjson, data),
@@ -118,7 +125,12 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
                     mods: object.clone(nodeBemjson.mods)
                 };
 
-                if(node.isElem()) {
+                if(node.isBlock()) {
+                    context = {
+                        block: data.context.block,
+                        mods: data.context.mods
+                    };
+                } else {
                     data.context.elem = nodeBemjson.elem;
                     data.context.elemMods = nodeBemjson.elemMods;
                 }
@@ -126,7 +138,7 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
 
             return node.content(this[
                 is.array(nodeBemjson.content) ? '_getContentList' : '_getNode'
-            ](nodeBemjson.content, data));
+            ](nodeBemjson.content, data, context));
         }
 
     };
