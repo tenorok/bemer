@@ -335,7 +335,7 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
                 return val;
             }
 
-            if(!is.undefined(baseBemjsonVal)) {
+            if(!modesFromAnotherTemplates[name] && !is.undefined(baseBemjsonVal)) {
                 return baseBemjsonVal;
             }
 
