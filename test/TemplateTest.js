@@ -397,7 +397,7 @@ definer('TemplateTest', function(assert, Template, Helpers, Selector) {
 
             it('Блок с модификатором и элемент с модификатором', function() {
                 assert.equal(Template.base({ block: 'a', mods: { c: 'd' }, elem: 'b', elemMods: { e: 'f' }}).toString(),
-                    '<div class="a__b a_c_d__b a_c_d__b_e_f"></div>'
+                    '<div class="a__b a_c_d__b a__b_e_f a_c_d__b_e_f"></div>'
                 );
             });
 

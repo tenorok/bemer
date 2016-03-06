@@ -893,7 +893,8 @@ definer('bemerTest', function(assert, bemer, Helpers) {
                     content: 'Button'
                 }),
                     '<button class="button button_theme_normal">' +
-                        '<label class="button__label button_theme_normal__label button_theme_normal__label_size_m">' +
+                        '<label class="button__label button_theme_normal__label ' +
+                            'button__label_size_m button_theme_normal__label_size_m">' +
                             'Button' +
                         '</label>' +
                     '</button>'
