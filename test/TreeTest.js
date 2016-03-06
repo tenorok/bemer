@@ -96,7 +96,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
             it('Блок с модификатором и элемент с модификатором', function() {
                 var tree = new Tree({ block: 'a', mods: { c: 'd' }, elem: 'b', elemMods: { e: 'f' }}, new Pool());
                 assert.equal(tree.toString(),
-                    '<div class="a__b a_c_d__b a_c_d__b_e_f"></div>'
+                    '<div class="a__b a_c_d__b a__b_e_f a_c_d__b_e_f"></div>'
                 );
             });
 
@@ -414,7 +414,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 }, new Pool());
                 assert.equal(tree.toString(), '' +
                     '<div class="a a_c_d">' +
-                        '<div class="a__b a_c_d__b a_c_d__b_e_f"></div>' +
+                        '<div class="a__b a_c_d__b a__b_e_f a_c_d__b_e_f"></div>' +
                     '</div>');
             });
 
@@ -430,7 +430,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 }, new Pool());
                 assert.equal(tree.toString(), '' +
                     '<div class="a a_c_d">' +
-                        '<div class="a__b a_c_g__b a_c_g__b_e_f"></div>' +
+                        '<div class="a__b a_c_g__b a__b_e_f a_c_g__b_e_f"></div>' +
                     '</div>');
             });
 
@@ -446,7 +446,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 }, new Pool());
                 assert.equal(tree.toString(), '' +
                     '<div class="a a_c_d">' +
-                        '<div class="a__b a_c_d__b a_g_h__b a_c_d__b_e_f a_g_h__b_e_f"></div>' +
+                        '<div class="a__b a_c_d__b a_g_h__b a__b_e_f a_c_d__b_e_f a_g_h__b_e_f"></div>' +
                     '</div>');
             });
 

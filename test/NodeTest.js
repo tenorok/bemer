@@ -314,7 +314,8 @@ definer('NodeTest', function(assert, Node) {
                     elem: 'element',
                     elemMods: { theme: 'normal' }
                 }).toString(),
-                    '<div class="name__element name_size_s__element name_size_s__element_theme_normal"></div>'
+                    '<div class="name__element name_size_s__element ' +
+                        'name__element_theme_normal name_size_s__element_theme_normal"></div>'
                 );
             });
 
@@ -325,7 +326,7 @@ definer('NodeTest', function(assert, Node) {
                     elem: 'element',
                     elemMods: { state: true }
                 }).toString(),
-                    '<div class="name__element name_size_s__element name_theme_dark__element ' +
+                    '<div class="name__element name_size_s__element name_theme_dark__element name__element_state ' +
                         'name_size_s__element_state name_theme_dark__element_state"></div>'
                 );
             });
@@ -338,6 +339,7 @@ definer('NodeTest', function(assert, Node) {
                     elemMods: { state: true, side: 'left' }
                 }).toString(),
                     '<div class="name__element name_size_s__element name_theme_dark__element ' +
+                        'name__element_state name__element_side_left ' +
                         'name_size_s__element_state name_size_s__element_side_left ' +
                         'name_theme_dark__element_state name_theme_dark__element_side_left"></div>'
                 );
