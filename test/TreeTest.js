@@ -397,7 +397,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                         elem: 'b'
                     }
                 }, new Pool());
-                assert.equal(tree.toString(), '' +
+                assert.equal(tree.toString(),
                     '<div class="a a_c_d">' +
                         '<div class="a__b a_c_d__b"></div>' +
                     '</div>');
@@ -412,7 +412,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                         elemMods: { e: 'f' }
                     }
                 }, new Pool());
-                assert.equal(tree.toString(), '' +
+                assert.equal(tree.toString(),
                     '<div class="a a_c_d">' +
                         '<div class="a__b a_c_d__b a__b_e_f a_c_d__b_e_f"></div>' +
                     '</div>');
@@ -428,7 +428,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                         elemMods: { e: 'f' }
                     }
                 }, new Pool());
-                assert.equal(tree.toString(), '' +
+                assert.equal(tree.toString(),
                     '<div class="a a_c_d">' +
                         '<div class="a__b a_c_g__b a__b_e_f a_c_g__b_e_f"></div>' +
                     '</div>');
@@ -444,9 +444,27 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                         elemMods: { e: 'f' }
                     }
                 }, new Pool());
-                assert.equal(tree.toString(), '' +
+                assert.equal(tree.toString(),
                     '<div class="a a_c_d">' +
                         '<div class="a__b a_c_d__b a_g_h__b a__b_e_f a_c_d__b_e_f a_g_h__b_e_f"></div>' +
+                    '</div>');
+            });
+
+            it('Указание модификатора во вложенном элементе не должно затрагивать соседние элементы', function() {
+                var tree = new Tree({
+                    block: 'header',
+                    content: [
+                        {
+                            mods: { size: 's' },
+                            elem: 'logo'
+                        },
+                        { elem: 'user' }
+                    ]
+                }, new Pool());
+                assert.equal(tree.toString(),
+                    '<div class="header">' +
+                        '<div class="header__logo header_size_s__logo"></div>' +
+                        '<div class="header__user"></div>' +
                     '</div>');
             });
 
