@@ -284,14 +284,17 @@ definer('Node', /** @exports Node */ function(Tag, Selector, object) {
          * @returns {string[]}
          */
         _getElemModsClasses: function() {
+            this._name.modVal(false);
+            var list = this._getModsClasses('elemMod');
+
             if(!object.isEmpty(this._bemjson.mods)) {
-                return Object.keys(this._bemjson.mods).reduce(function(classes, key) {
+                list = list.concat(Object.keys(this._bemjson.mods).reduce(function(classes, key) {
                     this._name.mod(key, this._bemjson.mods[key]);
                     return classes.concat(this._getModsClasses('elemMod'));
-                }.bind(this), []);
+                }.bind(this), []));
             }
 
-            return this._getModsClasses('elemMod');
+            return list;
         }
 
     };
