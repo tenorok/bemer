@@ -1,12 +1,14 @@
 {
   "name": "bemer",
   "description": "Template engine. BEMJSON to HTML processor.",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "license": "MIT",
+  "main": "bemer.js",
   "ignore": [
     "**/.*",
     "grunt",
     "test",
+    "benchmark",
     "Gruntfile.js",
     "index.js",
     "package.json"
@@ -16,11 +18,11 @@
     "template engine"
   ],
   "homepage": "https://github.com/tenorok/bemer",
-  "_release": "0.8.4",
+  "_release": "0.8.5",
   "_resolution": {
     "type": "version",
-    "tag": "v0.8.4",
-    "commit": "9283a0bbb35a8cd786f3a71045d31eb3dafdad6e"
+    "tag": "v0.8.5",
+    "commit": "d15536708fa279e0d7d109fe38ee2899b22a148f"
   },
   "_source": "git://github.com/tenorok/bemer.git",
   "_target": "^0.8.0",

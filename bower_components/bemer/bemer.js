@@ -174,8 +174,8 @@ defineAsGlobal && (global.inherit = inherit);
  * @file Template engine. BEMJSON to HTML processor.
  * @copyright 2014 Artem Kurbatov, tenorok.ru
  * @license MIT license
- * @version 0.8.4
- * @date 12 September 2015
+ * @version 0.8.5
+ * @date 6 March 2016
  */
 (function(global, undefined) {
 var definer = {
@@ -2525,14 +2525,17 @@ Node = (function (Tag, Selector, object) {
          * @returns {string[]}
          */
         _getElemModsClasses: function() {
+            this._name.modVal(false);
+            var list = this._getModsClasses('elemMod');
+
             if(!object.isEmpty(this._bemjson.mods)) {
-                return Object.keys(this._bemjson.mods).reduce(function(classes, key) {
+                list = list.concat(Object.keys(this._bemjson.mods).reduce(function(classes, key) {
                     this._name.mod(key, this._bemjson.mods[key]);
                     return classes.concat(this._getModsClasses('elemMod'));
-                }.bind(this), []);
+                }.bind(this), []));
             }
 
-            return this._getModsClasses('elemMod');
+            return list;
         }
 
     };
@@ -3266,7 +3269,7 @@ Tree = (function (Template, is, object) {
          * @param {string} [data.context.elem] Имя родительского элемента
          * @param {object} [data.context.elemMods] Модификаторы родительского элемента
          * @param {object} [context] Информация о контекстуальном блоке
-         * @param {object} [context.block] Имя контекстуального блока
+         * @param {string} [context.block] Имя контекстуального блока
          * @param {object} [context.mods] Модификаторы контекстуального блока
          * @returns {array}
          */
@@ -3307,7 +3310,7 @@ Tree = (function (Template, is, object) {
          * @param {string} [data.context.elem] Имя родительского элемента
          * @param {object} [data.context.elemMods] Модификаторы родительского элемента
          * @param {object} [context] Информация о контекстуальном блоке
-         * @param {object} [context.block] Имя контекстуального блока
+         * @param {string} [context.block] Имя контекстуального блока
          * @param {object} [context.mods] Модификаторы контекстуального блока
          * @returns {Node|*}
          */
@@ -3319,7 +3322,7 @@ Tree = (function (Template, is, object) {
 
             if(!bemjson.block && bemjson.elem) {
                 bemjson.block = context.block;
-                bemjson.mods = object.extend(context.mods, bemjson.mods || {});
+                bemjson.mods = object.extend(object.clone(context.mods), bemjson.mods || {});
             }
 
             var node = this._pool.find(bemjson, data) || Template.base(bemjson, data),

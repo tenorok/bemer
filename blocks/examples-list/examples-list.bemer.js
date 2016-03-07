@@ -32,8 +32,10 @@ bemer
                             block: this.data.context.block,
                             elem: 'index-wrapper',
                             content: {
+                                block: this.data.context.block,
                                 elem: 'index-border',
                                 content: {
+                                    block: this.data.context.block,
                                     elem: 'index',
                                     content: this.eq
                                 }
