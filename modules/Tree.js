@@ -119,8 +119,13 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
             context = context || {};
 
             if(!bemjson.block && bemjson.elem) {
-                bemjson.block = bemjson.__templateBlock__ || context.block;
-                delete bemjson.__templateBlock__;
+
+                if(bemjson.__templateBlock__) {
+                    context.block = bemjson.__templateBlock__;
+                    delete bemjson.__templateBlock__;
+                }
+
+                bemjson.block = context.block;
                 bemjson.mods = object.extend(object.clone(context.mods), bemjson.mods || {});
             }
 

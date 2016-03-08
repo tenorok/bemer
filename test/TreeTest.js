@@ -422,6 +422,36 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                 assert.equal(tree.toString(), '<div class="a"><div class="b__c"><div class="b__d"></div></div></div>');
             });
 
+            it('Несколько вложенных элементов добавляется в шаблоне во вложенный элемент другого блока', function() {
+                var tree = new Tree({
+                    block: 'a',
+                    content: {
+                        block: 'b',
+                        elem: 'c'
+                    }
+                }, new Pool().add(new Template('b__c', { content: {
+                    elem: 'd',
+                    content: {
+                        elem: 'e',
+                        content: [
+                            { elem: 'f' },
+                            { elem: 'g' }
+                        ]
+                    }
+                }})));
+                assert.equal(tree.toString(),
+                    '<div class="a">' +
+                        '<div class="b__c">' +
+                            '<div class="b__d">' +
+                                '<div class="b__e">' +
+                                    '<div class="b__f"></div>' +
+                                    '<div class="b__g"></div>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>');
+            });
+
             it('Элемент добавляется в шаблоне на вложенный элемент блока', function() {
                 var tree = new Tree({
                     block: 'a',
