@@ -119,15 +119,30 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
             var modes = new this.Modes(bemjson, data);
 
             for(var i = 0, len = Template._defaultModesNames.length; i < len; i++) {
-                var mode = Template._defaultModesNames[i];
-                bemjson[mode] = this._getMode(
-                    modes,
-                    bemjson,
-                    mode,
-                    baseBemjson || bemjson,
-                    modesFromAnotherTemplates || {},
-                    index || 0
-                );
+                var modeName = Template._defaultModesNames[i],
+                    modeInfo = this._getMode(
+                        modes,
+                        bemjson,
+                        modeName,
+                        baseBemjson || bemjson,
+                        modesFromAnotherTemplates || {},
+                        index || 0
+                    );
+
+                if(modeName === 'content' && modeInfo.value && modeInfo.priority === this._valuePriorities.THIS) {
+                    /**
+                     * Имя блока текущего узла.
+                     *
+                     * Необходимо для корректной установки контекстуального блока
+                     * элементам, которые добавляются в содержимое в текущем шаблоне.
+                     *
+                     * @private
+                     * @type {string}
+                     */
+                    modeInfo.value.__templateBlock__ = bemjson.block;
+                }
+
+                bemjson[modeName] = modeInfo.value;
             }
 
             return new Node(bemjson);
@@ -264,6 +279,23 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
         },
 
         /**
+         * Словарь для идентификации места установления значения моды.
+         *
+         * @private
+         * @readonly
+         * @typedef ValuePriorities
+         * @enum {string}
+         * @prop {string} THIS Текущий шаблон
+         * @prop {string} ANOTHER Другой шаблон
+         * @prop {string} BEMJSON Входящие данные
+         */
+        _valuePriorities: {
+            THIS: 'this',
+            ANOTHER: 'another',
+            BEMJSON: 'bemjson'
+        },
+
+        /**
          * Получить значение моды.
          *
          * Если значение в шаблоне скалярное, то массивы конкатенируются,
@@ -276,7 +308,7 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
          * @param {object} baseBemjson Базовый BEMJSON из входящих данных
          * @param {string[]} modesFromAnotherTemplates Список полей, которые были установлены из других шаблонов
          * @param {number} index Порядковый номер шаблона в общем списке
-         * @returns {*}
+         * @returns {{value: *, priority: ValuePriorities}}
          */
         _getMode: function(modes, bemjson, name, baseBemjson, modesFromAnotherTemplates, index) {
             var isValFunc = !modes[name].__wrapped__,
@@ -295,9 +327,9 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
 
             if(!isValFunc) {
                 if(is.array(val, bemjsonVal)) {
-                    priorityVal = bemjsonVal.concat(val);
+                    priorityVal.value = bemjsonVal.concat(val);
                 } else if(is.map(val, bemjsonVal)) {
-                    priorityVal = this._isThisTemplatePriority(index, modesFromAnotherTemplates[name], isValFunc)
+                    priorityVal.value = this._isThisTemplatePriority(index, modesFromAnotherTemplates[name], isValFunc)
                         ? object.extend(object.clone(bemjsonVal), val)
                         : object.extend(object.clone(val), bemjsonVal);
                 }
@@ -320,7 +352,7 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
          * @param {boolean} isValFunc Значение моды в шаблоне может быть задано функцией
          * @param {string[]} modesFromAnotherTemplates Список полей, которые были установлены из других шаблонов
          * @param {object} info Информация для добавления в список полей, установленных из шаблонов
-         * @returns {*}
+         * @returns {{value: *, priority: ValuePriorities}}
          */
         _getPriorityValue: function(name, val, bemjsonVal, baseBemjsonVal, isValFunc, modesFromAnotherTemplates, info) {
             var isOwn = !!~this._modesNames.indexOf(name),
@@ -332,21 +364,34 @@ definer('Template', /** @exports Template */ function( /* jshint maxparams: fals
 
             if(isThisTemplatePriority && isOwn) {
                 modesFromAnotherTemplates[name] = info;
-                return val;
+                return {
+                    value: val,
+                    priority: this._valuePriorities.THIS
+                };
             }
 
             if(!modesFromAnotherTemplates[name] && !is.undefined(baseBemjsonVal)) {
-                return baseBemjsonVal;
+                return {
+                    value: baseBemjsonVal,
+                    priority: this._valuePriorities.BEMJSON
+                };
             }
 
             if(is.undefined(val) || modesFromAnotherTemplates[name] && (!isOwn || !isThisTemplatePriority)) {
-                return bemjsonVal;
+                return {
+                    value: bemjsonVal,
+                    priority: this._valuePriorities.ANOTHER
+                };
             }
 
             if(isOwn) {
                 modesFromAnotherTemplates[name] = info;
             }
-            return val;
+
+            return {
+                value: val,
+                priority: this._valuePriorities.THIS
+            };
         },
 
         /**
