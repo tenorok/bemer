@@ -169,7 +169,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                             ]
                         ]
                     ] },
-                    new Pool().add(new Template('*', { js: false }))
+                    new Pool()
                 );
                 assert.equal(tree.toString(),
                     '<div class="a">' +
@@ -198,7 +198,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
 
             it('Три вложенных друг в друга блока', function() {
                 var tree = new Tree({ block: 'a', content: { block: 'b', content: { block: 'c', content: 'content' }}},
-                    new Pool().add(new Template('a', 'b', 'c', { js: false }))
+                    new Pool()
                 );
                 assert.equal(tree.toString(),
                     '<div class="a">' +
@@ -226,7 +226,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                             { block: 'e' }
                         ] }
                     ] },
-                    new Pool().add(new Template('*', { js: false }))
+                    new Pool()
                 );
                 assert.equal(tree.toString(),
                     '<div class="a">' +
@@ -239,9 +239,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
             });
 
             it('Вложенный одноимённый блок с модификатором и шаблоном', function() {
-                var tree = new Tree({ block: 'a', content: { block: 'a', mods: { b: 'c' }}},
-                    new Pool().add(new Template('a', { js: false }))
-                );
+                var tree = new Tree({ block: 'a', content: { block: 'a', mods: { b: 'c' }}}, new Pool());
                 assert.equal(tree.toString(),
                     '<div class="a">' +
                         '<div class="a a_b_c"></div>' +
@@ -249,9 +247,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
             });
 
             it('Вложенный одноимённый блок с миксом и шаблоном', function() {
-                var tree = new Tree({ block: 'a', content: { block: 'a', mix: [{ block: 'b' }] }},
-                    new Pool().add(new Template('a', { js: false }))
-                );
+                var tree = new Tree({ block: 'a', content: { block: 'a', mix: [{ block: 'b' }] }}, new Pool());
                 assert.equal(tree.toString(),
                     '<div class="a">' +
                         '<div class="a b"></div>' +
@@ -275,7 +271,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     content: {
                         elem: 'b'
                     }
-                }, new Pool().add(new Template('a', { js: false })));
+                }, new Pool());
                 assert.equal(tree.toString(), '<div class="a"><div class="a__b"></div></div>');
             });
 
@@ -310,7 +306,7 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                             }
                         ]
                     }
-                }, new Pool().add(new Template('a', 'c', { js: false })));
+                }, new Pool());
                 assert.equal(tree.toString(),
                     '<div class="a">' +
                         '<div class="a__b">' +
@@ -345,6 +341,95 @@ definer('TreeTest', function(assert, Tree, Pool, Template) {
                     }
                 }, new Pool());
                 assert.equal(tree.toString(), '<div class="a"><div class="b__c"><div class="a__d"></div></div></div>');
+            });
+
+            it('Элемент добавляется в шаблоне во вложенный элемент другого блока', function() {
+                var tree = new Tree({
+                    block: 'a',
+                    content: {
+                        block: 'b',
+                        elem: 'c'
+                    }
+                }, new Pool().add(new Template('b__c', { content: { elem: 'd' }})));
+                assert.equal(tree.toString(), '<div class="a"><div class="b__c"><div class="b__d"></div></div></div>');
+            });
+
+            it('Элемент указан в шаблоне во вложенный элемент другого блока, но приоритет в BEMJSON', function() {
+                var tree = new Tree({
+                    block: 'a',
+                    content: {
+                        block: 'b',
+                        elem: 'c',
+                        content: {
+                            elem: 'e'
+                        }
+                    }
+                }, new Pool().add(new Template('b__c', { content: { elem: 'd' }})));
+                assert.equal(tree.toString(), '<div class="a"><div class="b__c"><div class="a__e"></div></div></div>');
+            });
+
+            it('Элемент указан с приоритетом в шаблоне во вложенный элемент другого блока', function() {
+                var tree = new Tree({
+                    block: 'a',
+                    content: {
+                        block: 'b',
+                        elem: 'c',
+                        content: {
+                            elem: 'e'
+                        }
+                    }
+                }, new Pool().add(new Template('b__c', { content: function() { return { elem: 'd' }; }})));
+                assert.equal(tree.toString(), '<div class="a"><div class="b__c"><div class="b__d"></div></div></div>');
+            });
+
+            it('Массив элементов добавляется в шаблоне во вложенный элемент другого блока', function() {
+                var tree = new Tree({
+                    block: 'a',
+                    content: {
+                        block: 'b',
+                        elem: 'c'
+                    }
+                }, new Pool().add(new Template('b__c', { content: [{ elem: 'd' }, { elem: 'e' }] })));
+                assert.equal(tree.toString(),
+                    '<div class="a">' +
+                        '<div class="b__c">' +
+                            '<div class="b__d"></div>' +
+                            '<div class="b__e"></div>' +
+                        '</div>' +
+                    '</div>');
+            });
+
+            it('Элемент добавляется в шаблоне со звёздочкой во вложенный элемент другого блока', function() {
+                var tree = new Tree({
+                    block: 'a',
+                    content: {
+                        block: 'b',
+                        elem: 'c'
+                    }
+                }, new Pool().add(new Template('*__c', { content: { elem: 'd' }})));
+                assert.equal(tree.toString(), '<div class="a"><div class="b__c"><div class="b__d"></div></div></div>');
+            });
+
+            it('Элемент добавляется в шаблоне с несколькими селекторами во вложенный элемент другого блока',
+                function() {
+                var tree = new Tree({
+                    block: 'a',
+                    content: {
+                        block: 'b',
+                        elem: 'c'
+                    }
+                }, new Pool().add(new Template('a__c', '*__c', 'b__c', 'a__c', { content: { elem: 'd' }})));
+                assert.equal(tree.toString(), '<div class="a"><div class="b__c"><div class="b__d"></div></div></div>');
+            });
+
+            it('Элемент добавляется в шаблоне на вложенный элемент блока', function() {
+                var tree = new Tree({
+                    block: 'a',
+                    content: {
+                        elem: 'c'
+                    }
+                }, new Pool().add(new Template('a__c', { content: { elem: 'd' }})));
+                assert.equal(tree.toString(), '<div class="a"><div class="a__c"><div class="a__d"></div></div></div>');
             });
 
             it('Элемент в элементе с модифицированным блоком', function() {
