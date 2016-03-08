@@ -75,6 +75,10 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
 
                 if(item) {
                     elemData.context = data.context;
+
+                    if(bemjson.__templateBlock__) {
+                        item.__templateBlock__ = bemjson.__templateBlock__;
+                    }
                 }
 
                 var node = is.array(item)
@@ -83,6 +87,9 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
 
                 list = list.concat(node);
             }
+
+            delete bemjson.__templateBlock__;
+
             return list;
         },
 
@@ -112,6 +119,12 @@ definer('Tree', /** @exports Tree */ function(Template, is, object) {
             context = context || {};
 
             if(!bemjson.block && bemjson.elem) {
+
+                if(bemjson.__templateBlock__) {
+                    context.block = bemjson.__templateBlock__;
+                    delete bemjson.__templateBlock__;
+                }
+
                 bemjson.block = context.block;
                 bemjson.mods = object.extend(object.clone(context.mods), bemjson.mods || {});
             }
