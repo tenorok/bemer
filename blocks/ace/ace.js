@@ -4,12 +4,12 @@ BEM.DOM.decl('ace', {
         js: {
             inited: function() {
                 this.editor = ace.edit(this.domElem.attr('id'));
-                this.editor.session.setMode('ace/mode/' + this.params.mode);
                 this.editor.session.setUseWrapMode(true);
                 this.editor.session.setUseSoftTabs(false);
                 this.editor.renderer.setScrollMargin(6, 6);
 
                 this.editor.setOptions({
+                    mode: 'ace/mode/' + this.params.mode,
                     minLines: this.params.minLines || 0,
                     maxLines: this.params.maxLines || Infinity
                 });
