@@ -38,7 +38,7 @@ BEM.DOM.decl('examples-list', {
                 "        }\n" +
                 "    })\n" +
                 "    .match('input_disable__control', {\n" +
-                "        attrs: { disable: true }\n" +
+                "        attrs: { disabled: true }\n" +
                 "    })\n" +
                 "    .match('input_*_text__control', {\n" +
                 "        tag: 'input',\n" +
